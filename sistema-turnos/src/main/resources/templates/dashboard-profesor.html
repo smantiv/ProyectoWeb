@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Profesor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Prof. María González</span>
+        <a href="../perfil-profesor.html" class="profile-avatar">👤</a>
+      </div>
+    </nav>
+
+    <main class="container">
+      <section class="section-header">
+        <h1>Panel de Profesor</h1>
+        <p>Bienvenido, María González. Aquí puedes gestionar tus turnos de vigilancia.</p>
+      </section>
+
+      <section class="section">
+        <h2>Acciones Rápidas</h2>
+        <div class="action-grid">
+          <a class="action-card" href="../mis-turnos.html">
+            <div class="action-icon navy">📋</div>
+            <span>Ver Mis Turnos</span>
+          </a>
+
+          <button class="action-card">
+            <div class="action-icon orange">▶</div>
+            <span>Iniciar Turno</span>
+          </button>
+
+          <a class="action-card" href="../registrar-punto.html">
+            <div class="action-icon navy">📍</div>
+            <span>Registrar Punto de Control</span>
+          </a>
+
+          <a class="action-card" href="../reportar-incidente.html">
+            <div class="action-icon red">⚠</div>
+            <span>Reportar Incidente</span>
+          </a>
+
+          <a class="action-card" href="../solicitar-reemplazo.html">
+            <div class="action-icon navy">👥</div>
+            <span>Solicitar Reemplazo</span>
+          </a>
+
+          <button class="action-card">
+            <div class="action-icon navy">⏹</div>
+            <span>Cerrar Turno</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Estadísticas</h2>
+        <div class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon green">✓</div>
+            <div>
+              <div class="stat-value green-text">8</div>
+              <div class="stat-label">Turnos completados esta semana</div>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon orange">!</div>
+            <div>
+              <div class="stat-value orange-text">3</div>
+              <div class="stat-label">Incidentes reportados</div>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon navy">◎</div>
+            <div>
+              <div class="stat-value navy-text">24</div>
+              <div class="stat-label">Puntos de control registrados</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title-row">
+          <h2>Próximos Turnos</h2>
+        </div>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Zona Asignada</th>
+                  <th>Fecha</th>
+                  <th>Hora de Inicio</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Patio Principal</td>
+                  <td>17 Mar 2026</td>
+                  <td>08:00 - 09:30</td>
+                  <td><span class="badge">Programado</span></td>
+                </tr>
+                <tr>
+                  <td>Cafetería</td>
+                  <td>18 Mar 2026</td>
+                  <td>10:00 - 11:30</td>
+                  <td><span class="badge">Programado</span></td>
+                </tr>
+                <tr>
+                  <td>Biblioteca</td>
+                  <td>19 Mar 2026</td>
+                  <td>14:00 - 15:30</td>
+                  <td><span class="badge">Programado</span></td>
+                </tr>
+                <tr>
+                  <td>Entrada Principal</td>
+                  <td>20 Mar 2026</td>
+                  <td>07:00 - 08:30</td>
+                  <td><span class="badge">Programado</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="cta-wrap">
+          <button class="btn btn-primary btn-large">
+            ▶ Iniciar Turno
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="../soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="../contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

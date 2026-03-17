@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrar Punto de Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Prof. María González</span>
+        <a href="perfil-profesor.html" class="profile-avatar">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="checkpoint-container">
+        <section class="section-header">
+          <h1>Registrar Punto de Control</h1>
+          <p>Confirma tu ubicación registrando el checkpoint del punto de vigilancia.</p>
+        </section>
+
+        <div id="checkpointConfirmation" class="checkpoint-confirmation hidden">
+          <span class="confirmation-icon">✔</span>
+          <p>Checkpoint registrado exitosamente.</p>
+        </div>
+
+        <section class="section">
+          <h2 class="subsection-title">Turno Activo</h2>
+
+          <div class="checkpoint-summary-card">
+            <div class="checkpoint-summary-grid checkpoint-summary-grid-4">
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">📍</span>
+                  <span>Zona asignada</span>
+                </div>
+                <p>Patio Principal</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">🕒</span>
+                  <span>Hora de inicio</span>
+                </div>
+                <p>14:00</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">🕒</span>
+                  <span>Hora actual</span>
+                </div>
+                <p>14:35</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">✔</span>
+                  <span>Estado del turno</span>
+                </div>
+                <span class="checkpoint-status-badge">Activo</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="subsection-title">Nuevo Checkpoint</h2>
+
+          <div class="checkpoint-form-card">
+            <form id="checkpointForm" class="checkpoint-form">
+              <div class="checkpoint-field">
+                <label for="pin">
+                  <div class="checkpoint-label-row">
+                    <span class="checkpoint-big-icon">📷</span>
+                    <div>
+                      <div class="checkpoint-main-label">PIN del punto de control</div>
+                      <div class="checkpoint-help-text">
+                        Ingresa el código del checkpoint asignado a esta zona.
+                      </div>
+                    </div>
+                  </div>
+                </label>
+                <input
+                  id="pin"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="6"
+                  placeholder="000000"
+                  class="checkpoint-pin-input"
+                  required
+                />
+              </div>
+
+              <div class="checkpoint-field">
+                <label for="notes" class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">💬</span>
+                  <span>Notas (opcional)</span>
+                </label>
+                <textarea
+                  id="notes"
+                  rows="4"
+                  placeholder="Agrega observaciones o comentarios sobre este checkpoint..."
+                ></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary checkpoint-submit-btn">
+                ✔ Registrar Checkpoint
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="subsection-title">Checkpoints Registrados - Turno Actual</h2>
+
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ubicación</th>
+                    <th>Hora Registrada</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="checkpointTableBody">
+                  <tr class="mis-row">
+                    <td>
+                      <div class="zone-cell">
+                        <span class="zone-icon">📍</span>
+                        <span>Entrada Patio Principal - Norte</span>
+                      </div>
+                    </td>
+                    <td>14:05</td>
+                    <td>
+                      <div class="checkpoint-status-row">
+                        <span class="green-text">✔</span>
+                        <span class="green-text">Confirmado</span>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="mis-row">
+                    <td>
+                      <div class="zone-cell">
+                        <span class="zone-icon">📍</span>
+                        <span>Entrada Patio Principal - Sur</span>
+                      </div>
+                    </td>
+                    <td>14:15</td>
+                    <td>
+                      <div class="checkpoint-status-row">
+                        <span class="green-text">✔</span>
+                        <span class="green-text">Confirmado</span>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="mis-row">
+                    <td>
+                      <div class="zone-cell">
+                        <span class="zone-icon">📍</span>
+                        <span>Zona de Juegos</span>
+                      </div>
+                    </td>
+                    <td>14:25</td>
+                    <td>
+                      <div class="checkpoint-status-row">
+                        <span class="green-text">✔</span>
+                        <span class="green-text">Confirmado</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="checkpoint-reminder">
+            <span class="checkpoint-reminder-icon">✔</span>
+            <p>
+              Recuerda registrar un checkpoint cada 10 minutos durante tu turno de vigilancia para mantener el registro completo.
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const checkpointForm = document.getElementById('checkpointForm');
+    const checkpointConfirmation = document.getElementById('checkpointConfirmation');
+    const checkpointTableBody = document.getElementById('checkpointTableBody');
+    const pinInput = document.getElementById('pin');
+    const notesInput = document.getElementById('notes');
+
+    checkpointForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const newRow = document.createElement('tr');
+      newRow.className = 'mis-row';
+      newRow.innerHTML = `
+        <td>
+          <div class="zone-cell">
+            <span class="zone-icon">📍</span>
+            <span>Zona Central del Patio</span>
+          </div>
+        </td>
+        <td>14:35</td>
+        <td>
+          <div class="checkpoint-status-row">
+            <span class="green-text">✔</span>
+            <span class="green-text">Confirmado</span>
+          </div>
+        </td>
+      `;
+
+      checkpointTableBody.appendChild(newRow);
+
+      checkpointConfirmation.classList.remove('hidden');
+      checkpointConfirmation.classList.add('fade-in');
+
+      pinInput.value = '';
+      notesInput.value = '';
+
+      setTimeout(() => {
+        checkpointConfirmation.classList.add('hidden');
+        checkpointConfirmation.classList.remove('fade-in');
+      }, 5000);
+    });
+
+    pinInput.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+  </script>
+</body>
+</html>

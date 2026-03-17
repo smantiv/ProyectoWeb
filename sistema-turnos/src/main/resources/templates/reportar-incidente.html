@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reportar Incidente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Prof. María González</span>
+        <a href="perfil-profesor.html" class="profile-avatar">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="checkpoint-container">
+        <section class="section-header">
+          <h1>Reportar Incidente</h1>
+          <p>Registra un incidente ocurrido durante tu turno de vigilancia.</p>
+<br> 
+        </section>
+
+        <div id="incidentConfirmation" class="checkpoint-confirmation hidden">
+          <span class="confirmation-icon">✔</span>
+          <p>Incidente registrado correctamente.</p>
+        </div>
+
+        <section class="section">
+          <h2 class="subsection-title">Turno Activo</h2>
+
+          <div class="checkpoint-summary-card">
+            <div class="incident-summary-grid">
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">📍</span>
+                  <span>Zona asignada</span>
+                </div>
+                <p>Patio Principal</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">🕒</span>
+                  <span>Hora actual</span>
+                </div>
+                <p>14:45</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">⚠</span>
+                  <span>Estado del turno</span>
+                </div>
+                <span class="checkpoint-status-badge">Activo</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="subsection-title">Detalles del Incidente</h2>
+
+          <div class="checkpoint-form-card">
+            <form id="incidentForm" class="checkpoint-form">
+              <div class="checkpoint-field">
+                <label for="incidentType" class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">⚠</span>
+                  <span>Tipo de incidente</span>
+                </label>
+                <select id="incidentType" required>
+                  <option value="">Selecciona un tipo</option>
+                  <option value="Disciplina estudiantil">Disciplina estudiantil</option>
+                  <option value="Conflicto entre estudiantes">Conflicto entre estudiantes</option>
+                  <option value="Emergencia médica">Emergencia médica</option>
+                  <option value="Daño en infraestructura">Daño en infraestructura</option>
+                  <option value="Situación de seguridad">Situación de seguridad</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+
+              <div class="checkpoint-field">
+                <label for="location" class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">📍</span>
+                  <span>Ubicación</span>
+                </label>
+                <select id="location" required>
+                  <option value="">Selecciona una ubicación</option>
+                  <option value="Patio principal">Patio principal</option>
+                  <option value="Cafetería">Cafetería</option>
+                  <option value="Biblioteca">Biblioteca</option>
+                  <option value="Entrada principal">Entrada principal</option>
+                  <option value="Zona de juegos">Zona de juegos</option>
+                  <option value="Pasillo académico">Pasillo académico</option>
+                </select>
+              </div>
+
+              <div class="checkpoint-field">
+                <label class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">❗</span>
+                  <span>Nivel de prioridad</span>
+                </label>
+
+                <div class="priority-grid">
+                  <button type="button" class="priority-btn" data-priority="baja" data-color="green">Baja</button>
+                  <button type="button" class="priority-btn" data-priority="media" data-color="yellow">Media</button>
+                  <button type="button" class="priority-btn" data-priority="alta" data-color="orange">Alta</button>
+                  <button type="button" class="priority-btn" data-priority="critica" data-color="red">Crítica</button>
+                </div>
+                <input type="hidden" id="priorityValue" required>
+              </div>
+
+              <div class="checkpoint-field">
+                <label for="description" class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">📝</span>
+                  <span>Descripción del incidente</span>
+                </label>
+                <textarea
+                  id="description"
+                  rows="6"
+                  placeholder="Describe brevemente lo ocurrido..."
+                  required
+                ></textarea>
+              </div>
+
+              <div class="checkpoint-field">
+                <label class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">⬆</span>
+                  <span>Evidencia (opcional)</span>
+                </label>
+
+                <div class="upload-row">
+                  <button type="button" id="uploadBtn" class="upload-btn">
+                    ⬆ Adjuntar imagen o archivo
+                  </button>
+                  <span id="fileName" class="upload-file-name"></span>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary checkpoint-submit-btn">
+                ✔ Registrar Incidente
+              </button>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const incidentForm = document.getElementById('incidentForm');
+    const incidentConfirmation = document.getElementById('incidentConfirmation');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileName = document.getElementById('fileName');
+    const priorityButtons = document.querySelectorAll('.priority-btn');
+    const priorityValue = document.getElementById('priorityValue');
+
+    uploadBtn.addEventListener('click', function () {
+      fileName.textContent = 'evidencia_incidente_' + Date.now() + '.jpg';
+    });
+
+    priorityButtons.forEach(btn => {
+      btn.addEventListener('click', function () {
+        priorityButtons.forEach(b => {
+          b.classList.remove('priority-selected-green', 'priority-selected-yellow', 'priority-selected-orange', 'priority-selected-red');
+        });
+
+        const priority = this.getAttribute('data-priority');
+        const color = this.getAttribute('data-color');
+
+        priorityValue.value = priority;
+
+        if (color === 'green') this.classList.add('priority-selected-green');
+        if (color === 'yellow') this.classList.add('priority-selected-yellow');
+        if (color === 'orange') this.classList.add('priority-selected-orange');
+        if (color === 'red') this.classList.add('priority-selected-red');
+      });
+    });
+
+    incidentForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      if (!priorityValue.value) {
+        alert('Selecciona un nivel de prioridad.');
+        return;
+      }
+
+      incidentConfirmation.classList.remove('hidden');
+      incidentConfirmation.classList.add('fade-in');
+
+      incidentForm.reset();
+      fileName.textContent = '';
+      priorityValue.value = '';
+
+      priorityButtons.forEach(b => {
+        b.classList.remove('priority-selected-green', 'priority-selected-yellow', 'priority-selected-orange', 'priority-selected-red');
+      });
+
+      setTimeout(() => {
+        incidentConfirmation.classList.add('hidden');
+        incidentConfirmation.classList.remove('fade-in');
+      }, 5000);
+    });
+  </script>
+</body>
+</html>

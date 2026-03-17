@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solicitar Reemplazo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Prof. María González</span>
+        <a href="perfil-profesor.html" class="profile-avatar">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="checkpoint-container">
+        <section class="section-header">
+          <h1>Solicitar Reemplazo de Turno</h1>
+          <p>Solicita que otro profesor cubra uno de tus turnos de vigilancia.</p>
+        </section>
+
+        <div id="replacementConfirmation" class="checkpoint-confirmation hidden">
+          <span class="confirmation-icon">✔</span>
+          <p>Solicitud de reemplazo enviada correctamente.</p>
+        </div>
+
+        <section class="section">
+          <h2 class="subsection-title">Datos de la Solicitud</h2>
+
+          <div class="checkpoint-form-card">
+            <form id="replacementForm" class="checkpoint-form">
+              <div class="checkpoint-field">
+                <label for="shiftSelect" class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">📅</span>
+                  <span>Seleccionar turno</span>
+                </label>
+                <select id="shiftSelect" required>
+                  <option value="">Selecciona un turno</option>
+                  <option value="1">Patio Principal — 17 Mar 2026 — 08:00–09:30</option>
+                  <option value="2">Biblioteca — 18 Mar 2026 — 10:00–11:30</option>
+                  <option value="3">Cafetería — 19 Mar 2026 — 14:00–15:30</option>
+                  <option value="4">Entrada Principal — 20 Mar 2026 — 08:00–09:30</option>
+                  <option value="5">Zona de Juegos — 21 Mar 2026 — 10:00–11:30</option>
+                </select>
+              </div>
+
+              <div class="checkpoint-field">
+                <label for="professorSelect" class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">👥</span>
+                  <span>Profesor sugerido (opcional)</span>
+                </label>
+                <select id="professorSelect">
+                  <option value="">Sin preferencia</option>
+                  <option value="Prof. Carlos Mendoza">Prof. Carlos Mendoza</option>
+                  <option value="Prof. Ana Martínez">Prof. Ana Martínez</option>
+                  <option value="Prof. Roberto Silva">Prof. Roberto Silva</option>
+                  <option value="Prof. Laura Pérez">Prof. Laura Pérez</option>
+                  <option value="Prof. Diego Torres">Prof. Diego Torres</option>
+                  <option value="Prof. Carmen Ruiz">Prof. Carmen Ruiz</option>
+                </select>
+              </div>
+
+              <div class="checkpoint-field">
+                <label for="replacementReason" class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">📝</span>
+                  <span>Motivo de la solicitud</span>
+                </label>
+                <textarea
+                  id="replacementReason"
+                  rows="5"
+                  placeholder="Explica brevemente por qué necesitas un reemplazo."
+                  required
+                ></textarea>
+              </div>
+
+              <div class="checkpoint-field">
+                <label class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">❗</span>
+                  <span>Nivel de urgencia</span>
+                </label>
+
+                <div class="urgency-grid">
+                  <button type="button" class="urgency-btn urgency-selected-normal" data-urgency="normal">Normal</button>
+                  <button type="button" class="urgency-btn" data-urgency="urgente">Urgente</button>
+                </div>
+                <input type="hidden" id="urgencyValue" value="normal">
+              </div>
+
+              <button type="submit" class="btn btn-primary checkpoint-submit-btn">
+                👥 Enviar Solicitud de Reemplazo
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="subsection-title">Solicitudes Recientes</h2>
+
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Turno</th>
+                    <th>Fecha</th>
+                    <th>Profesor asignado</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="table-row-hover">
+                    <td>Patio Principal</td>
+                    <td>14 Mar 2026</td>
+                    <td>Prof. Carlos Mendoza</td>
+                    <td>
+                      <span class="request-badge request-accepted">✔ Aceptado</span>
+                    </td>
+                  </tr>
+
+                  <tr class="table-row-hover">
+                    <td>Biblioteca</td>
+                    <td>12 Mar 2026</td>
+                    <td>Prof. Ana Martínez</td>
+                    <td>
+                      <span class="request-badge request-pending">🕒 Pendiente</span>
+                    </td>
+                  </tr>
+
+                  <tr class="table-row-hover">
+                    <td>Cafetería</td>
+                    <td>10 Mar 2026</td>
+                    <td>Prof. Roberto Silva</td>
+                    <td>
+                      <span class="request-badge request-rejected">✖ Rechazado</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const replacementForm = document.getElementById('replacementForm');
+    const replacementConfirmation = document.getElementById('replacementConfirmation');
+    const urgencyButtons = document.querySelectorAll('.urgency-btn');
+    const urgencyValue = document.getElementById('urgencyValue');
+
+    urgencyButtons.forEach(btn => {
+      btn.addEventListener('click', function () {
+        urgencyButtons.forEach(b => {
+          b.classList.remove('urgency-selected-normal', 'urgency-selected-urgent');
+        });
+
+        const urgency = this.getAttribute('data-urgency');
+        urgencyValue.value = urgency;
+
+        if (urgency === 'normal') {
+          this.classList.add('urgency-selected-normal');
+        } else {
+          this.classList.add('urgency-selected-urgent');
+        }
+      });
+    });
+
+    replacementForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      replacementConfirmation.classList.remove('hidden');
+      replacementConfirmation.classList.add('fade-in');
+
+      replacementForm.reset();
+      urgencyValue.value = 'normal';
+
+      urgencyButtons.forEach(b => {
+        b.classList.remove('urgency-selected-normal', 'urgency-selected-urgent');
+      });
+
+      const normalBtn = document.querySelector('[data-urgency="normal"]');
+      if (normalBtn) normalBtn.classList.add('urgency-selected-normal');
+
+      setTimeout(() => {
+        replacementConfirmation.classList.add('hidden');
+        replacementConfirmation.classList.remove('fade-in');
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
