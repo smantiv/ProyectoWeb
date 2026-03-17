@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="sidebar">
+    <ul>
+        <li><a th:href="@{/admin/dashboard}">Inicio</a></li>
+        <li><a th:href="@{/profesores}">Profesores</a></li>
+        <li><a th:href="@{/turnos}">Turnos</a></li>
+        <li><a th:href="@{/coordinacion}">Coordinación</a></li>
+        <li><a th:href="@{/incidentes/reportar}">Incidentes</a></li>
+        <li><a th:href="@{/analitica}">Analítica</a></li>
+        <li><a th:href="@{/perfil}">Perfil</a></li>
+    </ul>
+</aside>
+</body>
+</html>
