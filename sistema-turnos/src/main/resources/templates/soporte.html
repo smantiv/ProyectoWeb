@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro de Soporte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Usuario</span>
+        <div class="profile-avatar">👤</div>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="checkpoint-container">
+        <section class="section-header">
+          <h1>Centro de Soporte</h1>
+          <p>Encuentra respuestas a tus preguntas o contacta al equipo técnico.</p>
+          <br>
+        </section>
+
+        <section class="section">
+          <h2 class="support-section-title">Preguntas Frecuentes (FAQ)</h2>
+
+          <div class="faq-list">
+            <article class="faq-item">
+              <button class="faq-question">
+                <div class="faq-question-left">
+                  <span class="faq-icon">❓</span>
+                  <h3>¿Cómo crear un turno de vigilancia?</h3>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </button>
+              <div class="faq-answer">
+                <p>Para crear un turno de vigilancia, accede al módulo de "Gestión de Turnos" desde el Panel de Administrador. Haz clic en "Crear Nuevo Turno", completa la información requerida (fecha, hora de inicio y fin, zona asignada), selecciona el profesor responsable y guarda el turno. El profesor recibirá una notificación automática de su asignación.</p>
+              </div>
+            </article>
+
+            <article class="faq-item">
+              <button class="faq-question">
+                <div class="faq-question-left">
+                  <span class="faq-icon">❓</span>
+                  <h3>¿Cómo asignar un profesor a una zona?</h3>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </button>
+              <div class="faq-answer">
+                <p>Ve al módulo de "Gestión de Profesores" y selecciona el profesor que deseas asignar. En la sección de detalles del profesor, encontrarás la opción "Zonas Asignadas". Haz clic en "Asignar Nueva Zona", selecciona la zona de la lista disponible y confirma la asignación. El profesor podrá ahora realizar turnos en esa zona.</p>
+              </div>
+            </article>
+
+            <article class="faq-item">
+              <button class="faq-question">
+                <div class="faq-question-left">
+                  <span class="faq-icon">❓</span>
+                  <h3>¿Cómo configurar reglas operativas?</h3>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </button>
+              <div class="faq-answer">
+                <p>Accede al módulo de "Reglas Operativas" desde el Panel de Administrador. Aquí encontrarás diferentes categorías de reglas (Turnos, Puntos de Control, Incidentes, etc.). Selecciona la categoría que deseas configurar, ajusta los parámetros según tus necesidades (tiempos, frecuencias, niveles de autorización) y guarda los cambios. Las nuevas reglas se aplicarán inmediatamente al sistema.</p>
+              </div>
+            </article>
+
+            <article class="faq-item">
+              <button class="faq-question">
+                <div class="faq-question-left">
+                  <span class="faq-icon">❓</span>
+                  <h3>¿Qué hacer si un profesor reporta ausencia?</h3>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </button>
+              <div class="faq-answer">
+                <p>Cuando un profesor reporta ausencia a través de "Solicitar Reemplazo", el coordinador recibe una notificación inmediata. Ve al módulo de "Reasignar Turnos", revisa la solicitud pendiente, verifica la disponibilidad de otros profesores en el sistema, selecciona un reemplazo apropiado y confirma la reasignación. Tanto el profesor ausente como el reemplazo recibirán notificaciones de confirmación.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="support-section-title">Guía Rápida del Sistema</h2>
+
+          <div class="support-guide-grid">
+            <article class="support-guide-card">
+              <div class="support-guide-icon bg-orange">👥</div>
+              <div class="support-guide-content">
+                <h3>Gestión de Profesores</h3>
+                <p>Administra el registro de profesores, asigna zonas de vigilancia, consulta el historial de turnos completados y gestiona la disponibilidad del personal docente.</p>
+              </div>
+            </article>
+
+            <article class="support-guide-card">
+              <div class="support-guide-icon bg-navy">📍</div>
+              <div class="support-guide-content">
+                <h3>Gestión de Zonas</h3>
+                <p>Configura las diferentes áreas de vigilancia del colegio, establece puntos de control, define horarios de supervisión y asigna códigos QR para cada zona.</p>
+              </div>
+            </article>
+
+            <article class="support-guide-card">
+              <div class="support-guide-icon bg-purple">🕒</div>
+              <div class="support-guide-content">
+                <h3>Gestión de Turnos</h3>
+                <p>Crea, programa y asigna turnos de vigilancia a profesores, administra el calendario de turnos, visualiza la cobertura semanal y gestiona cambios de último momento.</p>
+              </div>
+            </article>
+
+            <article class="support-guide-card">
+              <div class="support-guide-icon bg-green">⚙</div>
+              <div class="support-guide-content">
+                <h3>Reglas Operativas</h3>
+                <p>Define y ajusta las reglas del sistema de vigilancia: tiempos de puntos de control, niveles de gravedad de incidentes, umbrales de alertas y parámetros de autorización.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="support-section-title">Soporte Técnico</h2>
+
+          <div class="support-technical-card">
+            <div class="support-technical-icon">⚠</div>
+            <div class="support-technical-content">
+              <h3>¿Necesitas ayuda técnica?</h3>
+              <p>Si experimentas problemas técnicos, contacta al administrador del sistema o al equipo de soporte institucional.</p>
+
+              <div class="support-contact-list">
+                <p><strong>Correo:</strong> soporte@sfr.edu.co</p>
+                <p><strong>Teléfono:</strong> +57 (1) 234-5678 ext. 123</p>
+                <p><strong>Horario:</strong> Lunes a Viernes, 7:00 AM - 5:00 PM</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const faqQuestions = document.querySelectorAll('.faq-question');
+
+    faqQuestions.forEach(question => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        const answer = item.querySelector('.faq-answer');
+        const toggle = question.querySelector('.faq-toggle');
+
+        const isOpen = item.classList.contains('faq-open');
+
+        document.querySelectorAll('.faq-item').forEach(faq => {
+          faq.classList.remove('faq-open');
+          faq.querySelector('.faq-answer').style.maxHeight = null;
+          faq.querySelector('.faq-toggle').textContent = '▼';
+        });
+
+        if (!isOpen) {
+          item.classList.add('faq-open');
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+          toggle.textContent = '▲';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
