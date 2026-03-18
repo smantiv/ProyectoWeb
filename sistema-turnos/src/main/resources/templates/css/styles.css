@@ -3730,3 +3730,250 @@ tbody td:nth-child(3) {
 .activity-icon.red {
   background: rgb(220, 53, 69);
 }
+/* =========================
+   GESTIÓN DE INCIDENTES
+========================= */
+
+.incidents-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.incidents-layout-full {
+  display: block;
+}
+
+.incidents-panel-title {
+  margin: 0 0 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.25rem;
+  color: var(--navy);
+}
+
+.incidents-count {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
+.incidents-table-card {
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-soft);
+  box-shadow: var(--shadow);
+}
+
+.incidents-detail-card {
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--bg-soft);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 24px;
+}
+
+.incidents-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.incidents-detail-header h2 {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.25rem;
+  color: var(--navy);
+}
+
+.incidents-close-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--navy);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.incidents-close-btn:hover {
+  background: rgb(220, 220, 220);
+}
+
+.incidents-table-wrap {
+  overflow-x: auto;
+}
+
+.incidents-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.incidents-table thead tr {
+  background: var(--navy);
+}
+
+.incidents-table th {
+  padding: 16px;
+  text-align: left;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.875rem;
+}
+
+.incidents-table td {
+  padding: 16px;
+  text-align: left;
+  color: var(--navy);
+  font-size: 0.92rem;
+  border-top: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.incidents-row {
+  background: var(--white);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.incidents-row:hover {
+  background: rgb(248, 248, 248);
+}
+
+.incidents-row-active {
+  background: rgb(230, 240, 255);
+}
+
+.incident-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: white;
+  font-size: 0.8rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.incident-priority-low {
+  background: var(--green);
+}
+
+.incident-priority-medium {
+  background: rgb(255, 193, 7);
+}
+
+.incident-priority-high {
+  background: var(--orange);
+}
+
+.incident-priority-critical {
+  background: var(--red);
+}
+
+.incident-status-pending {
+  background: rgb(255, 193, 7);
+}
+
+.incident-status-progress {
+  background: var(--orange);
+}
+
+.incident-status-resolved {
+  background: var(--green);
+}
+
+.incident-status-escalated {
+  background: var(--red);
+}
+
+.incident-detail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.incident-detail-box {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--white);
+}
+
+.incident-detail-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  color: var(--text-soft);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.incident-detail-icon {
+  color: var(--orange);
+}
+
+.incident-detail-box p {
+  margin: 0;
+  color: var(--navy);
+  line-height: 1.5;
+}
+
+.incident-state-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.incident-actions {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.incident-action-btn {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.incident-action-progress {
+  background: var(--orange);
+}
+
+.incident-action-progress:hover {
+  background: var(--orange-hover);
+}
+
+.incident-action-resolve {
+  background: var(--green);
+}
+
+.incident-action-resolve:hover {
+  background: rgb(33, 147, 59);
+}
+
+.incident-action-escalate {
+  background: var(--red);
+}
+
+.incident-action-escalate:hover {
+  background: rgb(200, 35, 51);
+}
+
+@media (max-width: 1100px) {
+  .incidents-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .incidents-detail-card {
+    position: static;
+  }
+}

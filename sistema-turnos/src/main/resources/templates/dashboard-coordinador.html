@@ -23,112 +23,310 @@
       </div>
     </nav>
 
-    <main class="dashboard-main">
-      <div class="container">
-        <section class="section-header">
-          <h1>Panel del Coordinador</h1>
-          <p>Supervisa turnos, incidentes y solicitudes del sistema.</p>
-          <br>
-        </section>
+    <main class="container">
+      <section class="section-header">
+        <h1>Panel del Coordinador</h1>
+        <p>Supervisa turnos, incidentes y solicitudes del sistema.</p>
+      </section>
 
-        <section class="section">
-          <h2>Estadísticas del Día</h2>
-          <div class="coordinator-stats-grid">
-            <article class="admin-stat-card">
-              <div class="admin-stat-top">
-                <div class="admin-stat-icon bg-navy">📋</div>
+      <section class="section">
+        <h2>Acceso Rápido</h2>
+
+        <div class="admin-quick-grid">
+          <a class="admin-quick-card" href="cobertura-tiempo-real.html">
+            <div class="admin-quick-icon bg-green">📍</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Cobertura en Tiempo Real</h3>
+                <span class="admin-arrow">→</span>
               </div>
-              <h3>12</h3>
-              <p>Total turnos activos hoy</p>
-            </article>
-
-            <article class="admin-stat-card">
-              <div class="admin-stat-top">
-                <div class="admin-stat-icon bg-orange">⚠</div>
-              </div>
-              <h3>4</h3>
-              <p>Incidentes reportados hoy</p>
-            </article>
-
-            <article class="admin-stat-card">
-              <div class="admin-stat-top">
-                <div class="admin-stat-icon bg-red">👥</div>
-              </div>
-              <h3>3</h3>
-              <p>Solicitudes de reemplazo pendientes</p>
-            </article>
-
-            <article class="admin-stat-card">
-              <div class="admin-stat-top">
-                <div class="admin-stat-icon bg-green">📍</div>
-              </div>
-              <h3>56</h3>
-              <p>Checkpoints registrados hoy</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="section">
-          <h2>Incidentes Activos</h2>
-          <div class="table-card">
-            <div class="table-wrap">
-              <table>
-                <thead class="thead-admin">
-                  <tr>
-                    <th>Tipo de incidente</th>
-                    <th>Ubicación</th>
-                    <th>Hora</th>
-                    <th>Prioridad</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody id="incidentsTableBody"></tbody>
-              </table>
+              <p>Monitorea el estado de todas las zonas en vivo</p>
             </div>
-          </div>
-        </section>
+          </a>
 
-        <section class="section">
-          <h2>Solicitudes de Reemplazo</h2>
-          <div class="table-card">
-            <div class="table-wrap">
-              <table>
-                <thead class="thead-admin">
-                  <tr>
-                    <th>Profesor solicitante</th>
-                    <th>Turno</th>
-                    <th>Fecha</th>
-                    <th>Motivo</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody id="replacementTableBody"></tbody>
-              </table>
+          <a class="admin-quick-card" href="gestion-incidentes.html">
+            <div class="admin-quick-icon bg-orange">📄</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Gestión de Incidentes</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Revisa y gestiona todos los incidentes reportados</p>
             </div>
-          </div>
-        </section>
+          </a>
 
-        <section class="section">
-          <h2>Turnos Activos</h2>
-          <div class="table-card">
-            <div class="table-wrap">
-              <table>
-                <thead class="thead-admin">
-                  <tr>
-                    <th>Profesor</th>
-                    <th>Zona asignada</th>
-                    <th>Hora inicio</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody id="activeShiftsBody"></tbody>
-              </table>
+          <a class="admin-quick-card" href="gestion-turnos.html">
+            <div class="admin-quick-icon bg-navy">↻</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Reasignar Turnos</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Gestiona cambios y solicitudes de reemplazo</p>
             </div>
+          </a>
+
+          <a class="admin-quick-card" href="analiticas.html">
+            <div class="admin-quick-icon bg-purple">📊</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Analíticas</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Visualiza estadísticas y reportes detallados</p>
+            </div>
+          </a>
+
+          <a class="admin-quick-card" href="MetricasPositivasDocentes.html">
+            <div class="admin-quick-icon bg-yellow">🏆</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Métricas Positivas</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Desempeño y logros del equipo docente</p>
+            </div>
+          </a>
+
+          <a class="admin-quick-card" href="reconocimientos-institucionales.html">
+            <div class="admin-quick-icon bg-red">🎖</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Reconocimientos</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Logros y menciones institucionales</p>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Estadísticas del Día</h2>
+
+        <div class="coordinator-stats-grid">
+          <article class="admin-stat-card">
+            <div class="admin-stat-top">
+              <div class="admin-stat-icon bg-navy">📋</div>
+            </div>
+            <h3>12</h3>
+            <p>Total turnos activos hoy</p>
+          </article>
+
+          <article class="admin-stat-card">
+            <div class="admin-stat-top">
+              <div class="admin-stat-icon bg-orange">⚠</div>
+            </div>
+            <h3>4</h3>
+            <p>Incidentes reportados hoy</p>
+          </article>
+
+          <article class="admin-stat-card">
+            <div class="admin-stat-top">
+              <div class="admin-stat-icon bg-red">👥</div>
+            </div>
+            <h3>3</h3>
+            <p>Solicitudes de reemplazo pendientes</p>
+          </article>
+
+          <article class="admin-stat-card">
+            <div class="admin-stat-top">
+              <div class="admin-stat-icon bg-green">📍</div>
+            </div>
+            <h3>56</h3>
+            <p>Checkpoints registrados hoy</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Incidentes Activos</h2>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead class="thead-admin">
+                <tr>
+                  <th>Tipo de incidente</th>
+                  <th>Ubicación</th>
+                  <th>Hora</th>
+                  <th>Prioridad</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-row-hover">
+                  <td>Conflicto entre estudiantes</td>
+                  <td>Patio Principal</td>
+                  <td>08:25</td>
+                  <td><span class="badge badge-yellow">Media</span></td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
+                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Emergencia médica</td>
+                  <td>Cafetería</td>
+                  <td>09:15</td>
+                  <td><span class="request-badge request-rejected">Crítica</span></td>
+                  <td><span class="request-badge request-orange">En proceso</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
+                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Situación de seguridad</td>
+                  <td>Entrada Principal</td>
+                  <td>10:30</td>
+                  <td><span class="badge badge-orange">Alta</span></td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
+                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Daño en infraestructura</td>
+                  <td>Biblioteca</td>
+                  <td>11:00</td>
+                  <td><span class="request-badge request-accepted">Baja</span></td>
+                  <td><span class="request-badge request-accepted">Resuelto</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Solicitudes de Reemplazo</h2>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead class="thead-admin">
+                <tr>
+                  <th>Profesor solicitante</th>
+                  <th>Turno</th>
+                  <th>Fecha</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-row-hover">
+                  <td>Prof. María González</td>
+                  <td>Patio Principal</td>
+                  <td>17 Mar 2026</td>
+                  <td>Cita médica urgente</td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <button type="button" class="coord-btn coord-approve-btn">👍 Aprobar</button>
+                      <button type="button" class="coord-btn coord-reject-btn">👎 Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Carlos Mendoza</td>
+                  <td>Biblioteca</td>
+                  <td>18 Mar 2026</td>
+                  <td>Reunión de departamento</td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <button type="button" class="coord-btn coord-approve-btn">👍 Aprobar</button>
+                      <button type="button" class="coord-btn coord-reject-btn">👎 Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Ana Martínez</td>
+                  <td>Cafetería</td>
+                  <td>19 Mar 2026</td>
+                  <td>Asunto personal</td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <button type="button" class="coord-btn coord-approve-btn">👍 Aprobar</button>
+                      <button type="button" class="coord-btn coord-reject-btn">👎 Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Turnos Activos</h2>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead class="thead-admin">
+                <tr>
+                  <th>Profesor</th>
+                  <th>Zona asignada</th>
+                  <th>Hora inicio</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-row-hover">
+                  <td>Prof. Roberto Silva</td>
+                  <td>Patio Principal</td>
+                  <td>08:00</td>
+                  <td><span class="request-badge request-accepted">✔ Activo</span></td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Laura Pérez</td>
+                  <td>Biblioteca</td>
+                  <td>08:00</td>
+                  <td><span class="request-badge request-accepted">✔ Activo</span></td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Diego Torres</td>
+                  <td>Cafetería</td>
+                  <td>09:00</td>
+                  <td><span class="request-badge request-accepted">✔ Activo</span></td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Carmen Ruiz</td>
+                  <td>Entrada Principal</td>
+                  <td>09:30</td>
+                  <td><span class="request-badge request-pending">🕒 Por iniciar</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
@@ -136,187 +334,11 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a href="../soporte.html">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a href="../contacto.html">Contacto</a>
       </div>
     </footer>
   </div>
-
-  <script>
-    let incidents = [
-      {
-        id: 1,
-        type: 'Conflicto entre estudiantes',
-        location: 'Patio Principal',
-        time: '08:25',
-        priority: 'Media',
-        priorityClass: 'request-pending',
-        status: 'Pendiente',
-        statusClass: 'request-pending'
-      },
-      {
-        id: 2,
-        type: 'Emergencia médica',
-        location: 'Cafetería',
-        time: '09:15',
-        priority: 'Crítica',
-        priorityClass: 'request-rejected',
-        status: 'En proceso',
-        statusClass: 'request-orange'
-      },
-      {
-        id: 3,
-        type: 'Situación de seguridad',
-        location: 'Entrada Principal',
-        time: '10:30',
-        priority: 'Alta',
-        priorityClass: 'request-orange',
-        status: 'Pendiente',
-        statusClass: 'request-pending'
-      },
-      {
-        id: 4,
-        type: 'Daño en infraestructura',
-        location: 'Biblioteca',
-        time: '11:00',
-        priority: 'Baja',
-        priorityClass: 'request-accepted',
-        status: 'Resuelto',
-        statusClass: 'request-accepted'
-      }
-    ];
-
-    let replacementRequests = [
-      {
-        id: 1,
-        professor: 'Prof. María González',
-        shift: 'Patio Principal',
-        date: '17 Mar 2026',
-        reason: 'Cita médica urgente',
-        status: 'Pendiente',
-        statusClass: 'request-pending'
-      },
-      {
-        id: 2,
-        professor: 'Prof. Carlos Mendoza',
-        shift: 'Biblioteca',
-        date: '18 Mar 2026',
-        reason: 'Reunión de departamento',
-        status: 'Pendiente',
-        statusClass: 'request-pending'
-      },
-      {
-        id: 3,
-        professor: 'Prof. Ana Martínez',
-        shift: 'Cafetería',
-        date: '19 Mar 2026',
-        reason: 'Asunto personal',
-        status: 'Pendiente',
-        statusClass: 'request-pending'
-      }
-    ];
-
-    const activeShifts = [
-      { professor: 'Prof. Roberto Silva', zone: 'Patio Principal', startTime: '08:00', status: 'Activo', statusClass: 'request-accepted' },
-      { professor: 'Prof. Laura Pérez', zone: 'Biblioteca', startTime: '08:00', status: 'Activo', statusClass: 'request-accepted' },
-      { professor: 'Prof. Diego Torres', zone: 'Cafetería', startTime: '09:00', status: 'Activo', statusClass: 'request-accepted' },
-      { professor: 'Prof. Carmen Ruiz', zone: 'Entrada Principal', startTime: '09:30', status: 'Por iniciar', statusClass: 'request-pending' }
-    ];
-
-    const incidentsTableBody = document.getElementById('incidentsTableBody');
-    const replacementTableBody = document.getElementById('replacementTableBody');
-    const activeShiftsBody = document.getElementById('activeShiftsBody');
-
-    function renderIncidents() {
-      incidentsTableBody.innerHTML = incidents.map(incident => `
-        <tr class="table-row-hover">
-          <td>${incident.type}</td>
-          <td>${incident.location}</td>
-          <td>${incident.time}</td>
-          <td><span class="request-badge ${incident.priorityClass}">${incident.priority}</span></td>
-          <td><span class="request-badge ${incident.statusClass}">${incident.status}</span></td>
-          <td>
-            <div class="teacher-actions">
-              <button class="coord-btn coord-view-btn">👁 Ver</button>
-              ${incident.status !== 'Resuelto' ? `<button class="coord-btn coord-resolve-btn" onclick="markIncidentResolved(${incident.id})">✔ Resolver</button>` : ''}
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function renderReplacementRequests() {
-      replacementTableBody.innerHTML = replacementRequests.map(request => `
-        <tr class="table-row-hover">
-          <td>${request.professor}</td>
-          <td>${request.shift}</td>
-          <td>${request.date}</td>
-          <td>${request.reason}</td>
-          <td><span class="request-badge ${request.statusClass}">${request.status}</span></td>
-          <td>
-            ${
-              request.status === 'Pendiente'
-                ? `<div class="teacher-actions">
-                    <button class="coord-btn coord-approve-btn" onclick="approveRequest(${request.id})">👍 Aprobar</button>
-                    <button class="coord-btn coord-reject-btn" onclick="rejectRequest(${request.id})">👎 Rechazar</button>
-                  </div>`
-                : ''
-            }
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function renderActiveShifts() {
-      activeShiftsBody.innerHTML = activeShifts.map(shift => `
-        <tr class="table-row-hover">
-          <td>${shift.professor}</td>
-          <td>${shift.zone}</td>
-          <td>${shift.startTime}</td>
-          <td>
-            <span class="request-badge ${shift.statusClass}">
-              ${shift.status === 'Activo' ? '✔' : '🕒'} ${shift.status}
-            </span>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function markIncidentResolved(id) {
-      incidents = incidents.map(incident =>
-        incident.id === id
-          ? { ...incident, status: 'Resuelto', statusClass: 'request-accepted' }
-          : incident
-      );
-      renderIncidents();
-    }
-
-    function approveRequest(id) {
-      replacementRequests = replacementRequests.map(request =>
-        request.id === id
-          ? { ...request, status: 'Aprobado', statusClass: 'request-accepted' }
-          : request
-      );
-      renderReplacementRequests();
-    }
-
-    function rejectRequest(id) {
-      replacementRequests = replacementRequests.map(request =>
-        request.id === id
-          ? { ...request, status: 'Rechazado', statusClass: 'request-rejected' }
-          : request
-      );
-      renderReplacementRequests();
-    }
-
-    renderIncidents();
-    renderReplacementRequests();
-    renderActiveShifts();
-
-    window.markIncidentResolved = markIncidentResolved;
-    window.approveRequest = approveRequest;
-    window.rejectRequest = rejectRequest;
-  </script>
 </body>
 </html>
