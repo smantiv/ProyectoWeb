@@ -1,15 +1,403 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head('Gestión de Turnos')"></head>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Turnos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
 <body>
-    <div th:replace="fragments/navbar :: navbar"></div>
-    <div class="app-layout">
-        <aside th:replace="fragments/sidebar :: sidebar"></aside>
-        <main>
-            <h1>Gestión de Turnos</h1>
-        </main>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Admin. Patricia Flores</span>
+        <a href="perfil-cuenta.html" class="profile-avatar profile-avatar-admin">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="container">
+        <section class="section-header">
+          <h1>Gestión de Turnos</h1>
+          <p>Programa y organiza los turnos de vigilancia escolar.</p>
+         <br>
+        </section>
+
+        <button id="addShiftBtn" class="btn btn-primary teachers-add-btn">
+          ＋ Programar Turno
+        </button>
+
+        <section class="section">
+          <div class="admin-stats-grid">
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-navy">🕒</div>
+                <span class="admin-trend orange-text">↗</span>
+              </div>
+              <h3 id="shiftsStatTotal">8</h3>
+              <p>Turnos totales</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-blue">📅</div>
+                <span class="admin-trend blue-text" id="shiftsStatScheduledPct">50%</span>
+              </div>
+              <h3 id="shiftsStatScheduled">4</h3>
+              <p>Turnos programados</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-yellow">↻</div>
+                <span class="admin-trend orange-text">!</span>
+              </div>
+              <h3 id="shiftsStatInProgress">1</h3>
+              <p>Turnos en curso</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-green">✔</div>
+                <span class="admin-trend green-text" id="shiftsStatCompletedPct">12%</span>
+              </div>
+              <h3 id="shiftsStatCompleted">1</h3>
+              <p>Turnos completados</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="filter-card">
+            <div class="filter-title-row">
+              <span class="filter-icon">⚲</span>
+              <h3>Búsqueda y Filtros</h3>
+            </div>
+
+            <div class="shifts-filter-grid">
+              <div class="filter-field">
+                <label for="fechaShiftFilter">Fecha</label>
+                <input id="fechaShiftFilter" type="date">
+              </div>
+
+              <div class="filter-field">
+                <label for="zoneShiftFilter">Zona</label>
+                <select id="zoneShiftFilter">
+                  <option value="Todas">Todas</option>
+                  <option value="Biblioteca">Biblioteca</option>
+                  <option value="Patio Principal">Patio Principal</option>
+                  <option value="Cafetería">Cafetería</option>
+                  <option value="Entrada Principal">Entrada Principal</option>
+                  <option value="Zona de Juegos">Zona de Juegos</option>
+                  <option value="Pasillo Académico">Pasillo Académico</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="profesorShiftFilter">Profesor</label>
+                <select id="profesorShiftFilter">
+                  <option value="Todos">Todos</option>
+                  <option value="Prof. Carmen Ruiz">Prof. Carmen Ruiz</option>
+                  <option value="Prof. Roberto Silva">Prof. Roberto Silva</option>
+                  <option value="Prof. Laura Pérez">Prof. Laura Pérez</option>
+                  <option value="Prof. Ana Martínez">Prof. Ana Martínez</option>
+                  <option value="Prof. Carlos Mendoza">Prof. Carlos Mendoza</option>
+                  <option value="Prof. María González">Prof. María González</option>
+                  <option value="Prof. José Ramírez">Prof. José Ramírez</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="estadoShiftFilter">Estado</label>
+                <select id="estadoShiftFilter">
+                  <option value="Todos">Todos</option>
+                  <option value="Programado">Programado</option>
+                  <option value="En curso">En curso</option>
+                  <option value="Completado">Completado</option>
+                  <option value="Cancelado">Cancelado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="teachers-table-head">
+            <h2 id="shiftsTableTitle">Listado de Turnos (8)</h2>
+            <button id="exportShiftsBtn" class="teachers-export-btn">⬇ Exportar</button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Horario</th>
+                    <th>Zona</th>
+                    <th>Profesor</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="shiftsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="shiftOverlay" class="teacher-overlay hidden">
+      <div class="teacher-side-panel">
+        <div class="teacher-side-header">
+          <h2>Detalle del Turno</h2>
+          <button id="closeShiftPanel" class="teacher-close-btn">✕</button>
+        </div>
+
+        <div id="shiftPanelContent" class="teacher-panel-content"></div>
+      </div>
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
-    <div th:replace="fragments/scripts :: scripts"></div>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const shifts = [
+      { id: 1, fecha: '2026-03-17', horaInicio: '07:00', horaFin: '09:00', zona: 'Biblioteca', profesor: 'Prof. Carmen Ruiz', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' },
+      { id: 2, fecha: '2026-03-17', horaInicio: '09:00', horaFin: '11:00', zona: 'Patio Principal', profesor: 'Prof. Roberto Silva', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' },
+      { id: 3, fecha: '2026-03-17', horaInicio: '11:00', horaFin: '13:00', zona: 'Cafetería', profesor: 'Prof. Laura Pérez', estado: 'En curso', estadoColor: 'rgb(40, 167, 69)' },
+      { id: 4, fecha: '2026-03-18', horaInicio: '07:00', horaFin: '09:00', zona: 'Entrada Principal', profesor: 'Prof. Ana Martínez', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' },
+      { id: 5, fecha: '2026-03-18', horaInicio: '13:00', horaFin: '15:00', zona: 'Zona de Juegos', profesor: 'Prof. Carlos Mendoza', estado: 'Completado', estadoColor: 'rgb(40, 167, 69)' },
+      { id: 6, fecha: '2026-03-19', horaInicio: '09:00', horaFin: '11:00', zona: 'Pasillo Académico', profesor: 'Prof. María González', estado: 'Cancelado', estadoColor: 'rgb(220, 53, 69)' },
+      { id: 7, fecha: '2026-03-19', horaInicio: '11:00', horaFin: '13:00', zona: 'Biblioteca', profesor: 'Prof. José Ramírez', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' },
+      { id: 8, fecha: '2026-03-20', horaInicio: '07:00', horaFin: '09:00', zona: 'Patio Principal', profesor: 'Prof. Carmen Ruiz', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' }
+    ];
+
+    const fechaShiftFilter = document.getElementById('fechaShiftFilter');
+    const zoneShiftFilter = document.getElementById('zoneShiftFilter');
+    const profesorShiftFilter = document.getElementById('profesorShiftFilter');
+    const estadoShiftFilter = document.getElementById('estadoShiftFilter');
+
+    const shiftsTableBody = document.getElementById('shiftsTableBody');
+    const shiftsTableTitle = document.getElementById('shiftsTableTitle');
+
+    const shiftOverlay = document.getElementById('shiftOverlay');
+    const shiftPanelContent = document.getElementById('shiftPanelContent');
+    const closeShiftPanel = document.getElementById('closeShiftPanel');
+
+    const shiftsStatTotal = document.getElementById('shiftsStatTotal');
+    const shiftsStatScheduled = document.getElementById('shiftsStatScheduled');
+    const shiftsStatInProgress = document.getElementById('shiftsStatInProgress');
+    const shiftsStatCompleted = document.getElementById('shiftsStatCompleted');
+    const shiftsStatScheduledPct = document.getElementById('shiftsStatScheduledPct');
+    const shiftsStatCompletedPct = document.getElementById('shiftsStatCompletedPct');
+
+    function shiftBadgeClass(estado) {
+      if (estado === 'Programado') return 'request-programmed';
+      if (estado === 'En curso') return 'request-accepted';
+      if (estado === 'Completado') return 'request-accepted';
+      return 'request-rejected';
+    }
+
+    function formatDate(dateString) {
+      const d = new Date(dateString + 'T00:00:00');
+      return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function formatLongDate(dateString) {
+      const d = new Date(dateString + 'T00:00:00');
+      return d.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function renderShiftStats(data) {
+      const total = data.length;
+      const programados = data.filter(s => s.estado === 'Programado').length;
+      const enCurso = data.filter(s => s.estado === 'En curso').length;
+      const completados = data.filter(s => s.estado === 'Completado').length;
+
+      shiftsStatTotal.textContent = total;
+      shiftsStatScheduled.textContent = programados;
+      shiftsStatInProgress.textContent = enCurso;
+      shiftsStatCompleted.textContent = completados;
+      shiftsStatScheduledPct.textContent = total ? Math.round((programados / total) * 100) + '%' : '0%';
+      shiftsStatCompletedPct.textContent = total ? Math.round((completados / total) * 100) + '%' : '0%';
+    }
+
+    function renderShiftPanel(shift) {
+      const badgeClass = shiftBadgeClass(shift.estado);
+
+      shiftPanelContent.innerHTML = `
+        <div class="teacher-panel-profile">
+          <div class="teacher-panel-avatar">🕒</div>
+          <h3>Turno #${shift.id}</h3>
+          <span class="request-badge ${badgeClass}">${shift.estado}</span>
+        </div>
+
+        <div class="teacher-info-stack">
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>📅</span><span>Fecha</span></div>
+            <p>${formatLongDate(shift.fecha)}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>🕒</span><span>Horario</span></div>
+            <p>${shift.horaInicio} - ${shift.horaFin}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>📍</span><span>Zona asignada</span></div>
+            <p>${shift.zona}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>👤</span><span>Profesor responsable</span></div>
+            <p>${shift.profesor}</p>
+          </div>
+        </div>
+
+        <div class="teacher-panel-actions">
+          <button class="btn btn-primary teacher-panel-btn">✎ Editar turno</button>
+          <button class="teacher-secondary-btn">↻ Reasignar profesor</button>
+        </div>
+      `;
+    }
+
+    function renderShiftsTable(data) {
+      shiftsTableTitle.textContent = `Listado de Turnos (${data.length})`;
+
+      shiftsTableBody.innerHTML = data.map(shift => `
+        <tr class="table-row-hover shift-row" data-id="${shift.id}">
+          <td>
+            <div class="action-cell">
+              <span class="zone-icon">📅</span>
+              <span class="action-title">${formatDate(shift.fecha)}</span>
+            </div>
+          </td>
+          <td>
+            <div class="action-cell">
+              <span class="teacher-muted-icon">🕒</span>
+              <span>${shift.horaInicio} - ${shift.horaFin}</span>
+            </div>
+          </td>
+          <td>
+            <div class="action-cell">
+              <span class="teacher-muted-icon navy-text">📍</span>
+              <span>${shift.zona}</span>
+            </div>
+          </td>
+          <td>
+            <div class="action-cell">
+              <span class="teacher-muted-icon">👤</span>
+              <span>${shift.profesor}</span>
+            </div>
+          </td>
+          <td>
+            <span class="request-badge ${shiftBadgeClass(shift.estado)}">${shift.estado}</span>
+          </td>
+          <td>
+            <div class="teacher-actions">
+              <button class="mini-action-btn bg-orange" data-action="edit" data-id="${shift.id}" title="Editar">✎</button>
+              <button class="mini-action-btn bg-red" data-action="delete" data-id="${shift.id}" title="Eliminar">🗑</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      document.querySelectorAll('.shift-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const id = Number(row.dataset.id);
+          const shift = data.find(s => s.id === id);
+          if (shift) {
+            renderShiftPanel(shift);
+            shiftOverlay.classList.remove('hidden');
+            shiftOverlay.classList.add('teacher-overlay-flex');
+          }
+        });
+      });
+
+      document.querySelectorAll('.mini-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const id = btn.dataset.id;
+
+          if (action === 'edit') alert(`Abriendo formulario para editar turno ID: ${id}...`);
+          if (action === 'delete') {
+            const ok = confirm('¿Estás seguro de que deseas eliminar este turno? Esta acción no se puede deshacer.');
+            if (ok) alert(`Turno ID ${id} eliminado (demo).`);
+          }
+        });
+      });
+    }
+
+    function applyShiftFilters() {
+      const fecha = fechaShiftFilter.value;
+      const zona = zoneShiftFilter.value;
+      const profesor = profesorShiftFilter.value;
+      const estado = estadoShiftFilter.value;
+
+      const filtered = shifts.filter(shift => {
+        const matchesFecha = !fecha || shift.fecha === fecha;
+        const matchesZona = zona === 'Todas' || shift.zona === zona;
+        const matchesProfesor = profesor === 'Todos' || shift.profesor === profesor;
+        const matchesEstado = estado === 'Todos' || shift.estado === estado;
+
+        return matchesFecha && matchesZona && matchesProfesor && matchesEstado;
+      });
+
+      renderShiftStats(filtered);
+      renderShiftsTable(filtered);
+    }
+
+    fechaShiftFilter.addEventListener('change', applyShiftFilters);
+    zoneShiftFilter.addEventListener('change', applyShiftFilters);
+    profesorShiftFilter.addEventListener('change', applyShiftFilters);
+    estadoShiftFilter.addEventListener('change', applyShiftFilters);
+
+    closeShiftPanel.addEventListener('click', () => {
+      shiftOverlay.classList.add('hidden');
+      shiftOverlay.classList.remove('teacher-overlay-flex');
+    });
+
+    shiftOverlay.addEventListener('click', (e) => {
+      if (e.target === shiftOverlay) {
+        shiftOverlay.classList.add('hidden');
+        shiftOverlay.classList.remove('teacher-overlay-flex');
+      }
+    });
+
+    document.getElementById('addShiftBtn').addEventListener('click', () => {
+      alert('Abriendo formulario para programar nuevo turno...');
+    });
+
+    document.getElementById('exportShiftsBtn').addEventListener('click', () => {
+      alert('Exportando lista de turnos... Esta funcionalidad generaría un archivo CSV o Excel con todos los datos.');
+    });
+
+    renderShiftStats(shifts);
+    renderShiftsTable(shifts);
+  </script>
 </body>
 </html>

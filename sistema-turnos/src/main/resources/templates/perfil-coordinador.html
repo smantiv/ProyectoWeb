@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil Coordinador - Sistema de Vigilancia Escolar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Coord. Ana Torres</span>
+        <a href="perfil-coordinador.html" class="profile-avatar profile-avatar-coordinator">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()">←</button>
+      </div>
+
+      <div class="container">
+        <section class="section-header">
+          <h1>Mi Perfil de Coordinador</h1>
+          <p>Administra tu información personal y configuraciones de cuenta.</p>
+        </section>
+
+        <!-- PERFIL -->
+        <section class="section">
+          <div class="card profile-main-card">
+            <div class="profile-main-layout">
+              <div class="profile-left">
+                <div class="profile-large-avatar coordinator-avatar">👤</div>
+                <div class="role-badge coordinator-role">Coordinador</div>
+              </div>
+
+              <div class="profile-right">
+                <div class="profile-field">
+                  <label>Nombre completo</label>
+                  <div class="profile-row">
+                    <span class="field-icon">👤</span>
+                    <span class="profile-value">Ana Torres</span>
+                  </div>
+                </div>
+
+                <div class="profile-field">
+                  <label>Correo institucional</label>
+                  <div class="profile-row">
+                    <span class="field-icon">✉️</span>
+                    <span class="profile-value">ana.torres@sfr.edu.co</span>
+                  </div>
+                </div>
+
+                <div class="profile-field">
+                  <label>Área o zonas supervisadas</label>
+                  <div class="profile-row">
+                    <span class="field-icon">📍</span>
+                    <span class="profile-value">Patio Principal, Biblioteca, Cafetería</span>
+                  </div>
+                </div>
+
+                <div class="profile-field">
+                  <label>Fecha de creación de cuenta</label>
+                  <div class="profile-row">
+                    <span class="field-icon">📅</span>
+                    <span class="profile-value">10 de enero, 2025</span>
+                  </div>
+                </div>
+
+                <div class="profile-field">
+                  <label>Último inicio de sesión</label>
+                  <div class="profile-row">
+                    <span class="field-icon">🕒</span>
+                    <span class="profile-value">16 de marzo, 2026 - 7:00 AM</span>
+                  </div>
+                </div>
+
+                <div class="info-note green-note">
+                  <p>
+                    <strong>Nota:</strong> Si necesitas actualizar tu información personal o áreas supervisadas, contacta al administrador del sistema.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SEGURIDAD -->
+        <section class="section">
+          <h2>Configuración de Seguridad</h2>
+          <div class="card">
+            <div class="security-option">
+              <div class="security-left">
+                <div class="security-icon security-green">🔑</div>
+                <div>
+                  <h3>Cambiar contraseña</h3>
+                  <p>Actualiza tu contraseña para proteger tu cuenta.</p>
+                </div>
+              </div>
+              <button class="btn-success" id="openPasswordPanel">Cambiar contraseña</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ACTIVIDAD -->
+        <section class="section">
+          <div class="section-title-row">
+            <span class="icon-title">📈</span>
+            <h2>Actividad Reciente</h2>
+          </div>
+
+          <div class="card">
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon green">✔</div>
+                <div class="activity-body">
+                  <h4>Inicio de sesión</h4>
+                  <p>Acceso desde navegador Chrome en Windows</p>
+                </div>
+                <span class="activity-time">Hace 2 horas</span>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon orange">⚠</div>
+                <div class="activity-body">
+                  <h4>Incidente gestionado</h4>
+                  <p>Incidente en Patio Principal marcado como resuelto</p>
+                </div>
+                <span class="activity-time">Hace 1 día</span>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon navy">👥</div>
+                <div class="activity-body">
+                  <h4>Turno reasignado</h4>
+                  <p>Carlos Méndez reasignado a Biblioteca para turno del 18/03</p>
+                </div>
+                <span class="activity-time">Hace 2 días</span>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon purple">📍</div>
+                <div class="activity-body">
+                  <h4>Revisión de cobertura</h4>
+                  <p>Análisis de cobertura semanal completado</p>
+                </div>
+                <span class="activity-time">Hace 3 días</span>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon red">🔔</div>
+                <div class="activity-body">
+                  <h4>Notificación enviada</h4>
+                  <p>Alerta de baja cobertura enviada a 3 profesores</p>
+                </div>
+                <span class="activity-time">Hace 4 días</span>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon green">⚙</div>
+                <div class="activity-body">
+                  <h4>Configuración actualizada</h4>
+                  <p>Zona de Biblioteca actualizada con nuevo horario</p>
+                </div>
+                <span class="activity-time">Hace 5 días</span>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon green">✔</div>
+                <div class="activity-body">
+                  <h4>Inicio de sesión</h4>
+                  <p>Acceso desde navegador Firefox en Windows</p>
+                </div>
+                <span class="activity-time">Hace 6 días</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- PANEL CAMBIO CONTRASEÑA -->
+    <div class="side-panel-overlay hidden" id="passwordOverlay">
+      <div class="side-panel side-panel-wide" onclick="event.stopPropagation()">
+        <div class="side-panel-header navy-bg">
+          <div class="side-panel-header-left">
+            <div class="panel-icon-box green-bg">🔒</div>
+            <h2>Cambiar Contraseña</h2>
+          </div>
+          <button class="side-close-btn" id="closePasswordPanel">✕</button>
+        </div>
+
+        <div class="side-panel-content">
+          <p class="panel-description">
+            Actualiza tu contraseña para proteger tu cuenta. Asegúrate de usar una contraseña fuerte con al menos 8 caracteres.
+          </p>
+
+          <div class="form-stack">
+            <div class="form-group">
+              <label>Contraseña actual</label>
+              <div class="password-wrap">
+                <input type="password" id="currentPassword" placeholder="Ingresa tu contraseña actual">
+                <button type="button" class="toggle-pass" data-target="currentPassword">👁</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Nueva contraseña</label>
+              <div class="password-wrap">
+                <input type="password" id="newPassword" placeholder="Ingresa tu nueva contraseña (mínimo 8 caracteres)">
+                <button type="button" class="toggle-pass" data-target="newPassword">👁</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Confirmar nueva contraseña</label>
+              <div class="password-wrap">
+                <input type="password" id="confirmPassword" placeholder="Confirma tu nueva contraseña">
+                <button type="button" class="toggle-pass" data-target="confirmPassword">👁</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-row panel-actions">
+            <button class="btn-success large-btn" id="savePasswordBtn">💾 Guardar nueva contraseña</button>
+            <button class="btn-secondary large-btn" id="cancelPasswordBtn">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p><span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026</p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const passwordOverlay = document.getElementById("passwordOverlay");
+    const openPasswordPanel = document.getElementById("openPasswordPanel");
+    const closePasswordPanel = document.getElementById("closePasswordPanel");
+    const cancelPasswordBtn = document.getElementById("cancelPasswordBtn");
+    const savePasswordBtn = document.getElementById("savePasswordBtn");
+
+    const currentPassword = document.getElementById("currentPassword");
+    const newPassword = document.getElementById("newPassword");
+    const confirmPassword = document.getElementById("confirmPassword");
+
+    function openPanel() {
+      passwordOverlay.classList.remove("hidden");
+    }
+
+    function closePanel() {
+      passwordOverlay.classList.add("hidden");
+      currentPassword.value = "";
+      newPassword.value = "";
+      confirmPassword.value = "";
+    }
+
+    openPasswordPanel.addEventListener("click", openPanel);
+    closePasswordPanel.addEventListener("click", closePanel);
+    cancelPasswordBtn.addEventListener("click", closePanel);
+    passwordOverlay.addEventListener("click", closePanel);
+
+    savePasswordBtn.addEventListener("click", () => {
+      if (!currentPassword.value.trim()) {
+        alert("Por favor ingresa tu contraseña actual.");
+        return;
+      }
+
+      if (!newPassword.value.trim()) {
+        alert("Por favor ingresa tu nueva contraseña.");
+        return;
+      }
+
+      if (newPassword.value !== confirmPassword.value) {
+        alert("Las contraseñas nuevas no coinciden.");
+        return;
+      }
+
+      if (newPassword.value.length < 8) {
+        alert("La nueva contraseña debe tener al menos 8 caracteres.");
+        return;
+      }
+
+      alert("Contraseña actualizada exitosamente.");
+      closePanel();
+    });
+
+    document.querySelectorAll(".toggle-pass").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const input = document.getElementById(btn.dataset.target);
+        input.type = input.type === "password" ? "text" : "password";
+      });
+    });
+  </script>
+</body>
+</html>

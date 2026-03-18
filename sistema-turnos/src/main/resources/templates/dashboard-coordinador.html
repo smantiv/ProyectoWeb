@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel del Coordinador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Coord. Ana Torres</span>
+        <a href="perfil-coordinador.html" class="profile-avatar profile-avatar-coord">👤</a>
+      </div>
+    </nav>
+
+    <main class="dashboard-main">
+      <div class="container">
+        <section class="section-header">
+          <h1>Panel del Coordinador</h1>
+          <p>Supervisa turnos, incidentes y solicitudes del sistema.</p>
+          <br>
+        </section>
+
+        <section class="section">
+          <h2>Estadísticas del Día</h2>
+          <div class="coordinator-stats-grid">
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-navy">📋</div>
+              </div>
+              <h3>12</h3>
+              <p>Total turnos activos hoy</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-orange">⚠</div>
+              </div>
+              <h3>4</h3>
+              <p>Incidentes reportados hoy</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-red">👥</div>
+              </div>
+              <h3>3</h3>
+              <p>Solicitudes de reemplazo pendientes</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-green">📍</div>
+              </div>
+              <h3>56</h3>
+              <p>Checkpoints registrados hoy</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Incidentes Activos</h2>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Tipo de incidente</th>
+                    <th>Ubicación</th>
+                    <th>Hora</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="incidentsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Solicitudes de Reemplazo</h2>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Profesor solicitante</th>
+                    <th>Turno</th>
+                    <th>Fecha</th>
+                    <th>Motivo</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="replacementTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Turnos Activos</h2>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Profesor</th>
+                    <th>Zona asignada</th>
+                    <th>Hora inicio</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="activeShiftsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    let incidents = [
+      {
+        id: 1,
+        type: 'Conflicto entre estudiantes',
+        location: 'Patio Principal',
+        time: '08:25',
+        priority: 'Media',
+        priorityClass: 'request-pending',
+        status: 'Pendiente',
+        statusClass: 'request-pending'
+      },
+      {
+        id: 2,
+        type: 'Emergencia médica',
+        location: 'Cafetería',
+        time: '09:15',
+        priority: 'Crítica',
+        priorityClass: 'request-rejected',
+        status: 'En proceso',
+        statusClass: 'request-orange'
+      },
+      {
+        id: 3,
+        type: 'Situación de seguridad',
+        location: 'Entrada Principal',
+        time: '10:30',
+        priority: 'Alta',
+        priorityClass: 'request-orange',
+        status: 'Pendiente',
+        statusClass: 'request-pending'
+      },
+      {
+        id: 4,
+        type: 'Daño en infraestructura',
+        location: 'Biblioteca',
+        time: '11:00',
+        priority: 'Baja',
+        priorityClass: 'request-accepted',
+        status: 'Resuelto',
+        statusClass: 'request-accepted'
+      }
+    ];
+
+    let replacementRequests = [
+      {
+        id: 1,
+        professor: 'Prof. María González',
+        shift: 'Patio Principal',
+        date: '17 Mar 2026',
+        reason: 'Cita médica urgente',
+        status: 'Pendiente',
+        statusClass: 'request-pending'
+      },
+      {
+        id: 2,
+        professor: 'Prof. Carlos Mendoza',
+        shift: 'Biblioteca',
+        date: '18 Mar 2026',
+        reason: 'Reunión de departamento',
+        status: 'Pendiente',
+        statusClass: 'request-pending'
+      },
+      {
+        id: 3,
+        professor: 'Prof. Ana Martínez',
+        shift: 'Cafetería',
+        date: '19 Mar 2026',
+        reason: 'Asunto personal',
+        status: 'Pendiente',
+        statusClass: 'request-pending'
+      }
+    ];
+
+    const activeShifts = [
+      { professor: 'Prof. Roberto Silva', zone: 'Patio Principal', startTime: '08:00', status: 'Activo', statusClass: 'request-accepted' },
+      { professor: 'Prof. Laura Pérez', zone: 'Biblioteca', startTime: '08:00', status: 'Activo', statusClass: 'request-accepted' },
+      { professor: 'Prof. Diego Torres', zone: 'Cafetería', startTime: '09:00', status: 'Activo', statusClass: 'request-accepted' },
+      { professor: 'Prof. Carmen Ruiz', zone: 'Entrada Principal', startTime: '09:30', status: 'Por iniciar', statusClass: 'request-pending' }
+    ];
+
+    const incidentsTableBody = document.getElementById('incidentsTableBody');
+    const replacementTableBody = document.getElementById('replacementTableBody');
+    const activeShiftsBody = document.getElementById('activeShiftsBody');
+
+    function renderIncidents() {
+      incidentsTableBody.innerHTML = incidents.map(incident => `
+        <tr class="table-row-hover">
+          <td>${incident.type}</td>
+          <td>${incident.location}</td>
+          <td>${incident.time}</td>
+          <td><span class="request-badge ${incident.priorityClass}">${incident.priority}</span></td>
+          <td><span class="request-badge ${incident.statusClass}">${incident.status}</span></td>
+          <td>
+            <div class="teacher-actions">
+              <button class="coord-btn coord-view-btn">👁 Ver</button>
+              ${incident.status !== 'Resuelto' ? `<button class="coord-btn coord-resolve-btn" onclick="markIncidentResolved(${incident.id})">✔ Resolver</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderReplacementRequests() {
+      replacementTableBody.innerHTML = replacementRequests.map(request => `
+        <tr class="table-row-hover">
+          <td>${request.professor}</td>
+          <td>${request.shift}</td>
+          <td>${request.date}</td>
+          <td>${request.reason}</td>
+          <td><span class="request-badge ${request.statusClass}">${request.status}</span></td>
+          <td>
+            ${
+              request.status === 'Pendiente'
+                ? `<div class="teacher-actions">
+                    <button class="coord-btn coord-approve-btn" onclick="approveRequest(${request.id})">👍 Aprobar</button>
+                    <button class="coord-btn coord-reject-btn" onclick="rejectRequest(${request.id})">👎 Rechazar</button>
+                  </div>`
+                : ''
+            }
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderActiveShifts() {
+      activeShiftsBody.innerHTML = activeShifts.map(shift => `
+        <tr class="table-row-hover">
+          <td>${shift.professor}</td>
+          <td>${shift.zone}</td>
+          <td>${shift.startTime}</td>
+          <td>
+            <span class="request-badge ${shift.statusClass}">
+              ${shift.status === 'Activo' ? '✔' : '🕒'} ${shift.status}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function markIncidentResolved(id) {
+      incidents = incidents.map(incident =>
+        incident.id === id
+          ? { ...incident, status: 'Resuelto', statusClass: 'request-accepted' }
+          : incident
+      );
+      renderIncidents();
+    }
+
+    function approveRequest(id) {
+      replacementRequests = replacementRequests.map(request =>
+        request.id === id
+          ? { ...request, status: 'Aprobado', statusClass: 'request-accepted' }
+          : request
+      );
+      renderReplacementRequests();
+    }
+
+    function rejectRequest(id) {
+      replacementRequests = replacementRequests.map(request =>
+        request.id === id
+          ? { ...request, status: 'Rechazado', statusClass: 'request-rejected' }
+          : request
+      );
+      renderReplacementRequests();
+    }
+
+    renderIncidents();
+    renderReplacementRequests();
+    renderActiveShifts();
+
+    window.markIncidentResolved = markIncidentResolved;
+    window.approveRequest = approveRequest;
+    window.rejectRequest = rejectRequest;
+  </script>
+</body>
+</html>

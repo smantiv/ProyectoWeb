@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Métricas Positivas de Docentes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <button class="back-btn inline-back-btn" onclick="history.back()" title="Volver">←</button>
+        <span>Coord. Alberto Ramírez</span>
+        <a href="perfil-coordinador.html" class="profile-avatar profile-avatar-coord">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="container">
+        <section class="section-header">
+          <h1>Métricas Positivas de Docentes</h1>
+          <p>Visualiza el desempeño y logros destacados de los profesores en vigilancia.</p>
+        </section>
+
+        <section class="section">
+          <div class="filter-card">
+            <div class="filter-title-row">
+              <span class="filter-icon">⛃</span>
+              <h3>Filtros</h3>
+            </div>
+
+            <div class="analytics-filter-grid">
+              <div class="filter-field">
+                <label for="teacherFilter">Profesor</label>
+                <select id="teacherFilter"></select>
+              </div>
+
+              <div class="filter-field">
+                <label for="teacherZoneFilter">Zona</label>
+                <select id="teacherZoneFilter"></select>
+              </div>
+
+              <div class="filter-field">
+                <label for="teacherDateRange">Rango de fechas</label>
+                <select id="teacherDateRange">
+                  <option>Últimos 7 días</option>
+                  <option selected>Últimos 30 días</option>
+                  <option>Este mes</option>
+                  <option>Mes anterior</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="admin-stats-grid">
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-orange">✔</div>
+                <span class="admin-trend green-text">↗</span>
+              </div>
+              <h3>156</h3>
+              <p>Turnos completados</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-green">🕒</div>
+                <span class="admin-trend green-text">Excelente</span>
+              </div>
+              <h3>94%</h3>
+              <p>Puntualidad en checkpoints</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-navy">🎯</div>
+                <span class="admin-trend orange-text">★</span>
+              </div>
+              <h3>38</h3>
+              <p>Incidentes resueltos</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-yellow">🕒</div>
+                <span class="admin-trend green-text">↗</span>
+              </div>
+              <h3>12 min</h3>
+              <p>Tiempo promedio de respuesta</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title-row">
+            <span class="section-icon orange-text">🏆</span>
+            <h2>Docentes con mejor desempeño</h2>
+          </div>
+
+          <div class="top-performers-grid" id="topPerformersGrid"></div>
+        </section>
+
+        <section class="section">
+          <h2>Desempeño Detallado (<span id="teacherCount">0</span>)</h2>
+
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Profesor</th>
+                    <th>Zona asignada</th>
+                    <th>Turnos completados</th>
+                    <th>Incidentes gestionados</th>
+                    <th>Puntualidad (%)</th>
+                    <th>Calificación de desempeño</th>
+                  </tr>
+                </thead>
+                <tbody id="teacherPerformanceTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Análisis Visual</h2>
+
+          <div class="analytics-charts-grid">
+            <article class="analytics-chart-card">
+              <h3>Desempeño por profesor</h3>
+              <div id="teacherScoreChart" class="fake-chart"></div>
+            </article>
+
+            <article class="analytics-chart-card">
+              <h3>Zonas con mayor cobertura efectiva</h3>
+              <div id="zoneEffectivenessChart" class="fake-chart"></div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const teachers = [
+      {
+        id: 1,
+        name: "Prof. Carmen Ruiz",
+        zone: "Biblioteca",
+        completedShifts: 26,
+        managedIncidents: 8,
+        punctuality: 97,
+        performanceRating: "Excelente",
+        ratingClass: "request-accepted"
+      },
+      {
+        id: 2,
+        name: "Prof. Roberto Silva",
+        zone: "Patio Principal",
+        completedShifts: 28,
+        managedIncidents: 12,
+        punctuality: 95,
+        performanceRating: "Excelente",
+        ratingClass: "request-accepted"
+      },
+      {
+        id: 3,
+        name: "Prof. Laura Pérez",
+        zone: "Cafetería",
+        completedShifts: 25,
+        managedIncidents: 10,
+        punctuality: 92,
+        performanceRating: "Muy bueno",
+        ratingClass: "request-orange"
+      },
+      {
+        id: 4,
+        name: "Prof. Ana Martínez",
+        zone: "Zona de Juegos",
+        completedShifts: 24,
+        managedIncidents: 9,
+        punctuality: 90,
+        performanceRating: "Muy bueno",
+        ratingClass: "request-orange"
+      },
+      {
+        id: 5,
+        name: "Prof. Diego Torres",
+        zone: "Entrada Principal",
+        completedShifts: 22,
+        managedIncidents: 7,
+        punctuality: 88,
+        performanceRating: "Bueno",
+        ratingClass: "request-pending"
+      },
+      {
+        id: 6,
+        name: "Prof. Carlos Mendoza",
+        zone: "Pasillo Académico",
+        completedShifts: 21,
+        managedIncidents: 6,
+        punctuality: 85,
+        performanceRating: "Bueno",
+        ratingClass: "request-pending"
+      }
+    ];
+
+    const topPerformers = [
+      {
+        id: 1,
+        name: "Prof. Carmen Ruiz",
+        score: 98,
+        highlight: "Mayor puntualidad (97%)",
+        icon: "🕒"
+      },
+      {
+        id: 2,
+        name: "Prof. Roberto Silva",
+        score: 96,
+        highlight: "Más turnos completados (28)",
+        icon: "✔"
+      },
+      {
+        id: 3,
+        name: "Prof. Laura Pérez",
+        score: 93,
+        highlight: "Más incidentes resueltos (10)",
+        icon: "🎯"
+      }
+    ];
+
+    const zoneCoverageData = [
+      { zona: "Patio Principal", efectividad: 95 },
+      { zona: "Biblioteca", efectividad: 97 },
+      { zona: "Cafetería", efectividad: 92 },
+      { zona: "Entrada Principal", efectividad: 88 },
+      { zona: "Zona de Juegos", efectividad: 90 },
+      { zona: "Pasillo Académico", efectividad: 85 }
+    ];
+
+    const teacherFilter = document.getElementById("teacherFilter");
+    const teacherZoneFilter = document.getElementById("teacherZoneFilter");
+    const teacherTable = document.getElementById("teacherPerformanceTable");
+    const teacherCount = document.getElementById("teacherCount");
+    const topPerformersGrid = document.getElementById("topPerformersGrid");
+    const teacherScoreChart = document.getElementById("teacherScoreChart");
+    const zoneEffectivenessChart = document.getElementById("zoneEffectivenessChart");
+
+    function populateFilters() {
+      const teacherOptions = ["Todos", ...teachers.map(t => t.name)];
+      const zoneOptions = ["Todas", ...new Set(teachers.map(t => t.zone))];
+
+      teacherFilter.innerHTML = teacherOptions
+        .map(name => `<option value="${name}">${name}</option>`)
+        .join("");
+
+      teacherZoneFilter.innerHTML = zoneOptions
+        .map(zone => `<option value="${zone}">${zone}</option>`)
+        .join("");
+    }
+
+    function getFilteredTeachers() {
+      const selectedTeacher = teacherFilter.value;
+      const selectedZone = teacherZoneFilter.value;
+
+      return teachers.filter(teacher => {
+        if (selectedTeacher !== "Todos" && teacher.name !== selectedTeacher) return false;
+        if (selectedZone !== "Todas" && teacher.zone !== selectedZone) return false;
+        return true;
+      });
+    }
+
+    function renderTopPerformers() {
+      topPerformersGrid.innerHTML = topPerformers.map((performer, index) => {
+        const rankClass =
+          index === 0 ? "bg-orange" :
+          index === 1 ? "bg-navy" :
+          "bg-yellow";
+
+        return `
+          <article class="top-performer-card">
+            <div class="top-rank-badge ${rankClass}">${index + 1}</div>
+
+            <div class="top-performer-head">
+              <div class="top-performer-avatar">👤</div>
+              <div>
+                <h3>${performer.name}</h3>
+                <div class="top-performer-score">
+                  <span class="orange-text">🏅</span>
+                  <span>Puntaje: ${performer.score}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="top-performer-highlight">
+              <div class="top-highlight-icon">${performer.icon}</div>
+              <p>${performer.highlight}</p>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderTeacherTable() {
+      const filtered = getFilteredTeachers();
+      teacherCount.textContent = filtered.length;
+
+      teacherTable.innerHTML = filtered.map(teacher => `
+        <tr class="table-row-hover">
+          <td>
+            <div class="action-cell">
+              <span class="zone-icon complete">👤</span>
+              <span class="action-title">${teacher.name}</span>
+            </div>
+          </td>
+          <td>${teacher.zone}</td>
+          <td><span class="request-badge request-orange">${teacher.completedShifts}</span></td>
+          <td><span class="request-badge bg-navy-badge">${teacher.managedIncidents}</span></td>
+          <td>
+            <div class="teacher-punctuality-cell">
+              <div class="teacher-punctuality-track">
+                <div class="teacher-punctuality-fill ${teacher.punctuality >= 90 ? 'bg-green' : teacher.punctuality >= 80 ? 'bg-orange' : 'bg-yellow'}" style="width:${teacher.punctuality}%"></div>
+              </div>
+              <span>${teacher.punctuality}%</span>
+            </div>
+          </td>
+          <td>
+            <span class="request-badge ${teacher.ratingClass}">★ ${teacher.performanceRating}</span>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function renderTeacherScoreChart() {
+      const filtered = getFilteredTeachers();
+      const chartData = filtered.map(teacher => ({
+        profesor: teacher.name.replace("Prof. ", ""),
+        puntaje: Math.round(teacher.completedShifts * 0.4 + teacher.punctuality * 0.6)
+      }));
+
+      teacherScoreChart.innerHTML = chartData.map(item => `
+        <div class="fake-bar-row">
+          <span>${item.profesor}</span>
+          <div class="fake-bar-track">
+            <div class="fake-bar bg-orange" style="width:${item.puntaje}%"></div>
+          </div>
+          <strong>${item.puntaje}</strong>
+        </div>
+      `).join("");
+    }
+
+    function renderZoneEffectivenessChart() {
+      zoneEffectivenessChart.innerHTML = zoneCoverageData.map(item => `
+        <div class="fake-bar-row">
+          <span>${item.zona}</span>
+          <div class="fake-bar-track">
+            <div class="fake-bar bg-green" style="width:${item.efectividad}%"></div>
+          </div>
+          <strong>${item.efectividad}%</strong>
+        </div>
+      `).join("");
+    }
+
+    function renderAll() {
+      renderTopPerformers();
+      renderTeacherTable();
+      renderTeacherScoreChart();
+      renderZoneEffectivenessChart();
+    }
+
+    teacherFilter.addEventListener("change", renderAll);
+    teacherZoneFilter.addEventListener("change", renderAll);
+
+    populateFilters();
+    renderAll();
+  </script>
+</body>
+</html>

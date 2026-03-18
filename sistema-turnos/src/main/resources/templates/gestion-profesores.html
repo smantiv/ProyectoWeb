@@ -1,15 +1,393 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head('Gestión de Profesores')"></head>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Profesores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
 <body>
-    <div th:replace="fragments/navbar :: navbar"></div>
-    <div class="app-layout">
-        <aside th:replace="fragments/sidebar :: sidebar"></aside>
-        <main>
-            <h1>Gestión de Profesores</h1>
-        </main>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Admin. Patricia Flores</span>
+        <a href="perfil-cuenta.html" class="profile-avatar profile-avatar-admin">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="container">
+        <section class="section-header">
+          <h1>Gestión de Profesores</h1>
+          <p>Administra el registro de profesores y sus datos en el sistema.</p>
+        </section>
+
+        <button id="addTeacherBtn" class="btn btn-primary teachers-add-btn">
+          ＋ Agregar Profesor
+        </button>
+
+        <section class="section">
+          <div class="admin-stats-grid">
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-navy">👥</div>
+                <span class="admin-trend orange-text">↗</span>
+              </div>
+              <h3 id="statTotal">8</h3>
+              <p>Profesores totales</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-green">✔</div>
+                <span class="admin-trend green-text" id="statActivosPct">75%</span>
+              </div>
+              <h3 id="statActivos">6</h3>
+              <p>Profesores activos</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-red">✖</div>
+                <span class="admin-trend red-text" id="statInactivosPct">25%</span>
+              </div>
+              <h3 id="statInactivos">2</h3>
+              <p>Profesores inactivos</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-orange">📍</div>
+                <span class="admin-trend green-text">✔</span>
+              </div>
+              <h3 id="statZonas">6</h3>
+              <p>Zonas con profesor asignado</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="filter-card">
+            <div class="filter-title-row">
+              <span class="filter-icon">⚲</span>
+              <h3>Búsqueda y Filtros</h3>
+            </div>
+
+            <div class="teachers-filter-grid">
+              <div class="filter-field">
+                <label for="teacherSearch">Buscar profesor</label>
+                <div class="search-wrap">
+                  <span class="search-icon">🔍</span>
+                  <input id="teacherSearch" type="text" placeholder="Nombre o correo...">
+                </div>
+              </div>
+
+              <div class="filter-field">
+                <label for="zoneFilter">Zona asignada</label>
+                <select id="zoneFilter">
+                  <option value="Todas">Todas</option>
+                  <option value="Biblioteca">Biblioteca</option>
+                  <option value="Patio Principal">Patio Principal</option>
+                  <option value="Cafetería">Cafetería</option>
+                  <option value="Entrada Principal">Entrada Principal</option>
+                  <option value="Zona de Juegos">Zona de Juegos</option>
+                  <option value="Pasillo Académico">Pasillo Académico</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="statusFilter">Estado</label>
+                <select id="statusFilter">
+                  <option value="Todos">Todos</option>
+                  <option value="Activo">Activo</option>
+                  <option value="Inactivo">Inactivo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="teachers-table-head">
+            <h2 id="teachersTableTitle">Listado de Profesores (8)</h2>
+            <button id="exportTeachersBtn" class="teachers-export-btn">⬇ Exportar</button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Profesor</th>
+                    <th>Correo institucional</th>
+                    <th>Zona asignada</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="teachersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="teacherOverlay" class="teacher-overlay hidden">
+      <div class="teacher-side-panel">
+        <div class="teacher-side-header">
+          <h2>Detalle del Profesor</h2>
+          <button id="closeTeacherPanel" class="teacher-close-btn">✕</button>
+        </div>
+
+        <div id="teacherPanelContent" class="teacher-panel-content"></div>
+      </div>
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
-    <div th:replace="fragments/scripts :: scripts"></div>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const teachers = [
+      { id: 1, nombre: 'Prof. Carmen Ruiz', correo: 'carmen.ruiz@sfr.edu.co', zonaAsignada: 'Biblioteca', estado: 'Activo', turnosCompletados: 26, puntualidad: 97 },
+      { id: 2, nombre: 'Prof. Roberto Silva', correo: 'roberto.silva@sfr.edu.co', zonaAsignada: 'Patio Principal', estado: 'Activo', turnosCompletados: 28, puntualidad: 95 },
+      { id: 3, nombre: 'Prof. Laura Pérez', correo: 'laura.perez@sfr.edu.co', zonaAsignada: 'Cafetería', estado: 'Activo', turnosCompletados: 25, puntualidad: 92 },
+      { id: 4, nombre: 'Prof. Ana Martínez', correo: 'ana.martinez@sfr.edu.co', zonaAsignada: 'Zona de Juegos', estado: 'Activo', turnosCompletados: 24, puntualidad: 90 },
+      { id: 5, nombre: 'Prof. Diego Torres', correo: 'diego.torres@sfr.edu.co', zonaAsignada: 'Entrada Principal', estado: 'Inactivo', turnosCompletados: 22, puntualidad: 88 },
+      { id: 6, nombre: 'Prof. Carlos Mendoza', correo: 'carlos.mendoza@sfr.edu.co', zonaAsignada: 'Pasillo Académico', estado: 'Activo', turnosCompletados: 21, puntualidad: 85 },
+      { id: 7, nombre: 'Prof. María González', correo: 'maria.gonzalez@sfr.edu.co', zonaAsignada: 'Biblioteca', estado: 'Inactivo', turnosCompletados: 18, puntualidad: 82 },
+      { id: 8, nombre: 'Prof. José Ramírez', correo: 'jose.ramirez@sfr.edu.co', zonaAsignada: 'Patio Principal', estado: 'Activo', turnosCompletados: 23, puntualidad: 89 }
+    ];
+
+    const teacherSearch = document.getElementById('teacherSearch');
+    const zoneFilter = document.getElementById('zoneFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const teachersTableBody = document.getElementById('teachersTableBody');
+    const teachersTableTitle = document.getElementById('teachersTableTitle');
+
+    const teacherOverlay = document.getElementById('teacherOverlay');
+    const teacherPanelContent = document.getElementById('teacherPanelContent');
+    const closeTeacherPanel = document.getElementById('closeTeacherPanel');
+
+    const statTotal = document.getElementById('statTotal');
+    const statActivos = document.getElementById('statActivos');
+    const statInactivos = document.getElementById('statInactivos');
+    const statZonas = document.getElementById('statZonas');
+    const statActivosPct = document.getElementById('statActivosPct');
+    const statInactivosPct = document.getElementById('statInactivosPct');
+
+    function teacherBadgeClass(estado) {
+      return estado === 'Activo' ? 'request-accepted' : 'request-rejected';
+    }
+
+    function renderStats(data) {
+      const total = data.length;
+      const activos = data.filter(t => t.estado === 'Activo').length;
+      const inactivos = data.filter(t => t.estado === 'Inactivo').length;
+      const zonas = new Set(data.map(t => t.zonaAsignada)).size;
+
+      statTotal.textContent = total;
+      statActivos.textContent = activos;
+      statInactivos.textContent = inactivos;
+      statZonas.textContent = zonas;
+      statActivosPct.textContent = total ? Math.round((activos / total) * 100) + '%' : '0%';
+      statInactivosPct.textContent = total ? Math.round((inactivos / total) * 100) + '%' : '0%';
+    }
+
+    function renderTeacherPanel(teacher) {
+      const punctualityColor = teacher.puntualidad >= 90 ? 'rgb(40, 167, 69)' : 'rgb(252, 99, 0)';
+      const statusBadge = teacher.estado === 'Activo' ? 'request-accepted' : 'request-rejected';
+
+      teacherPanelContent.innerHTML = `
+        <div class="teacher-panel-profile">
+          <div class="teacher-panel-avatar">👤</div>
+          <h3>${teacher.nombre}</h3>
+          <span class="request-badge ${statusBadge}">${teacher.estado}</span>
+        </div>
+
+        <div class="teacher-info-stack">
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>✉</span><span>Correo institucional</span></div>
+            <p>${teacher.correo}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>📍</span><span>Zona asignada</span></div>
+            <p>${teacher.zonaAsignada}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>✔</span><span>Estado de cuenta</span></div>
+            <p>Cuenta ${teacher.estado.toLowerCase()}a desde Mar 2026</p>
+          </div>
+        </div>
+
+        <div class="teacher-history-section">
+          <h4>Historial de Turnos</h4>
+
+          <div class="teacher-info-box">
+            <div class="teacher-metric-row">
+              <span class="teacher-metric-label">Turnos completados</span>
+              <span class="teacher-metric-value">${teacher.turnosCompletados}</span>
+            </div>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-metric-row">
+              <span class="teacher-metric-label">Puntualidad</span>
+              <span class="teacher-metric-value">${teacher.puntualidad}%</span>
+            </div>
+            <div class="teacher-progress">
+              <div class="teacher-progress-bar" style="width:${teacher.puntualidad}%; background:${punctualityColor};"></div>
+            </div>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>📅</span><span>Último turno</span></div>
+            <p>15 de marzo, 2026 - ${teacher.zonaAsignada}</p>
+          </div>
+        </div>
+
+        <div class="teacher-panel-actions">
+          <button class="btn btn-primary teacher-panel-btn">✎ Editar información</button>
+          <button class="teacher-toggle-btn ${teacher.estado === 'Activo' ? 'teacher-toggle-warning' : 'teacher-toggle-success'}">
+            ⏻ ${teacher.estado === 'Activo' ? 'Desactivar profesor' : 'Activar profesor'}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderTable(data) {
+      teachersTableTitle.textContent = `Listado de Profesores (${data.length})`;
+
+      teachersTableBody.innerHTML = data.map(teacher => `
+        <tr class="table-row-hover teacher-row" data-id="${teacher.id}">
+          <td>
+            <div class="action-cell">
+              <span class="zone-icon">👤</span>
+              <span class="action-title">${teacher.nombre}</span>
+            </div>
+          </td>
+          <td>
+            <div class="action-cell">
+              <span class="teacher-muted-icon">✉</span>
+              <span>${teacher.correo}</span>
+            </div>
+          </td>
+          <td>
+            <div class="action-cell">
+              <span class="teacher-muted-icon navy-text">📍</span>
+              <span>${teacher.zonaAsignada}</span>
+            </div>
+          </td>
+          <td>
+            <span class="request-badge ${teacherBadgeClass(teacher.estado)}">${teacher.estado}</span>
+          </td>
+          <td>
+            <div class="teacher-actions">
+              <button class="mini-action-btn bg-orange" data-action="edit" data-id="${teacher.id}" title="Editar">✎</button>
+              <button class="mini-action-btn ${teacher.estado === 'Activo' ? 'bg-yellow' : 'bg-green'}" data-action="toggle" data-id="${teacher.id}" title="${teacher.estado === 'Activo' ? 'Desactivar' : 'Activar'}">⏻</button>
+              <button class="mini-action-btn bg-red" data-action="delete" data-id="${teacher.id}" title="Eliminar">🗑</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      document.querySelectorAll('.teacher-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const id = Number(row.dataset.id);
+          const teacher = data.find(t => t.id === id);
+          if (teacher) {
+            renderTeacherPanel(teacher);
+            teacherOverlay.classList.remove('hidden');
+            teacherOverlay.classList.add('teacher-overlay-flex');
+          }
+        });
+      });
+
+      document.querySelectorAll('.mini-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const id = btn.dataset.id;
+
+          if (action === 'edit') alert(`Abriendo formulario para editar profesor ID: ${id}...`);
+          if (action === 'toggle') alert(`Cambiando estado del profesor ID: ${id}...`);
+          if (action === 'delete') {
+            const ok = confirm('¿Estás seguro de que deseas eliminar este profesor? Esta acción no se puede deshacer.');
+            if (ok) alert(`Profesor ID ${id} eliminado (demo).`);
+          }
+        });
+      });
+    }
+
+    function applyFilters() {
+      const search = teacherSearch.value.toLowerCase().trim();
+      const zone = zoneFilter.value;
+      const status = statusFilter.value;
+
+      const filtered = teachers.filter(teacher => {
+        const matchesSearch =
+          teacher.nombre.toLowerCase().includes(search) ||
+          teacher.correo.toLowerCase().includes(search);
+
+        const matchesZone = zone === 'Todas' || teacher.zonaAsignada === zone;
+        const matchesStatus = status === 'Todos' || teacher.estado === status;
+
+        return matchesSearch && matchesZone && matchesStatus;
+      });
+
+      renderStats(filtered);
+      renderTable(filtered);
+    }
+
+    teacherSearch.addEventListener('input', applyFilters);
+    zoneFilter.addEventListener('change', applyFilters);
+    statusFilter.addEventListener('change', applyFilters);
+
+    closeTeacherPanel.addEventListener('click', () => {
+      teacherOverlay.classList.add('hidden');
+      teacherOverlay.classList.remove('teacher-overlay-flex');
+    });
+
+    teacherOverlay.addEventListener('click', (e) => {
+      if (e.target === teacherOverlay) {
+        teacherOverlay.classList.add('hidden');
+        teacherOverlay.classList.remove('teacher-overlay-flex');
+      }
+    });
+
+    document.getElementById('addTeacherBtn').addEventListener('click', () => {
+      alert('Abriendo formulario para agregar nuevo profesor...');
+    });
+
+    document.getElementById('exportTeachersBtn').addEventListener('click', () => {
+      alert('Exportando lista de profesores... Esta funcionalidad generaría un archivo CSV o Excel con todos los datos.');
+    });
+
+    renderStats(teachers);
+    renderTable(teachers);
+  </script>
 </body>
 </html>
