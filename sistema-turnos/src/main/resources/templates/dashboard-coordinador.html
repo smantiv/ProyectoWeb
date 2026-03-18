@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel del Coordinador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Coord. Ana Torres</span>
+        <a href="perfil-coordinador.html" class="profile-avatar profile-avatar-coord">👤</a>
+      </div>
+    </nav>
+
+    <main class="container">
+      <section class="section-header">
+        <h1>Panel del Coordinador</h1>
+        <p>Supervisa turnos, incidentes y solicitudes del sistema.</p>
+      </section>
+
+      <section class="section">
+        <h2>Acceso Rápido</h2>
+
+        <div class="admin-quick-grid">
+          <a class="admin-quick-card" href="cobertura-tiempo-real.html">
+            <div class="admin-quick-icon bg-green">📍</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Cobertura en Tiempo Real</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Monitorea el estado de todas las zonas en vivo</p>
+            </div>
+          </a>
+
+          <a class="admin-quick-card" href="gestion-incidentes.html">
+            <div class="admin-quick-icon bg-orange">📄</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Gestión de Incidentes</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Revisa y gestiona todos los incidentes reportados</p>
+            </div>
+          </a>
+
+          <a class="admin-quick-card" href="gestion-turnos.html">
+            <div class="admin-quick-icon bg-navy">↻</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Reasignar Turnos</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Gestiona cambios y solicitudes de reemplazo</p>
+            </div>
+          </a>
+
+          <a class="admin-quick-card" href="analiticas.html">
+            <div class="admin-quick-icon bg-purple">📊</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Analíticas</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Visualiza estadísticas y reportes detallados</p>
+            </div>
+          </a>
+
+          <a class="admin-quick-card" href="MetricasPositivasDocentes.html">
+            <div class="admin-quick-icon bg-yellow">🏆</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Métricas Positivas</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Desempeño y logros del equipo docente</p>
+            </div>
+          </a>
+
+          <a class="admin-quick-card" href="reconocimientos-institucionales.html">
+            <div class="admin-quick-icon bg-red">🎖</div>
+            <div class="admin-quick-content">
+              <div class="admin-quick-head">
+                <h3>Reconocimientos</h3>
+                <span class="admin-arrow">→</span>
+              </div>
+              <p>Logros y menciones institucionales</p>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Estadísticas del Día</h2>
+
+        <div class="coordinator-stats-grid">
+          <article class="admin-stat-card">
+            <div class="admin-stat-top">
+              <div class="admin-stat-icon bg-navy">📋</div>
+            </div>
+            <h3>12</h3>
+            <p>Total turnos activos hoy</p>
+          </article>
+
+          <article class="admin-stat-card">
+            <div class="admin-stat-top">
+              <div class="admin-stat-icon bg-orange">⚠</div>
+            </div>
+            <h3>4</h3>
+            <p>Incidentes reportados hoy</p>
+          </article>
+
+          <article class="admin-stat-card">
+            <div class="admin-stat-top">
+              <div class="admin-stat-icon bg-red">👥</div>
+            </div>
+            <h3>3</h3>
+            <p>Solicitudes de reemplazo pendientes</p>
+          </article>
+
+          <article class="admin-stat-card">
+            <div class="admin-stat-top">
+              <div class="admin-stat-icon bg-green">📍</div>
+            </div>
+            <h3>56</h3>
+            <p>Checkpoints registrados hoy</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Incidentes Activos</h2>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead class="thead-admin">
+                <tr>
+                  <th>Tipo de incidente</th>
+                  <th>Ubicación</th>
+                  <th>Hora</th>
+                  <th>Prioridad</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-row-hover">
+                  <td>Conflicto entre estudiantes</td>
+                  <td>Patio Principal</td>
+                  <td>08:25</td>
+                  <td><span class="badge badge-yellow">Media</span></td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
+                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Emergencia médica</td>
+                  <td>Cafetería</td>
+                  <td>09:15</td>
+                  <td><span class="request-badge request-rejected">Crítica</span></td>
+                  <td><span class="request-badge request-orange">En proceso</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
+                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Situación de seguridad</td>
+                  <td>Entrada Principal</td>
+                  <td>10:30</td>
+                  <td><span class="badge badge-orange">Alta</span></td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
+                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Daño en infraestructura</td>
+                  <td>Biblioteca</td>
+                  <td>11:00</td>
+                  <td><span class="request-badge request-accepted">Baja</span></td>
+                  <td><span class="request-badge request-accepted">Resuelto</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Solicitudes de Reemplazo</h2>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead class="thead-admin">
+                <tr>
+                  <th>Profesor solicitante</th>
+                  <th>Turno</th>
+                  <th>Fecha</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-row-hover">
+                  <td>Prof. María González</td>
+                  <td>Patio Principal</td>
+                  <td>17 Mar 2026</td>
+                  <td>Cita médica urgente</td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <button type="button" class="coord-btn coord-approve-btn">👍 Aprobar</button>
+                      <button type="button" class="coord-btn coord-reject-btn">👎 Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Carlos Mendoza</td>
+                  <td>Biblioteca</td>
+                  <td>18 Mar 2026</td>
+                  <td>Reunión de departamento</td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <button type="button" class="coord-btn coord-approve-btn">👍 Aprobar</button>
+                      <button type="button" class="coord-btn coord-reject-btn">👎 Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Ana Martínez</td>
+                  <td>Cafetería</td>
+                  <td>19 Mar 2026</td>
+                  <td>Asunto personal</td>
+                  <td><span class="request-badge request-pending">Pendiente</span></td>
+                  <td>
+                    <div class="teacher-actions">
+                      <button type="button" class="coord-btn coord-approve-btn">👍 Aprobar</button>
+                      <button type="button" class="coord-btn coord-reject-btn">👎 Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Turnos Activos</h2>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead class="thead-admin">
+                <tr>
+                  <th>Profesor</th>
+                  <th>Zona asignada</th>
+                  <th>Hora inicio</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-row-hover">
+                  <td>Prof. Roberto Silva</td>
+                  <td>Patio Principal</td>
+                  <td>08:00</td>
+                  <td><span class="request-badge request-accepted">✔ Activo</span></td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Laura Pérez</td>
+                  <td>Biblioteca</td>
+                  <td>08:00</td>
+                  <td><span class="request-badge request-accepted">✔ Activo</span></td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Diego Torres</td>
+                  <td>Cafetería</td>
+                  <td>09:00</td>
+                  <td><span class="request-badge request-accepted">✔ Activo</span></td>
+                </tr>
+
+                <tr class="table-row-hover">
+                  <td>Prof. Carmen Ruiz</td>
+                  <td>Entrada Principal</td>
+                  <td>09:30</td>
+                  <td><span class="request-badge request-pending">🕒 Por iniciar</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="../soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="../contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

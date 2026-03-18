@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cobertura en Tiempo Real</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Coord. Alberto Ramírez</span>
+        <a href="perfil-coordinador.html" class="profile-avatar profile-avatar-coord">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="container">
+        <section class="section-header">
+          <h1>Cobertura en Tiempo Real</h1>
+          <p>Monitorea el estado actual de la cobertura en todas las zonas.</p>
+        </section>
+
+        <section class="section">
+          <div class="coordinator-stats-grid">
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-green">✔</div>
+              </div>
+              <h3>3</h3>
+              <p>Total zonas cubiertas</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-red">✖</div>
+              </div>
+              <h3>1</h3>
+              <p>Zonas sin cobertura</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-orange">👤</div>
+              </div>
+              <h3>5</h3>
+              <p>Turnos activos</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-yellow">⚠</div>
+              </div>
+              <h3>2</h3>
+              <p>Alertas detectadas</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Mapa de Cobertura</h2>
+
+          <div class="coverage-legend">
+            <div class="coverage-legend-item">
+              <span class="coverage-legend-color bg-green"></span>
+              <span>Cubierto</span>
+            </div>
+            <div class="coverage-legend-item">
+              <span class="coverage-legend-color bg-yellow"></span>
+              <span>Parcial</span>
+            </div>
+            <div class="coverage-legend-item">
+              <span class="coverage-legend-color bg-red"></span>
+              <span>Sin cobertura</span>
+            </div>
+          </div>
+
+          <div class="coverage-map-card">
+            <div id="coverageGrid" class="coverage-grid"></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Estado de las Zonas</h2>
+
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Zona</th>
+                    <th>Profesor asignado</th>
+                    <th>Estado del turno</th>
+                    <th>Último checkpoint</th>
+                  </tr>
+                </thead>
+                <tbody id="coverageTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="section coverage-cta-wrap">
+          <a href="gestion-incidentes.html" class="btn btn-primary coverage-cta-btn">
+            ⚠ Gestionar Incidentes
+          </a>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const zones = [
+      {
+        id: 1,
+        name: 'Patio Principal',
+        professor: 'Prof. Roberto Silva',
+        status: 'Cubierto',
+        statusClass: 'request-accepted',
+        lastCheckpoint: '14:45',
+        coverage: 'complete',
+        borderClass: 'coverage-border-green',
+        icon: '✔'
+      },
+      {
+        id: 2,
+        name: 'Biblioteca',
+        professor: 'Prof. Laura Pérez',
+        status: 'Cubierto',
+        statusClass: 'request-accepted',
+        lastCheckpoint: '14:42',
+        coverage: 'complete',
+        borderClass: 'coverage-border-green',
+        icon: '✔'
+      },
+      {
+        id: 3,
+        name: 'Cafetería',
+        professor: 'Prof. Diego Torres',
+        status: 'Parcial',
+        statusClass: 'request-pending',
+        lastCheckpoint: '14:20',
+        coverage: 'partial',
+        borderClass: 'coverage-border-yellow',
+        icon: '⚠'
+      },
+      {
+        id: 4,
+        name: 'Entrada Principal',
+        professor: 'Sin asignar',
+        status: 'Sin cobertura',
+        statusClass: 'request-rejected',
+        lastCheckpoint: 'N/A',
+        coverage: 'none',
+        borderClass: 'coverage-border-red',
+        icon: '✖'
+      },
+      {
+        id: 5,
+        name: 'Zona de Juegos',
+        professor: 'Prof. Carmen Ruiz',
+        status: 'Cubierto',
+        statusClass: 'request-accepted',
+        lastCheckpoint: '14:48',
+        coverage: 'complete',
+        borderClass: 'coverage-border-green',
+        icon: '✔'
+      },
+      {
+        id: 6,
+        name: 'Pasillo Académico',
+        professor: 'Prof. Ana Martínez',
+        status: 'Parcial',
+        statusClass: 'request-pending',
+        lastCheckpoint: '14:15',
+        coverage: 'partial',
+        borderClass: 'coverage-border-yellow',
+        icon: '⚠'
+      }
+    ];
+
+    const coverageGrid = document.getElementById('coverageGrid');
+    const coverageTableBody = document.getElementById('coverageTableBody');
+
+    function renderCoverageGrid() {
+      coverageGrid.innerHTML = zones.map(zone => `
+        <article class="coverage-zone-card ${zone.borderClass}">
+          <div class="coverage-zone-head">
+            <div>
+              <h3>${zone.name}</h3>
+              <p>${zone.professor}</p>
+            </div>
+            <div class="coverage-zone-icon ${zone.coverage}">
+              ${zone.icon}
+            </div>
+          </div>
+
+          <div class="coverage-zone-meta">
+            <div class="coverage-zone-status-row">
+              <span class="coverage-mini-icon">🛡</span>
+              <span class="request-badge ${zone.statusClass}">${zone.status}</span>
+            </div>
+
+            <div class="coverage-zone-time">
+              <span class="coverage-mini-icon muted">🕒</span>
+              <span>Último checkpoint: ${zone.lastCheckpoint}</span>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function renderCoverageTable() {
+      coverageTableBody.innerHTML = zones.map(zone => `
+        <tr class="table-row-hover">
+          <td>
+            <div class="action-cell">
+              <span class="zone-icon ${zone.coverage}">${zone.icon === '⚠' ? '📍' : '📍'}</span>
+              <span class="action-title">${zone.name}</span>
+            </div>
+          </td>
+          <td>${zone.professor}</td>
+          <td>
+            <span class="request-badge ${zone.statusClass}">
+              ${zone.icon} ${zone.status}
+            </span>
+          </td>
+          <td>${zone.lastCheckpoint}</td>
+        </tr>
+      `).join('');
+    }
+
+    renderCoverageGrid();
+    renderCoverageTable();
+  </script>
+</body>
+</html>

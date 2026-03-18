@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reconocimientos Institucionales</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+<div class="page">
+
+  <!-- NAV -->
+  <nav class="topbar">
+    <div class="brand">
+      <img src="assets/logo-sfr.png" class="brand-logo">
+      <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+    </div>
+
+    <div class="profile-box">
+      <span>Coord. Alberto Ramírez</span>
+      <a href="perfil-coordinador.html" class="profile-avatar profile-avatar-coord">👤</a>
+    </div>
+  </nav>
+
+  <main class="mis-turnos-main">
+
+    <div class="back-wrap">
+      <button class="back-btn" onclick="history.back()">←</button>
+    </div>
+
+    <div class="container">
+
+      <!-- HEADER -->
+      <section class="section-header">
+        <h1>Reconocimientos Institucionales</h1>
+        <p>Reconoce y celebra el excelente desempeño de los profesores destacados.</p>
+      </section>
+
+      <!-- CANDIDATOS -->
+      <section class="section">
+        <div class="section-title-row">
+          <span class="orange-text">🏆</span>
+          <h2>Candidatos (<span id="candidateCount"></span>)</h2>
+        </div>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead class="thead-admin">
+                <tr>
+                  <th>Profesor</th>
+                  <th>Zona</th>
+                  <th>Métrica destacada</th>
+                  <th>Puntaje</th>
+                  <th>Reconocimiento</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="candidatesTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="emptyState" class="empty-state hidden">
+          <h3>No hay candidatos pendientes</h3>
+          <p>El sistema generará nuevos automáticamente.</p>
+        </div>
+
+      </section>
+
+      <!-- HISTORIAL -->
+      <section class="section">
+        <div class="section-title-row">
+          <span class="orange-text">🏅</span>
+          <h2>Historial</h2>
+        </div>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead class="thead-admin">
+                <tr>
+                  <th>Profesor</th>
+                  <th>Reconocimiento</th>
+                  <th>Fecha</th>
+                  <th>Aprobado por</th>
+                </tr>
+              </thead>
+              <tbody id="historyTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p><span class="footer-school">Colegio Santa Francisca Romana</span> © 2026</p>
+    <div class="footer-links">
+      <a href="soporte.html">Soporte</a> |
+      <a href="contacto.html">Contacto</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+let candidates = [
+  {id:1, profesor:"Prof. Carmen Ruiz", zona:"Biblioteca", destacada:"Puntualidad 97%", puntaje:97, tipo:"Puntualidad", estado:"Pendiente"},
+  {id:2, profesor:"Prof. Roberto Silva", zona:"Patio", destacada:"28 turnos", puntaje:95, tipo:"Cobertura", estado:"Pendiente"},
+  {id:3, profesor:"Prof. Laura Pérez", zona:"Cafetería", destacada:"12 incidentes", puntaje:93, tipo:"Incidentes", estado:"Pendiente"}
+];
+
+let history = [];
+
+function render() {
+
+  document.getElementById("candidateCount").textContent = candidates.length;
+
+  const table = document.getElementById("candidatesTable");
+  const empty = document.getElementById("emptyState");
+
+  if(candidates.length === 0){
+    empty.classList.remove("hidden");
+  } else {
+    empty.classList.add("hidden");
+  }
+
+  table.innerHTML = candidates.map(c => `
+    <tr>
+      <td>${c.profesor}</td>
+      <td>${c.zona}</td>
+      <td>${c.destacada}</td>
+      <td>${c.puntaje}</td>
+      <td><span class="badge-orange">${c.tipo}</span></td>
+      <td><span class="badge-yellow">${c.estado}</span></td>
+      <td>
+        <button class="btn-green" onclick="approve(${c.id})">✔</button>
+        <button class="btn-red" onclick="reject(${c.id})">✖</button>
+      </td>
+    </tr>
+  `).join("");
+
+  document.getElementById("historyTable").innerHTML = history.map(h => `
+    <tr>
+      <td>${h.profesor}</td>
+      <td>${h.tipo}</td>
+      <td>${h.fecha}</td>
+      <td>${h.aprobado}</td>
+    </tr>
+  `).join("");
+}
+
+function approve(id){
+  const c = candidates.find(x=>x.id===id);
+
+  history.unshift({
+    profesor:c.profesor,
+    tipo:c.tipo,
+    fecha:new Date().toLocaleDateString(),
+    aprobado:"Coord. Alberto"
+  });
+
+  candidates = candidates.filter(x=>x.id!==id);
+  render();
+}
+
+function reject(id){
+  candidates = candidates.filter(x=>x.id!==id);
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>

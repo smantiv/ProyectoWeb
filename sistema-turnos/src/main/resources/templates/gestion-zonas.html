@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Zonas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Admin. Patricia Flores</span>
+        <a href="perfil-cuenta.html" class="profile-avatar profile-avatar-admin">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="container">
+        <section class="section-header">
+          <h1>Gestión de Zonas</h1>
+          <p>Configura y mantén las zonas de vigilancia del colegio.</p>
+        </section>
+
+        <button id="addZoneBtn" class="btn btn-primary teachers-add-btn">
+          ＋ Agregar Zona
+        </button>
+
+        <section class="section">
+          <div class="admin-stats-grid">
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-navy">📍</div>
+                <span class="admin-trend orange-text">↗</span>
+              </div>
+              <h3 id="zonesStatTotal">8</h3>
+              <p>Zonas totales</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-green">✔</div>
+                <span class="admin-trend green-text" id="zonesStatCompletePct">50%</span>
+              </div>
+              <h3 id="zonesStatComplete">4</h3>
+              <p>Cobertura completa</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-yellow">⚠</div>
+                <span class="admin-trend orange-text" id="zonesStatPartialPct">25%</span>
+              </div>
+              <h3 id="zonesStatPartial">2</h3>
+              <p>Cobertura parcial</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-red">⚠</div>
+                <span class="admin-trend red-text" id="zonesStatNonePct">25%</span>
+              </div>
+              <h3 id="zonesStatNone">2</h3>
+              <p>Sin cobertura</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="filter-card">
+            <div class="filter-title-row">
+              <span class="filter-icon">⚲</span>
+              <h3>Búsqueda y Filtros</h3>
+            </div>
+
+            <div class="teachers-filter-grid">
+              <div class="filter-field">
+                <label for="zoneSearch">Buscar zona</label>
+                <div class="search-wrap">
+                  <span class="search-icon">🔍</span>
+                  <input id="zoneSearch" type="text" placeholder="Nombre o descripción...">
+                </div>
+              </div>
+
+              <div class="filter-field">
+                <label for="responsableZoneFilter">Responsable</label>
+                <select id="responsableZoneFilter">
+                  <option value="Todos">Todos</option>
+                  <option value="Prof. Carmen Ruiz">Prof. Carmen Ruiz</option>
+                  <option value="Prof. Roberto Silva">Prof. Roberto Silva</option>
+                  <option value="Prof. Laura Pérez">Prof. Laura Pérez</option>
+                  <option value="Prof. Ana Martínez">Prof. Ana Martínez</option>
+                  <option value="Prof. Carlos Mendoza">Prof. Carlos Mendoza</option>
+                  <option value="Prof. María González">Prof. María González</option>
+                  <option value="Sin asignar">Sin asignar</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="coverageFilter">Cobertura</label>
+                <select id="coverageFilter">
+                  <option value="Todas">Todas</option>
+                  <option value="Completa">Completa</option>
+                  <option value="Parcial">Parcial</option>
+                  <option value="Sin cobertura">Sin cobertura</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="teachers-table-head">
+            <h2 id="zonesTableTitle">Listado de Zonas (8)</h2>
+            <button id="exportZonesBtn" class="teachers-export-btn">⬇ Exportar</button>
+          </div>
+
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead class="thead-admin">
+                  <tr>
+                    <th>Zona</th>
+                    <th>Descripción</th>
+                    <th>Responsable</th>
+                    <th>Cobertura</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="zonesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="zoneOverlay" class="teacher-overlay hidden">
+      <div class="teacher-side-panel">
+        <div class="teacher-side-header">
+          <h2>Detalle de la Zona</h2>
+          <button id="closeZonePanel" class="teacher-close-btn">✕</button>
+        </div>
+
+        <div id="zonePanelContent" class="teacher-panel-content"></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const zones = [
+      { id: 1, nombre: 'Biblioteca', descripcion: 'Área de lectura y estudio, incluye sala de computación', responsable: 'Prof. Carmen Ruiz', cobertura: 'Completa', puntosControl: 4, capacidad: 60 },
+      { id: 2, nombre: 'Patio Principal', descripcion: 'Zona de recreación principal durante los descansos', responsable: 'Prof. Roberto Silva', cobertura: 'Completa', puntosControl: 6, capacidad: 200 },
+      { id: 3, nombre: 'Cafetería', descripcion: 'Área de alimentación y servicio de comedor escolar', responsable: 'Prof. Laura Pérez', cobertura: 'Parcial', puntosControl: 3, capacidad: 100 },
+      { id: 4, nombre: 'Entrada Principal', descripcion: 'Control de acceso principal del colegio', responsable: 'Sin asignar', cobertura: 'Sin cobertura', puntosControl: 2, capacidad: 50 },
+      { id: 5, nombre: 'Zona de Juegos', descripcion: 'Área recreativa para estudiantes de primaria', responsable: 'Prof. Ana Martínez', cobertura: 'Completa', puntosControl: 5, capacidad: 80 },
+      { id: 6, nombre: 'Pasillo Académico', descripcion: 'Corredor principal que conecta las aulas de clase', responsable: 'Prof. Carlos Mendoza', cobertura: 'Parcial', puntosControl: 8, capacidad: 150 },
+      { id: 7, nombre: 'Laboratorio de Ciencias', descripcion: 'Área de prácticas científicas y experimentación', responsable: 'Prof. María González', cobertura: 'Completa', puntosControl: 3, capacidad: 40 },
+      { id: 8, nombre: 'Cancha Deportiva', descripcion: 'Espacio para actividades deportivas y educación física', responsable: 'Sin asignar', cobertura: 'Sin cobertura', puntosControl: 4, capacidad: 120 }
+    ];
+
+    const zoneSearch = document.getElementById('zoneSearch');
+    const responsableZoneFilter = document.getElementById('responsableZoneFilter');
+    const coverageFilter = document.getElementById('coverageFilter');
+    const zonesTableBody = document.getElementById('zonesTableBody');
+    const zonesTableTitle = document.getElementById('zonesTableTitle');
+
+    const zoneOverlay = document.getElementById('zoneOverlay');
+    const zonePanelContent = document.getElementById('zonePanelContent');
+    const closeZonePanel = document.getElementById('closeZonePanel');
+
+    const zonesStatTotal = document.getElementById('zonesStatTotal');
+    const zonesStatComplete = document.getElementById('zonesStatComplete');
+    const zonesStatPartial = document.getElementById('zonesStatPartial');
+    const zonesStatNone = document.getElementById('zonesStatNone');
+    const zonesStatCompletePct = document.getElementById('zonesStatCompletePct');
+    const zonesStatPartialPct = document.getElementById('zonesStatPartialPct');
+    const zonesStatNonePct = document.getElementById('zonesStatNonePct');
+
+    function coverageBadgeClass(cobertura) {
+      if (cobertura === 'Completa') return 'request-accepted';
+      if (cobertura === 'Parcial') return 'request-pending';
+      return 'request-rejected';
+    }
+
+    function renderZoneStats(data) {
+      const total = data.length;
+      const completa = data.filter(z => z.cobertura === 'Completa').length;
+      const parcial = data.filter(z => z.cobertura === 'Parcial').length;
+      const sinCobertura = data.filter(z => z.cobertura === 'Sin cobertura').length;
+
+      zonesStatTotal.textContent = total;
+      zonesStatComplete.textContent = completa;
+      zonesStatPartial.textContent = parcial;
+      zonesStatNone.textContent = sinCobertura;
+      zonesStatCompletePct.textContent = total ? Math.round((completa / total) * 100) + '%' : '0%';
+      zonesStatPartialPct.textContent = total ? Math.round((parcial / total) * 100) + '%' : '0%';
+      zonesStatNonePct.textContent = total ? Math.round((sinCobertura / total) * 100) + '%' : '0%';
+    }
+
+    function renderZonePanel(zone) {
+      const coverageBadge = coverageBadgeClass(zone.cobertura);
+
+      zonePanelContent.innerHTML = `
+        <div class="teacher-panel-profile">
+          <div class="teacher-panel-avatar">📍</div>
+          <h3>${zone.nombre}</h3>
+          <span class="request-badge ${coverageBadge}">${zone.cobertura}</span>
+        </div>
+
+        <div class="teacher-info-stack">
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>🏢</span><span>Descripción</span></div>
+            <p>${zone.descripcion}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>👤</span><span>Responsable asignado</span></div>
+            <p>${zone.responsable}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>🎯</span><span>Puntos de control</span></div>
+            <p>${zone.puntosControl} puntos activos</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>👥</span><span>Capacidad máxima</span></div>
+            <p>${zone.capacidad} estudiantes</p>
+          </div>
+        </div>
+
+        <div class="teacher-history-section">
+          <h4>Estadísticas de Actividad</h4>
+
+          <div class="teacher-info-box">
+            <div class="teacher-metric-row">
+              <span class="teacher-metric-label">Turnos esta semana</span>
+              <span class="teacher-metric-value">12</span>
+            </div>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>🕒</span><span>Último registro</span></div>
+            <p>Hoy, 10:30 AM - Punto de control #2</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-metric-row">
+              <span class="teacher-metric-label">Cobertura promedio</span>
+              <span class="teacher-metric-value">94%</span>
+            </div>
+            <div class="teacher-progress">
+              <div class="teacher-progress-bar" style="width:94%; background:rgb(40, 167, 69);"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="teacher-panel-actions">
+          <button class="btn btn-primary teacher-panel-btn">✎ Editar zona</button>
+          <button class="teacher-secondary-btn">🎯 Ver puntos de control</button>
+        </div>
+      `;
+    }
+
+    function renderZonesTable(data) {
+      zonesTableTitle.textContent = `Listado de Zonas (${data.length})`;
+
+      zonesTableBody.innerHTML = data.map(zone => `
+        <tr class="table-row-hover zone-row" data-id="${zone.id}">
+          <td>
+            <div class="action-cell">
+              <span class="zone-icon">📍</span>
+              <span class="action-title">${zone.nombre}</span>
+            </div>
+          </td>
+          <td><span>${zone.descripcion}</span></td>
+          <td>
+            <div class="action-cell">
+              <span class="teacher-muted-icon">👤</span>
+              <span>${zone.responsable}</span>
+            </div>
+          </td>
+          <td>
+            <span class="request-badge ${coverageBadgeClass(zone.cobertura)}">${zone.cobertura}</span>
+          </td>
+          <td>
+            <div class="teacher-actions">
+              <button class="mini-action-btn bg-orange" data-action="edit" data-id="${zone.id}" title="Editar">✎</button>
+              <button class="mini-action-btn bg-red" data-action="delete" data-id="${zone.id}" title="Eliminar">🗑</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      document.querySelectorAll('.zone-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const id = Number(row.dataset.id);
+          const zone = data.find(z => z.id === id);
+          if (zone) {
+            renderZonePanel(zone);
+            zoneOverlay.classList.remove('hidden');
+            zoneOverlay.classList.add('teacher-overlay-flex');
+          }
+        });
+      });
+
+      document.querySelectorAll('.mini-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const id = btn.dataset.id;
+
+          if (action === 'edit') alert(`Abriendo formulario para editar zona ID: ${id}...`);
+          if (action === 'delete') {
+            const ok = confirm('¿Estás seguro de que deseas eliminar esta zona? Esta acción no se puede deshacer.');
+            if (ok) alert(`Zona ID ${id} eliminada (demo).`);
+          }
+        });
+      });
+    }
+
+    function applyZoneFilters() {
+      const search = zoneSearch.value.toLowerCase().trim();
+      const responsable = responsableZoneFilter.value;
+      const cobertura = coverageFilter.value;
+
+      const filtered = zones.filter(zone => {
+        const matchesSearch =
+          zone.nombre.toLowerCase().includes(search) ||
+          zone.descripcion.toLowerCase().includes(search);
+
+        const matchesResponsable = responsable === 'Todos' || zone.responsable === responsable;
+        const matchesCobertura = cobertura === 'Todas' || zone.cobertura === cobertura;
+
+        return matchesSearch && matchesResponsable && matchesCobertura;
+      });
+
+      renderZoneStats(filtered);
+      renderZonesTable(filtered);
+    }
+
+    zoneSearch.addEventListener('input', applyZoneFilters);
+    responsableZoneFilter.addEventListener('change', applyZoneFilters);
+    coverageFilter.addEventListener('change', applyZoneFilters);
+
+    closeZonePanel.addEventListener('click', () => {
+      zoneOverlay.classList.add('hidden');
+      zoneOverlay.classList.remove('teacher-overlay-flex');
+    });
+
+    zoneOverlay.addEventListener('click', (e) => {
+      if (e.target === zoneOverlay) {
+        zoneOverlay.classList.add('hidden');
+        zoneOverlay.classList.remove('teacher-overlay-flex');
+      }
+    });
+
+    document.getElementById('addZoneBtn').addEventListener('click', () => {
+      alert('Abriendo formulario para agregar nueva zona...');
+    });
+
+    document.getElementById('exportZonesBtn').addEventListener('click', () => {
+      alert('Exportando lista de zonas... Esta funcionalidad generaría un archivo CSV o Excel con todos los datos.');
+    });
+
+    renderZoneStats(zones);
+    renderZonesTable(zones);
+  </script>
+</body>
+</html>

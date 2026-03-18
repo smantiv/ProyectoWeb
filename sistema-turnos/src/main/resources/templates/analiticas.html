@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analíticas y Estadísticas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <div class="brand">
+        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+      </div>
+
+      <div class="profile-box">
+        <span>Coord. Alberto Ramírez</span>
+        <a href="perfil-coordinador.html" class="profile-avatar profile-avatar-coord">👤</a>
+      </div>
+    </nav>
+
+    <main class="mis-turnos-main">
+      <div class="back-wrap">
+        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
+      </div>
+
+      <div class="container">
+        <section class="section-header">
+          <h1>Analíticas y Estadísticas</h1>
+          <p>Visualiza el rendimiento general del sistema de vigilancia escolar.</p>
+        </section>
+
+        <section class="section">
+          <div class="filter-card">
+            <div class="filter-title-row">
+              <span class="filter-icon">🎯</span>
+              <h3>Filtros</h3>
+            </div>
+
+            <div class="analytics-filter-grid">
+              <div class="filter-field">
+                <label for="dateRange">Rango de fechas</label>
+                <select id="dateRange">
+                  <option>Últimos 7 días</option>
+                  <option>Últimos 30 días</option>
+                  <option>Este mes</option>
+                  <option>Mes anterior</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="zoneFilterAnalytics">Zona</label>
+                <select id="zoneFilterAnalytics">
+                  <option>Todas</option>
+                  <option>Patio Principal</option>
+                  <option>Biblioteca</option>
+                  <option>Cafetería</option>
+                  <option>Entrada Principal</option>
+                  <option>Zona de Juegos</option>
+                  <option>Pasillo Académico</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="incidentTypeFilter">Tipo de incidente</label>
+                <select id="incidentTypeFilter">
+                  <option>Todos</option>
+                  <option>Conflicto estudiantes</option>
+                  <option>Emergencia médica</option>
+                  <option>Seguridad</option>
+                  <option>Daño infraestructura</option>
+                  <option>Comportamiento</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="admin-stats-grid">
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-orange">⚠</div>
+                <span class="admin-trend green-text">↗</span>
+              </div>
+              <h3>47</h3>
+              <p>Total incidentes reportados</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-green">✔</div>
+                <span class="admin-trend green-text">81%</span>
+              </div>
+              <h3>38</h3>
+              <p>Incidentes resueltos</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-navy">📍</div>
+                <span class="admin-trend orange-text">📊</span>
+              </div>
+              <h3>8</h3>
+              <p>Zonas activas</p>
+            </article>
+
+            <article class="admin-stat-card">
+              <div class="admin-stat-top">
+                <div class="admin-stat-icon bg-yellow">🕒</div>
+                <span class="admin-trend green-text">Excelente</span>
+              </div>
+              <h3>12 min</h3>
+              <p>Tiempo promedio de respuesta</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Análisis Visual</h2>
+
+          <div class="analytics-charts-grid">
+            <article class="analytics-chart-card">
+              <h3>Incidentes por tipo</h3>
+              <div class="fake-chart">
+                <div class="fake-bar-row">
+                  <span>Conflicto estudiantes</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-orange" style="width: 100%"></div></div>
+                  <strong>15</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Emergencia médica</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-orange" style="width: 53%"></div></div>
+                  <strong>8</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Seguridad</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-orange" style="width: 40%"></div></div>
+                  <strong>6</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Daño infraestructura</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-orange" style="width: 67%"></div></div>
+                  <strong>10</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Comportamiento</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-orange" style="width: 53%"></div></div>
+                  <strong>8</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="analytics-chart-card">
+              <h3>Cobertura por zona</h3>
+              <div class="fake-chart">
+                <div class="fake-bar-row">
+                  <span>Patio Principal</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-navy" style="width: 100%"></div></div>
+                  <strong>24</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Biblioteca</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-navy" style="width: 75%"></div></div>
+                  <strong>18</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Cafetería</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-navy" style="width: 83%"></div></div>
+                  <strong>20</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Entrada Principal</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-navy" style="width: 63%"></div></div>
+                  <strong>15</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Zona de Juegos</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-navy" style="width: 92%"></div></div>
+                  <strong>22</strong>
+                </div>
+                <div class="fake-bar-row">
+                  <span>Pasillo Académico</span>
+                  <div class="fake-bar-track"><div class="fake-bar bg-navy" style="width: 67%"></div></div>
+                  <strong>16</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="analytics-chart-card">
+              <h3>Desempeño de guardias</h3>
+              <div class="performance-list">
+                <div class="performance-item">
+                  <div class="performance-head"><span>Prof. Silva</span><span>28 / 95%</span></div>
+                  <div class="performance-bars">
+                    <div class="performance-track"><div class="performance-fill bg-orange" style="width: 93%"></div></div>
+                    <div class="performance-track"><div class="performance-fill bg-green" style="width: 95%"></div></div>
+                  </div>
+                </div>
+                <div class="performance-item">
+                  <div class="performance-head"><span>Prof. Pérez</span><span>25 / 92%</span></div>
+                  <div class="performance-bars">
+                    <div class="performance-track"><div class="performance-fill bg-orange" style="width: 83%"></div></div>
+                    <div class="performance-track"><div class="performance-fill bg-green" style="width: 92%"></div></div>
+                  </div>
+                </div>
+                <div class="performance-item">
+                  <div class="performance-head"><span>Prof. Torres</span><span>22 / 88%</span></div>
+                  <div class="performance-bars">
+                    <div class="performance-track"><div class="performance-fill bg-orange" style="width: 73%"></div></div>
+                    <div class="performance-track"><div class="performance-fill bg-green" style="width: 88%"></div></div>
+                  </div>
+                </div>
+                <div class="performance-item">
+                  <div class="performance-head"><span>Prof. Ruiz</span><span>26 / 97%</span></div>
+                  <div class="performance-bars">
+                    <div class="performance-track"><div class="performance-fill bg-orange" style="width: 87%"></div></div>
+                    <div class="performance-track"><div class="performance-fill bg-green" style="width: 97%"></div></div>
+                  </div>
+                </div>
+                <div class="performance-item">
+                  <div class="performance-head"><span>Prof. Martínez</span><span>24 / 90%</span></div>
+                  <div class="performance-bars">
+                    <div class="performance-track"><div class="performance-fill bg-orange" style="width: 80%"></div></div>
+                    <div class="performance-track"><div class="performance-fill bg-green" style="width: 90%"></div></div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="analytics-chart-card">
+              <h3>Tendencia de incidentes</h3>
+              <div class="trend-chart">
+                <div class="trend-bars">
+                  <div class="trend-col">
+                    <div class="trend-bar bg-orange" style="height: 56%"></div>
+                    <span>10 Mar</span>
+                  </div>
+                  <div class="trend-col">
+                    <div class="trend-bar bg-orange" style="height: 78%"></div>
+                    <span>11 Mar</span>
+                  </div>
+                  <div class="trend-col">
+                    <div class="trend-bar bg-orange" style="height: 44%"></div>
+                    <span>12 Mar</span>
+                  </div>
+                  <div class="trend-col">
+                    <div class="trend-bar bg-orange" style="height: 100%"></div>
+                    <span>13 Mar</span>
+                  </div>
+                  <div class="trend-col">
+                    <div class="trend-bar bg-orange" style="height: 67%"></div>
+                    <span>14 Mar</span>
+                  </div>
+                  <div class="trend-col">
+                    <div class="trend-bar bg-orange" style="height: 89%"></div>
+                    <span>15 Mar</span>
+                  </div>
+                  <div class="trend-col">
+                    <div class="trend-bar bg-orange" style="height: 89%"></div>
+                    <span>16 Mar</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Mapa de Calor de Incidentes</h2>
+          <p class="analytics-subtext">Visualiza las zonas del colegio donde se reportan más incidentes.</p>
+
+          <div class="analytics-heatmap-card">
+            <div class="analytics-heatmap-legend">
+              <span class="legend-title">Leyenda:</span>
+              <div class="legend-item">
+                <span class="legend-box legend-low"></span>
+                <span>Pocos incidentes</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-box legend-medium"></span>
+                <span>Incidentes moderados</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-box legend-high"></span>
+                <span>Alta concentración</span>
+              </div>
+            </div>
+
+            <div class="analytics-heatmap-grid">
+              <div class="heat-card heat-high">
+                <div class="heat-card-head"><span>📍</span><h3>Patio Principal</h3></div>
+                <div class="heat-card-value"><strong>15</strong><span>incidentes</span></div>
+              </div>
+
+              <div class="heat-card heat-low">
+                <div class="heat-card-head"><span>📍</span><h3>Biblioteca</h3></div>
+                <div class="heat-card-value"><strong>3</strong><span>incidentes</span></div>
+              </div>
+
+              <div class="heat-card heat-medium">
+                <div class="heat-card-head"><span>📍</span><h3>Cafetería</h3></div>
+                <div class="heat-card-value"><strong>8</strong><span>incidentes</span></div>
+              </div>
+
+              <div class="heat-card heat-medium">
+                <div class="heat-card-head"><span>📍</span><h3>Entrada Principal</h3></div>
+                <div class="heat-card-value"><strong>7</strong><span>incidentes</span></div>
+              </div>
+
+              <div class="heat-card heat-high">
+                <div class="heat-card-head"><span>📍</span><h3>Zona de Juegos</h3></div>
+                <div class="heat-card-value"><strong>11</strong><span>incidentes</span></div>
+              </div>
+
+              <div class="heat-card heat-low">
+                <div class="heat-card-head"><span>📍</span><h3>Pasillo Académico</h3></div>
+                <div class="heat-card-value"><strong>3</strong><span>incidentes</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Gestión de Desempeño Docente</h2>
+          <p class="analytics-subtext">Accede a herramientas avanzadas para evaluar y reconocer el desempeño docente.</p>
+
+          <div class="analytics-actions-grid">
+            <a href="MetricasPositivasDocentes.html" class="analytics-action-card">
+              <div class="analytics-action-icon bg-orange">📊</div>
+              <div class="analytics-action-content">
+                <div class="analytics-action-head">
+                  <h3>Métricas Positivas Docentes</h3>
+                  <span>→</span>
+                </div>
+                <p>Analiza el desempeño de los docentes en vigilancia escolar.</p>
+                <span class="analytics-pill bg-orange">Ver análisis completo</span>
+              </div>
+            </a>
+
+            <a href="reconocimientos-institucionales.html" class="analytics-action-card">
+              <div class="analytics-action-icon bg-navy">🏆</div>
+              <div class="analytics-action-content">
+                <div class="analytics-action-head">
+                  <h3>Reconocimientos Institucionales</h3>
+                  <span>→</span>
+                </div>
+                <p>Gestiona los reconocimientos otorgados a docentes con mejor desempeño.</p>
+                <span class="analytics-pill bg-navy">Gestionar reconocimientos</span>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="analytics-export-card">
+            <div>
+              <h3>Exportar datos</h3>
+              <p>Descarga un reporte completo con todas las estadísticas y gráficos</p>
+            </div>
+
+            <button id="exportAnalyticsBtn" class="btn btn-primary analytics-export-btn">
+              ⬇ Exportar reporte
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
+      </p>
+      <div class="footer-links">
+        <a href="soporte.html">Soporte</a>
+        <span>|</span>
+        <a href="contacto.html">Contacto</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('exportAnalyticsBtn').addEventListener('click', function () {
+      alert('Exportando reporte... Esta funcionalidad generaría un archivo PDF o Excel con todos los datos analíticos.');
+    });
+  </script>
+</body>
+</html>
