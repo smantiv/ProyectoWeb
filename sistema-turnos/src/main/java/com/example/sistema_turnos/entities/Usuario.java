@@ -1,7 +1,7 @@
 package com.example.sistema_turnos.entities;
 import jakarta.persistence.*;
 
-
+@Entity
 public class Usuario {
 
     @Id
