@@ -1,4 +1,4 @@
-package com.example.entities;
+package com.example.sistema_turnos.entities;
 
 import jakarta.persistence.*;
 

@@ -1,18 +1,19 @@
-package com.example.entities;
+package com.example.sistema_turnos.entities;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "checkpoint")
-public class Checkpoint {
+@Table(name = "zona")
+public class Zona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
+    private String descripcion;
 
-    public Checkpoint() {}
+    public Zona() {}
 
     public Long getId() {
         return id;
@@ -24,5 +25,13 @@ public class Checkpoint {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 }
