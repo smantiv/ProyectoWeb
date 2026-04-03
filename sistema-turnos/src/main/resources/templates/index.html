@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,13 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
 <body>
   <div class="page page-login">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo small-round">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo small-round">
         <span class="brand-title">Sistema de Vigilancia Escolar</span>
       </div>
     </nav>
@@ -21,7 +21,7 @@
     <main class="main-center">
       <section class="login-header">
         <div class="hero-logo-wrap">
-          <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="hero-logo">
+          <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="hero-logo">
         </div>
         <h1>Bienvenido al Sistema de Vigilancia</h1>
         <p>Accede con tu cuenta institucional para gestionar los turnos de vigilancia escolar.</p>
@@ -56,17 +56,17 @@
 
   <div class="role-grid">
 
-    <a href="dashboard-profesor.html" class="role-card role-profesor">
+    <a th:href="@{/dashboard-profesor}" class="role-card role-profesor">
       <div class="role-icon-circle">👤</div>
       <span>Profesor</span>
     </a>
 
-    <a href="dashboard-coordinador.html" class="role-card role-coordinador">
+    <a th:href="@{/dashboard-coordinador}" class="role-card role-coordinador">
       <div class="role-icon-circle">🛡️</div>
       <span>Coordinador</span>
     </a>
 
-    <a href="dashboard-admin.html" class="role-card role-admin">
+    <a th:href="@{/dashboard-admin}" class="role-card role-admin">
       <div class="role-icon-circle">⚙️</div>
       <span>Administrador</span>
     </a>
@@ -80,13 +80,13 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
 
-  <script src="js/app.js"></script>
+  <script th:src="@{/js/app.js}"></script>
 </body>
 </html>

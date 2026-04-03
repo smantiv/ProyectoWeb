@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,19 +7,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
 <body>
   <div class="page">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo">
         <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
       </div>
 
       <div class="profile-box">
         <span>Prof. María González</span>
-        <a href="perfil-profesor.html" class="profile-avatar">👤</a>
+        <a th:href="@{/mi-perfil-profesor}" class="profile-avatar">👤</a>
       </div>
     </nav>
 
@@ -32,26 +32,26 @@
       <section class="section">
         <h2>Acciones Rápidas</h2>
         <div class="action-grid">
-          <a class="action-card" href="mis-turnos.html">
+          <a class="action-card" th:href="@{/mis-turnos}">
             <div class="action-icon navy">📋</div>
             <span>Ver Mis Turnos</span>
           </a>
 
-          <a class="action-card" href="registrar-punto.html">
+          <a class="action-card" th:href="@{/registrar-punto}">
             <div class="action-icon navy">📍</div>
             <span>Registrar Punto de Control</span>
           </a>
 
-          <a class="action-card" href="reportar-incidente.html">
+          <a class="action-card" th:href="@{/reportar-incidente}">
             <div class="action-icon red">⚠</div>
             <span>Reportar Incidente</span>
           </a>
 
-          <a class="action-card" href="solicitar-reemplazo.html">
+          <a class="action-card" th:href="@{/solicitar-reemplazo}">
             <div class="action-icon navy">👥</div>
             <span>Solicitar Reemplazo</span>
-          </a>2345678ERT
-        GHJKLXCVBNM         </div>
+          </a>
+          </div>
       </section>
 
       <section class="section">
@@ -142,9 +142,9 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
