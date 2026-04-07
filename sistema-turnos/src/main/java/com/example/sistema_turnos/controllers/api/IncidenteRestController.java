@@ -25,7 +25,9 @@ public class IncidenteRestController {
     @GetMapping("/{id}")
     public ResponseEntity<IncidenteDTO> obtenerPorId(@PathVariable Long id) {
         IncidenteDTO incidente = incidenteService.obtenerIncidentePorId(id);
-        return incidente != null ? ResponseEntity.ok(incidente) : ResponseEntity.notFound().build();
+        return incidente != null
+                ? ResponseEntity.ok(incidente)
+                : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/asignacion/{asignacionId}")
@@ -36,6 +38,16 @@ public class IncidenteRestController {
     @GetMapping("/tipo/{tipo}")
     public ResponseEntity<List<IncidenteDTO>> obtenerPorTipo(@PathVariable String tipo) {
         return ResponseEntity.ok(incidenteService.obtenerIncidentesPorTipo(tipo));
+    }
+
+    @GetMapping("/severidad/{severidad}")
+    public ResponseEntity<List<IncidenteDTO>> obtenerPorSeveridad(@PathVariable String severidad) {
+        return ResponseEntity.ok(incidenteService.obtenerIncidentesPorSeveridad(severidad));
+    }
+
+    @GetMapping("/estado/{estado}")
+    public ResponseEntity<List<IncidenteDTO>> obtenerPorEstado(@PathVariable String estado) {
+        return ResponseEntity.ok(incidenteService.obtenerIncidentesPorEstado(estado));
     }
 
     @PostMapping
@@ -52,7 +64,9 @@ public class IncidenteRestController {
     public ResponseEntity<IncidenteDTO> actualizar(@PathVariable Long id, @RequestBody IncidenteDTO incidenteDTO) {
         try {
             IncidenteDTO incidenteActualizado = incidenteService.actualizarIncidente(id, incidenteDTO);
-            return incidenteActualizado != null ? ResponseEntity.ok(incidenteActualizado) : ResponseEntity.notFound().build();
+            return incidenteActualizado != null
+                    ? ResponseEntity.ok(incidenteActualizado)
+                    : ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -60,6 +74,8 @@ public class IncidenteRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        return incidenteService.eliminarIncidente(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        return incidenteService.eliminarIncidente(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

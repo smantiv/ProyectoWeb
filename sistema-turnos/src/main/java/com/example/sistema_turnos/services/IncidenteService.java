@@ -27,6 +27,7 @@ public class IncidenteService {
         incidente.setSeveridad(incidenteDTO.getSeveridad());
         incidente.setDescripcion(incidenteDTO.getDescripcion());
         incidente.setFechaHora(incidenteDTO.getFechaHora());
+        incidente.setEstado(incidenteDTO.getEstado());
 
         if (incidenteDTO.getAsignacionId() != null) {
             Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());
@@ -79,6 +80,17 @@ public class IncidenteService {
         }
         return null;
     }
+    public List<IncidenteDTO> obtenerIncidentesPorSeveridad(String severidad) {
+    return incidenteRepository.findBySeveridad(severidad).stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+}
+
+public List<IncidenteDTO> obtenerIncidentesPorEstado(String estado) {
+    return incidenteRepository.findByEstado(estado).stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+}
 
     public boolean eliminarIncidente(Long id) {
         if (incidenteRepository.existsById(id)) {
@@ -93,9 +105,10 @@ public class IncidenteService {
         return new IncidenteDTO(
                 incidente.getId(),
                 incidente.getTipo(),
+                incidente.getEstado(), 
                 incidente.getSeveridad(),
-                incidente.getDescripcion(),
                 incidente.getFechaHora(),
+                incidente.getDescripcion(),
                 asignacionId
         );
     }

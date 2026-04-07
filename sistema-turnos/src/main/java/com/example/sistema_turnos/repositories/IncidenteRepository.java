@@ -11,11 +11,13 @@ import java.util.List;
 public interface IncidenteRepository extends JpaRepository<Incidente, Long> {
 
     List<Incidente> findByAsignacionTurnoId(Long asignacionId);
-
+     
     List<Incidente> findByTipo(String tipo);
 
     List<Incidente> findBySeveridad(String severidad);
 
+
+    List<Incidente> findByEstado(String estado);
     List<Incidente> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
 
     List<Incidente> findByAsignacionTurnoIdAndFechaHoraBetween(
@@ -23,4 +25,7 @@ public interface IncidenteRepository extends JpaRepository<Incidente, Long> {
             LocalDateTime inicio,
             LocalDateTime fin
     );
+     List<Incidente> findByAsignacionTurnoIdAndEstado(Long asignacionId, String estado); 
+
+    List<Incidente> findBySeveridadAndEstado(String severidad, String estado); 
 }

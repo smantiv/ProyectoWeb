@@ -12,6 +12,7 @@ public class Incidente {
     private Long id;
 
     private String tipo;
+    private String estado;
     private String severidad;
     private String descripcion;
     private LocalDateTime fechaHora;
@@ -64,5 +65,12 @@ public class Incidente {
 
     public void setAsignacionTurno(AsignacionTurno asignacionTurno) {
         this.asignacionTurno = asignacionTurno;
+    }
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

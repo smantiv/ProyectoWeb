@@ -96,60 +96,7 @@
                     <th>Profesor responsable</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr class="incidents-row">
-                    <td>Conflicto entre estudiantes</td>
-                    <td>Patio Principal</td>
-                    <td>08:25</td>
-                    <td><span class="incident-badge incident-priority-medium">Media</span></td>
-                    <td><span class="incident-badge incident-status-pending">Pendiente</span></td>
-                    <td>Prof. Roberto Silva</td>
-                  </tr>
-
-                  <tr class="incidents-row">
-                    <td>Emergencia médica</td>
-                    <td>Cafetería</td>
-                    <td>09:15</td>
-                    <td><span class="incident-badge incident-priority-critical">Crítica</span></td>
-                    <td><span class="incident-badge incident-status-progress">En proceso</span></td>
-                    <td>Prof. Laura Pérez</td>
-                  </tr>
-
-                  <tr class="incidents-row">
-                    <td>Situación de seguridad</td>
-                    <td>Entrada Principal</td>
-                    <td>10:30</td>
-                    <td><span class="incident-badge incident-priority-high">Alta</span></td>
-                    <td><span class="incident-badge incident-status-pending">Pendiente</span></td>
-                    <td>Prof. Diego Torres</td>
-                  </tr>
-
-                  <tr class="incidents-row">
-                    <td>Daño en infraestructura</td>
-                    <td>Biblioteca</td>
-                    <td>11:00</td>
-                    <td><span class="incident-badge incident-priority-low">Baja</span></td>
-                    <td><span class="incident-badge incident-status-resolved">Resuelto</span></td>
-                    <td>Prof. Carmen Ruiz</td>
-                  </tr>
-
-                  <tr class="incidents-row">
-                    <td>Conflicto entre estudiantes</td>
-                    <td>Zona de Juegos</td>
-                    <td>14:20</td>
-                    <td><span class="incident-badge incident-priority-medium">Media</span></td>
-                    <td><span class="incident-badge incident-status-resolved">Resuelto</span></td>
-                    <td>Prof. Ana Martínez</td>
-                  </tr>
-
-                  <tr class="incidents-row">
-                    <td>Comportamiento inapropiado</td>
-                    <td>Pasillo Académico</td>
-                    <td>13:40</td>
-                    <td><span class="incident-badge incident-priority-medium">Media</span></td>
-                    <td><span class="incident-badge incident-status-progress">En proceso</span></td>
-                    <td>Prof. Carlos Mendoza</td>
-                  </tr>
+                <tbody id="tablaIncidentes">    
                 </tbody>
               </table>
             </div>
@@ -169,5 +116,77 @@
       </div>
     </footer>
   </div>
+  <script>
+document.addEventListener("DOMContentLoaded", cargarIncidentes);
+
+async function cargarIncidentes() {
+  try {
+    const response = await fetch("/api/v1/incidentes");
+    const incidentes = await response.json();
+
+    const tabla = document.getElementById("tablaIncidentes");
+    tabla.innerHTML = "";
+
+    incidentes.forEach(inc => {
+      const severidad = (inc.severidad || "").toLowerCase();
+      const estado = (inc.estado || "").toLowerCase();
+
+      tabla.innerHTML += `
+  <tr class="incidents-row">
+    <td>${inc.tipo || "-"}</td>
+    <td>Asignación ${inc.asignacionId ?? "-"}</td>
+    <td>${inc.fechaHora ? inc.fechaHora.substring(11,16) : "-"}</td>
+    <td>${inc.severidad ?? "-"}</td>   <!-- PRIORIDAD -->
+    <td>${inc.estado ?? "-"}</td>      <!-- ESTADO -->
+    <td>-</td>
+  </tr>
+`;
+    });
+
+  } catch (error) {
+    console.error("Error cargando incidentes:", error);
+  }
+}
+
+// 🎨 estilos visuales
+function badgeSeveridad(severidad) {
+  const map = {
+    baja: "incident-priority-low",
+    media: "incident-priority-medium",
+    alta: "incident-priority-high",
+    critica: "incident-priority-critical"
+  };
+
+  return `<span class="incident-badge ${map[severidad] || ''}">
+            ${capitalizar(severidad)}
+          </span>`;
+}
+
+function badgeEstado(estado) {
+  const map = {
+    reportado: "incident-status-pending",
+    en_revision: "incident-status-progress",
+    resuelto: "incident-status-resolved"
+  };
+
+  const texto = {
+    reportado: "Pendiente",
+    en_revision: "En proceso",
+    resuelto: "Resuelto"
+  };
+
+  return `<span class="incident-badge ${map[estado] || ''}">
+            ${texto[estado] || estado}
+          </span>`;
+}
+
+function capitalizar(texto) {
+  if (!texto) return "-";
+  return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
+}
+</script>
+<script src="/js/api/ApiClient.js"></script>
+<script src="/js/api/IncidenteService.js"></script>
+<script src="/js/gestion-incidentes.js"></script>
 </body>
 </html>

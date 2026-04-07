@@ -7,7 +7,7 @@
 
 ## 📖 Tabla de Contenidos
 
-1. [Descripción General](#descripción-general)
+1. [Descripción Gen eral](#descripción-general)
 2. [Setup Inicial](#setup-inicial)
 3. [Estructura del Proyecto](#estructura-del-proyecto)
 4. [Patrones Arquitectónicos](#patrones-arquitectónicos)
@@ -18,7 +18,7 @@
 9. [Validación y Testing](#validación-y-testing)
 10. [Solución de Problemas](#solución-de-problemas)
 11. [Mejores Prácticas](#mejores-prácticas)
-12. [Roadmap Futuro](#roadmap-futuro)
+12. [Roadmap Futuro](#roadmap-fut       uro)
 
 ---
 
