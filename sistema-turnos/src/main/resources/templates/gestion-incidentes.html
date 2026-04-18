@@ -1,122 +1,117 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Gestión de Incidentes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
-   <div class="page">
-    <nav class="topbar">
-      <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
-        <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
-      </div>
+<div class="page">
 
-      <div class="profile-box">
-        <span>Coord. Alberto Ramírez</span>
-        <a href="perfil-coordinador.html" class="profile-avatar profile-avatar-coord">👤</a>
-      </div>
-    </nav>
+  <nav class="topbar">
+    <div class="brand">
+      <img src="/assets/logo-sfr.png" class="brand-logo">
+      <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
+    </div>
 
-    <main class="mis-turnos-main">
-      <div class="back-wrap">
-        <button class="back-btn" onclick="history.back()" title="Volver">←</button>
-      </div>
+    <div class="profile-box">
+      <span>Coord. Alberto Ramírez</span>
+      <a href="#" class="profile-avatar profile-avatar-coord">👤</a>
+    </div>
+  </nav>
 
-      <div class="container incidents-page-wrap">
-        <section class="section-header">
-          <h1>Gestión de Incidentes</h1>
-          <p>Supervisa y gestiona los incidentes reportados por los profesores.</p>
-        </section>
+  <main class="mis-turnos-main">
 
-        <section class="section">
-          <div class="filter-card">
-            <div class="filter-title-row">
-              <span class="filter-icon">⚲</span>
-              <h3>Filtros</h3>
+    <div class="back-wrap">
+      <button class="back-btn" onclick="history.back()">←</button>
+    </div>
+
+    <div class="container incidents-page-wrap">
+
+      <section class="section-header">
+        <h1>Gestión de Incidentes</h1>
+        <p>Supervisa y gestiona los incidentes reportados por los profesores.</p>
+      </section>
+
+      <!-- FILTROS -->
+      <section class="section">
+        <div class="filter-card">
+          <h3>Filtros</h3>
+
+          <div class="filter-grid">
+
+            <div class="filter-field">
+              <label>Estado</label>
+              <select>
+                <option>Todos</option>
+                <option>Pendiente</option>
+                <option>En proceso</option>
+                <option>Resuelto</option>
+                <option>Escalado</option>
+              </select>
             </div>
 
-            <div class="filter-grid">
-              <div class="filter-field">
-                <label>Estado</label>
-                <select>
-                  <option>Todos</option>
-                  <option>Pendiente</option>
-                  <option>En proceso</option>
-                  <option>Resuelto</option>
-                  <option>Escalado</option>
-                </select>
-              </div>
-
-              <div class="filter-field">
-                <label>Prioridad</label>
-                <select>
-                  <option>Todos</option>
-                  <option>Baja</option>
-                  <option>Media</option>
-                  <option>Alta</option>
-                  <option>Crítica</option>
-                </select>
-              </div>
-
-              <div class="filter-field">
-                <label>Zona</label>
-                <select>
-                  <option>Todos</option>
-                  <option>Patio Principal</option>
-                  <option>Biblioteca</option>
-                  <option>Cafetería</option>
-                  <option>Entrada Principal</option>
-                  <option>Zona de Juegos</option>
-                  <option>Pasillo Académico</option>
-                </select>
-              </div>
+            <div class="filter-field">
+              <label>Prioridad</label>
+              <select>
+                <option>Todos</option>
+                <option>Baja</option>
+                <option>Media</option>
+                <option>Alta</option>
+                <option>Crítica</option>
+              </select>
             </div>
+
+            <div class="filter-field">
+              <label>Zona</label>
+              <select>
+                <option>Todos</option>
+                <option>Patio Principal</option>
+                <option>Biblioteca</option>
+                <option>Cafetería</option>
+              </select>
+            </div>
+
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="section">
-          <h2 class="incidents-panel-title">
-            Incidentes <span class="incidents-count">(6)</span>
-          </h2>
+      <!-- TABLA -->
+      <section class="section">
+        <h2>Incidentes <span id="contador">(0)</span></h2>
 
-          <div class="incidents-table-card">
-            <div class="incidents-table-wrap">
-              <table class="incidents-table">
-                <thead>
-                  <tr>
-                    <th>Tipo de incidente</th>
-                    <th>Ubicación</th>
-                    <th>Hora</th>
-                    <th>Prioridad</th>
-                    <th>Estado</th>
-                    <th>Profesor responsable</th>
-                  </tr>
-                </thead>
-                <tbody id="tablaIncidentes">    
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
+        <table class="incidents-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Ubicación</th>
+              <th>Hora</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
 
-    <footer class="footer">
-      <p>
-        <span class="footer-school">Colegio Santa Francisca Romana</span> © 2026
-      </p>
-      <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
-        <span>|</span>
-        <a href="contacto.html">Contacto</a>
-      </div>
-    </footer>
-  </div>
-  <script>
+          <tbody id="tablaIncidentes"></tbody>
+        </table>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Colegio Santa Francisca Romana © 2026</p>
+  </footer>
+
+</div>
+
+<!-- SCRIPT LIMPIO -->
+<script>
+
 document.addEventListener("DOMContentLoaded", cargarIncidentes);
 
 async function cargarIncidentes() {
@@ -125,68 +120,36 @@ async function cargarIncidentes() {
     const incidentes = await response.json();
 
     const tabla = document.getElementById("tablaIncidentes");
+    const contador = document.getElementById("contador");
+
     tabla.innerHTML = "";
+    contador.textContent = `(${incidentes.length})`;
 
+    console.log("INCIDENTES:", incidentes);
     incidentes.forEach(inc => {
-      const severidad = (inc.severidad || "").toLowerCase();
-      const estado = (inc.estado || "").toLowerCase();
-
       tabla.innerHTML += `
-  <tr class="incidents-row">
-    <td>${inc.tipo || "-"}</td>
-    <td>Asignación ${inc.asignacionId ?? "-"}</td>
-    <td>${inc.fechaHora ? inc.fechaHora.substring(11,16) : "-"}</td>
-    <td>${inc.severidad ?? "-"}</td>   <!-- PRIORIDAD -->
-    <td>${inc.estado ?? "-"}</td>      <!-- ESTADO -->
-    <td>-</td>
-  </tr>
-`;
+        <tr>
+          <td>${inc.tipo}</td>
+          <td>${inc.ubicacion ?? "Sin ubicación"}</td>
+          <td>${inc.fechaHora ? inc.fechaHora.substring(11,16) : "-"}</td>
+          <td>${inc.descripcion ?? "-"}</td>
+           <td>${inc.severidad ?? "-"}</td>
+          <td>${inc.estado ?? "-"}</td>
+        </tr>
+      `;
     });
 
   } catch (error) {
-    console.error("Error cargando incidentes:", error);
+    console.error("Error:", error);
   }
-}
-
-// 🎨 estilos visuales
-function badgeSeveridad(severidad) {
-  const map = {
-    baja: "incident-priority-low",
-    media: "incident-priority-medium",
-    alta: "incident-priority-high",
-    critica: "incident-priority-critical"
-  };
-
-  return `<span class="incident-badge ${map[severidad] || ''}">
-            ${capitalizar(severidad)}
-          </span>`;
-}
-
-function badgeEstado(estado) {
-  const map = {
-    reportado: "incident-status-pending",
-    en_revision: "incident-status-progress",
-    resuelto: "incident-status-resolved"
-  };
-
-  const texto = {
-    reportado: "Pendiente",
-    en_revision: "En proceso",
-    resuelto: "Resuelto"
-  };
-
-  return `<span class="incident-badge ${map[estado] || ''}">
-            ${texto[estado] || estado}
-          </span>`;
 }
 
 function capitalizar(texto) {
   if (!texto) return "-";
-  return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
+
 </script>
-<script src="/js/api/ApiClient.js"></script>
-<script src="/js/api/IncidenteService.js"></script>
-<script src="/js/gestion-incidentes.js"></script>
+
 </body>
 </html>

@@ -101,15 +101,28 @@ public List<IncidenteDTO> obtenerIncidentesPorEstado(String estado) {
     }
 
     private IncidenteDTO convertToDTO(Incidente incidente) {
-        Long asignacionId = incidente.getAsignacionTurno() != null ? incidente.getAsignacionTurno().getId() : null;
-        return new IncidenteDTO(
-                incidente.getId(),
-                incidente.getTipo(),
-                incidente.getEstado(), 
-                incidente.getSeveridad(),
-                incidente.getFechaHora(),
-                incidente.getDescripcion(),
-                asignacionId
-        );
+    Long asignacionId = incidente.getAsignacionTurno() != null
+            ? incidente.getAsignacionTurno().getId()
+            : null;
+
+    String ubicacion = null;
+
+    if (incidente.getAsignacionTurno() != null
+            && incidente.getAsignacionTurno().getTurno() != null
+            && incidente.getAsignacionTurno().getTurno().getZona() != null) {
+        ubicacion = incidente.getAsignacionTurno().getTurno().getZona().getNombre();
     }
+
+    IncidenteDTO dto = new IncidenteDTO();
+    dto.setId(incidente.getId());
+    dto.setTipo(incidente.getTipo());
+    dto.setSeveridad(incidente.getSeveridad());
+    dto.setDescripcion(incidente.getDescripcion());
+    dto.setFechaHora(incidente.getFechaHora());
+    dto.setEstado(incidente.getEstado());
+    dto.setAsignacionId(asignacionId);
+    dto.setUbicacion(ubicacion);
+
+    return dto;
+}
 }

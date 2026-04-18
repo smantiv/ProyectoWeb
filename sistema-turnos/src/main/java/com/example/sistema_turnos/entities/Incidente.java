@@ -73,4 +73,5 @@ public class Incidente {
     public void setEstado(String estado) {
         this.estado = estado;
     }
+
 }

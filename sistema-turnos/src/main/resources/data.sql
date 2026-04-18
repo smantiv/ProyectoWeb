@@ -9,9 +9,12 @@ INSERT INTO docente (codigo_institucional, usuario_id) VALUES
 ('DOC002', 3);
 
 INSERT INTO zona (nombre, descripcion) VALUES
-('Zona A', 'Entrada principal'),
-('Zona B', 'Patio central'),
-('Zona C', 'Bloque académico');
+('Patio principal', 'Zona central de recreo'),
+('Biblioteca', 'Área de estudio y consulta'),
+('Cafetería', 'Zona de alimentación'),
+('Entrada principal', 'Acceso principal al colegio'),
+('Zona de juegos', 'Área recreativa'),
+('Pasillo académico', 'Corredor de aulas');
 
 INSERT INTO turno (fecha, hora_inicio, hora_fin, estado, zona_id) VALUES
 ('2026-03-18', '07:00:00', '09:00:00', 'PENDIENTE', 1),

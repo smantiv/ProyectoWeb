@@ -11,12 +11,13 @@ public class IncidenteDTO {
     private LocalDateTime fechaHora;
     private String estado;
     private Long asignacionId;
+    private String ubicacion;
 
     public IncidenteDTO() {
     }
 
     public IncidenteDTO(Long id, String tipo, String severidad, String descripcion,
-                        LocalDateTime fechaHora, String estado, Long asignacionId) {
+                        LocalDateTime fechaHora, String estado, Long asignacionId,String ubicacion) {
         this.id = id;
         this.tipo = tipo;
         this.severidad = severidad;
@@ -24,6 +25,7 @@ public class IncidenteDTO {
         this.fechaHora = fechaHora;
         this.estado = estado;
         this.asignacionId = asignacionId;
+        this.ubicacion= ubicacion;
     }
 
     public Long getId() {
@@ -81,4 +83,13 @@ public class IncidenteDTO {
     public void setAsignacionId(Long asignacionId) {
         this.asignacionId = asignacionId;
     }
+
+    public String getUbicacion(){
+        return ubicacion;
+    }
+    
+    public void setUbicacion(String ubicacion){
+        this.ubicacion=ubicacion;
+    }
+
 }

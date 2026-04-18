@@ -22,7 +22,7 @@ public class PantallaController {
         return "gestion-profesores";
     }
 
-    @GetMapping("/gestion-incidentes.html")
+    @GetMapping("/incidentes")
     public String gestionIncidentes() { 
         return "gestion-incidentes";
     }
