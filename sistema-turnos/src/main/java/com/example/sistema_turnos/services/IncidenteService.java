@@ -69,6 +69,7 @@ public class IncidenteService {
             incidente.setSeveridad(incidenteDTO.getSeveridad());
             incidente.setDescripcion(incidenteDTO.getDescripcion());
             incidente.setFechaHora(incidenteDTO.getFechaHora());
+            incidente.setEstado(incidenteDTO.getEstado());
 
             if (incidenteDTO.getAsignacionId() != null) {
                 Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());

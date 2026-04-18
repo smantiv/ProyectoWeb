@@ -132,9 +132,10 @@ async function cargarIncidentes() {
           <td>${inc.tipo}</td>
           <td>${inc.ubicacion ?? "Sin ubicación"}</td>
           <td>${inc.fechaHora ? inc.fechaHora.substring(11,16) : "-"}</td>
-          <td>${inc.descripcion ?? "-"}</td>
-           <td>${inc.severidad ?? "-"}</td>
+          <td>${inc.severidad ?? "-"}</td>
           <td>${inc.estado ?? "-"}</td>
+          <td>${inc.descripcion ?? "-"}</td>
+
         </tr>
       `;
     });
