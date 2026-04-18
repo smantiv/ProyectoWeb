@@ -13,13 +13,13 @@
   <div class="page">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo">
         <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
       </div>
 
       <div class="profile-box">
         <span>Prof. María González</span>
-        <a href="perfil-profesor.html" class="profile-avatar">👤</a>
+        <a th:href="@{/mi-perfil-profesor}" class="profile-avatar">👤</a>
       </div>
     </nav>
 
@@ -32,7 +32,7 @@
         <section class="section-header">
           <h1>Reportar Incidente</h1>
           <p>Registra un incidente ocurrido durante tu turno de vigilancia.</p>
-<br> 
+<br>
         </section>
 
         <div id="incidentConfirmation" class="checkpoint-confirmation hidden">
@@ -47,26 +47,34 @@
             <div class="incident-summary-grid">
               <div class="checkpoint-summary-item">
                 <div class="checkpoint-summary-label">
-                  <span class="checkpoint-mini-icon">📍</span>
-                  <span>Zona asignada</span>
+                  <span class="checkpoint-mini-icon">#</span>
+                  <span>Asignación</span>
                 </div>
-                <p>Patio Principal</p>
+                <p id="summaryAsignacion">Sin seleccionar</p>
               </div>
 
               <div class="checkpoint-summary-item">
                 <div class="checkpoint-summary-label">
                   <span class="checkpoint-mini-icon">🕒</span>
-                  <span>Hora actual</span>
+                  <span>Turno asociado</span>
                 </div>
-                <p>14:45</p>
+                <p id="summaryTurno">Sin seleccionar</p>
               </div>
 
               <div class="checkpoint-summary-item">
                 <div class="checkpoint-summary-label">
                   <span class="checkpoint-mini-icon">⚠</span>
-                  <span>Estado del turno</span>
+                  <span>Estado de cobertura</span>
                 </div>
-                <span class="checkpoint-status-badge">Activo</span>
+                <span id="summaryEstado" class="checkpoint-status-badge">Sin seleccionar</span>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">⏱</span>
+                  <span>Hora check-in</span>
+                </div>
+                <p id="summaryCheckin">No registrada</p>
               </div>
             </div>
           </div>
@@ -77,6 +85,16 @@
 
           <div class="checkpoint-form-card">
             <form id="incidentForm" class="checkpoint-form">
+              <div class="checkpoint-field">
+                <label for="assignmentSelect" class="checkpoint-textarea-label">
+                  <span class="checkpoint-big-icon">🕒</span>
+                  <span>Asignación válida</span>
+                </label>
+                <select id="assignmentSelect" required>
+                  <option value="">Selecciona una asignación</option>
+                </select>
+              </div>
+
               <div class="checkpoint-field">
                 <label for="incidentType" class="checkpoint-textarea-label">
                   <span class="checkpoint-big-icon">⚠</span>
@@ -98,7 +116,7 @@
                   <span class="checkpoint-big-icon">📍</span>
                   <span>Ubicación</span>
                 </label>
-                <select id="location" required>
+                <select id="location">
                   <option value="">Selecciona una ubicación</option>
                   <option value="Patio principal">Patio principal</option>
                   <option value="Cafetería">Cafetería</option>
@@ -165,20 +183,97 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
 
+  <script src="/js/api/ApiClient.js"></script>
+  <script src="/js/api/TurnoService.js"></script>
+  <script src="/js/api/UsuarioService.js"></script>
+  <script src="/js/api/DocenteService.js"></script>
+  <script src="/js/api/ZonaService.js"></script>
+  <script src="/js/api/AsignacionTurnoService.js"></script>
+  <script src="/js/api/IncidenteService.js"></script>
+  <script src="/js/api/CheckpointService.js"></script>
+  <script src="/js/api/RecorridoService.js"></script>
+  <script src="/js/api/ReasignacionService.js"></script>
+  <script src="/js/api/ApiServices.js"></script>
+
   <script>
+    let assignments = [];
+
     const incidentForm = document.getElementById('incidentForm');
     const incidentConfirmation = document.getElementById('incidentConfirmation');
     const uploadBtn = document.getElementById('uploadBtn');
     const fileName = document.getElementById('fileName');
     const priorityButtons = document.querySelectorAll('.priority-btn');
     const priorityValue = document.getElementById('priorityValue');
+    const assignmentSelect = document.getElementById('assignmentSelect');
+
+    const summaryAsignacion = document.getElementById('summaryAsignacion');
+    const summaryTurno = document.getElementById('summaryTurno');
+    const summaryEstado = document.getElementById('summaryEstado');
+    const summaryCheckin = document.getElementById('summaryCheckin');
+
+    function formatDateTime(dateTimeString) {
+      if (!dateTimeString) return 'No registrada';
+      const d = new Date(dateTimeString);
+      return d.toLocaleString('es-ES');
+    }
+
+    function formatLocalDateTimeNow() {
+      return new Date().toISOString().slice(0, 19);
+    }
+
+    function badgeClassForEstado(estado) {
+      const value = String(estado || '').toLowerCase();
+      if (value.includes('complet')) return 'request-accepted';
+      if (value.includes('cancel')) return 'request-rejected';
+      if (value.includes('cobert') || value.includes('asign') || value.includes('activ')) return 'checkpoint-status-badge';
+      return 'checkpoint-status-badge';
+    }
+
+    function renderAssignmentOptions() {
+      assignmentSelect.innerHTML = '<option value="">Selecciona una asignación</option>' +
+        assignments.map(a => `
+          <option value="${a.id}">
+            Asignación #${a.id} - Turno #${a.turnoId || 'Sin turno'}
+          </option>
+        `).join('');
+    }
+
+    function updateAssignmentSummary() {
+      const assignmentId = Number(assignmentSelect.value);
+      const assignment = assignments.find(a => a.id === assignmentId);
+
+      if (!assignment) {
+        summaryAsignacion.textContent = 'Sin seleccionar';
+        summaryTurno.textContent = 'Sin seleccionar';
+        summaryEstado.textContent = 'Sin seleccionar';
+        summaryEstado.className = 'checkpoint-status-badge';
+        summaryCheckin.textContent = 'No registrada';
+        return;
+      }
+
+      summaryAsignacion.textContent = `#${assignment.id}`;
+      summaryTurno.textContent = assignment.turnoId ? `Turno #${assignment.turnoId}` : 'Sin turno';
+      summaryEstado.textContent = assignment.estadoCobertura || 'Sin estado';
+      summaryEstado.className = `checkpoint-status-badge ${badgeClassForEstado(assignment.estadoCobertura)}`;
+      summaryCheckin.textContent = formatDateTime(assignment.horaCheckin);
+    }
+
+    async function loadAssignments() {
+      try {
+        assignments = await ApiServices.asignacionTurnoService.obtenerTodas();
+        renderAssignmentOptions();
+        updateAssignmentSummary();
+      } catch (error) {
+        alert(`No se pudieron cargar las asignaciones: ${error.message}`);
+      }
+    }
 
     uploadBtn.addEventListener('click', function () {
       fileName.textContent = 'evidencia_incidente_' + Date.now() + '.jpg';
@@ -202,30 +297,52 @@
       });
     });
 
-    incidentForm.addEventListener('submit', function (e) {
+    assignmentSelect.addEventListener('change', updateAssignmentSummary);
+
+    incidentForm.addEventListener('submit', async function (e) {
       e.preventDefault();
+
+      if (!assignmentSelect.value) {
+        alert('Selecciona una asignación válida.');
+        return;
+      }
 
       if (!priorityValue.value) {
         alert('Selecciona un nivel de prioridad.');
         return;
       }
 
-      incidentConfirmation.classList.remove('hidden');
-      incidentConfirmation.classList.add('fade-in');
+      try {
+        await ApiServices.incidenteService.crear({
+          asignacionId: Number(assignmentSelect.value),
+          tipo: document.getElementById('incidentType').value,
+          severidad: priorityValue.value,
+          descripcion: document.getElementById('description').value.trim(),
+          fechaHora: formatLocalDateTimeNow()
+        });
 
-      incidentForm.reset();
-      fileName.textContent = '';
-      priorityValue.value = '';
+        incidentConfirmation.classList.remove('hidden');
+        incidentConfirmation.classList.add('fade-in');
 
-      priorityButtons.forEach(b => {
-        b.classList.remove('priority-selected-green', 'priority-selected-yellow', 'priority-selected-orange', 'priority-selected-red');
-      });
+        incidentForm.reset();
+        fileName.textContent = '';
+        priorityValue.value = '';
+        priorityButtons.forEach(b => {
+          b.classList.remove('priority-selected-green', 'priority-selected-yellow', 'priority-selected-orange', 'priority-selected-red');
+        });
 
-      setTimeout(() => {
-        incidentConfirmation.classList.add('hidden');
-        incidentConfirmation.classList.remove('fade-in');
-      }, 5000);
+        updateAssignmentSummary();
+
+        setTimeout(() => {
+          incidentConfirmation.classList.add('hidden');
+          incidentConfirmation.classList.remove('fade-in');
+        }, 5000);
+      } catch (error) {
+        alert(`No se pudo registrar el incidente: ${error.message}`);
+      }
     });
+
+    loadAssignments();
   </script>
 </body>
 </html>

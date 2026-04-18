@@ -13,13 +13,13 @@
   <div class="page">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo">
         <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
       </div>
 
       <div class="profile-box">
         <span>Admin. Patricia Flores</span>
-        <a href="perfil-cuenta.html" class="profile-avatar profile-avatar-admin">👤</a>
+        <a th:href="@{/mi-perfil}" class="profile-avatar profile-avatar-admin">👤</a>
       </div>
     </nav>
 
@@ -45,35 +45,35 @@
                 <div class="admin-stat-icon bg-navy">👥</div>
                 <span class="admin-trend orange-text">↗</span>
               </div>
-              <h3 id="statTotal">8</h3>
+              <h3 id="statTotal">0</h3>
               <p>Profesores totales</p>
             </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
                 <div class="admin-stat-icon bg-green">✔</div>
-                <span class="admin-trend green-text" id="statActivosPct">75%</span>
+                <span class="admin-trend green-text" id="statActivosPct">0%</span>
               </div>
-              <h3 id="statActivos">6</h3>
+              <h3 id="statActivos">0</h3>
               <p>Profesores activos</p>
             </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
                 <div class="admin-stat-icon bg-red">✖</div>
-                <span class="admin-trend red-text" id="statInactivosPct">25%</span>
+                <span class="admin-trend red-text" id="statInactivosPct">0%</span>
               </div>
-              <h3 id="statInactivos">2</h3>
+              <h3 id="statInactivos">0</h3>
               <p>Profesores inactivos</p>
             </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
-                <div class="admin-stat-icon bg-orange">📍</div>
+                <div class="admin-stat-icon bg-orange">🛡</div>
                 <span class="admin-trend green-text">✔</span>
               </div>
-              <h3 id="statZonas">6</h3>
-              <p>Zonas con profesor asignado</p>
+              <h3 id="statRoles">0</h3>
+              <p>Roles visibles</p>
             </article>
           </div>
         </section>
@@ -90,20 +90,16 @@
                 <label for="teacherSearch">Buscar profesor</label>
                 <div class="search-wrap">
                   <span class="search-icon">🔍</span>
-                  <input id="teacherSearch" type="text" placeholder="Nombre o correo...">
+                  <input id="teacherSearch" type="text" placeholder="Nombre, correo o código...">
                 </div>
               </div>
 
               <div class="filter-field">
-                <label for="zoneFilter">Zona asignada</label>
-                <select id="zoneFilter">
+                <label for="roleFilter">Rol</label>
+                <select id="roleFilter">
                   <option value="Todas">Todas</option>
-                  <option value="Biblioteca">Biblioteca</option>
-                  <option value="Patio Principal">Patio Principal</option>
-                  <option value="Cafetería">Cafetería</option>
-                  <option value="Entrada Principal">Entrada Principal</option>
-                  <option value="Zona de Juegos">Zona de Juegos</option>
-                  <option value="Pasillo Académico">Pasillo Académico</option>
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="DOCENTE">DOCENTE</option>
                 </select>
               </div>
 
@@ -121,7 +117,7 @@
 
         <section class="section">
           <div class="teachers-table-head">
-            <h2 id="teachersTableTitle">Listado de Profesores (8)</h2>
+            <h2 id="teachersTableTitle">Listado de Profesores (0)</h2>
             <button id="exportTeachersBtn" class="teachers-export-btn">⬇ Exportar</button>
           </div>
 
@@ -132,7 +128,7 @@
                   <tr>
                     <th>Profesor</th>
                     <th>Correo institucional</th>
-                    <th>Zona asignada</th>
+                    <th>Código institucional</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                   </tr>
@@ -161,27 +157,29 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
 
+  <script src="/js/api/ApiClient.js"></script>
+  <script src="/js/api/TurnoService.js"></script>
+  <script src="/js/api/UsuarioService.js"></script>
+  <script src="/js/api/DocenteService.js"></script>
+  <script src="/js/api/ZonaService.js"></script>
+  <script src="/js/api/AsignacionTurnoService.js"></script>
+  <script src="/js/api/IncidenteService.js"></script>
+  <script src="/js/api/CheckpointService.js"></script>
+  <script src="/js/api/RecorridoService.js"></script>
+  <script src="/js/api/ReasignacionService.js"></script>
+  <script src="/js/api/ApiServices.js"></script>
   <script>
-    const teachers = [
-      { id: 1, nombre: 'Prof. Carmen Ruiz', correo: 'carmen.ruiz@sfr.edu.co', zonaAsignada: 'Biblioteca', estado: 'Activo', turnosCompletados: 26, puntualidad: 97 },
-      { id: 2, nombre: 'Prof. Roberto Silva', correo: 'roberto.silva@sfr.edu.co', zonaAsignada: 'Patio Principal', estado: 'Activo', turnosCompletados: 28, puntualidad: 95 },
-      { id: 3, nombre: 'Prof. Laura Pérez', correo: 'laura.perez@sfr.edu.co', zonaAsignada: 'Cafetería', estado: 'Activo', turnosCompletados: 25, puntualidad: 92 },
-      { id: 4, nombre: 'Prof. Ana Martínez', correo: 'ana.martinez@sfr.edu.co', zonaAsignada: 'Zona de Juegos', estado: 'Activo', turnosCompletados: 24, puntualidad: 90 },
-      { id: 5, nombre: 'Prof. Diego Torres', correo: 'diego.torres@sfr.edu.co', zonaAsignada: 'Entrada Principal', estado: 'Inactivo', turnosCompletados: 22, puntualidad: 88 },
-      { id: 6, nombre: 'Prof. Carlos Mendoza', correo: 'carlos.mendoza@sfr.edu.co', zonaAsignada: 'Pasillo Académico', estado: 'Activo', turnosCompletados: 21, puntualidad: 85 },
-      { id: 7, nombre: 'Prof. María González', correo: 'maria.gonzalez@sfr.edu.co', zonaAsignada: 'Biblioteca', estado: 'Inactivo', turnosCompletados: 18, puntualidad: 82 },
-      { id: 8, nombre: 'Prof. José Ramírez', correo: 'jose.ramirez@sfr.edu.co', zonaAsignada: 'Patio Principal', estado: 'Activo', turnosCompletados: 23, puntualidad: 89 }
-    ];
+    let teachers = [];
 
     const teacherSearch = document.getElementById('teacherSearch');
-    const zoneFilter = document.getElementById('zoneFilter');
+    const roleFilter = document.getElementById('roleFilter');
     const statusFilter = document.getElementById('statusFilter');
     const teachersTableBody = document.getElementById('teachersTableBody');
     const teachersTableTitle = document.getElementById('teachersTableTitle');
@@ -193,9 +191,22 @@
     const statTotal = document.getElementById('statTotal');
     const statActivos = document.getElementById('statActivos');
     const statInactivos = document.getElementById('statInactivos');
-    const statZonas = document.getElementById('statZonas');
+    const statRoles = document.getElementById('statRoles');
     const statActivosPct = document.getElementById('statActivosPct');
     const statInactivosPct = document.getElementById('statInactivosPct');
+
+    function normalizeTeacher(docente) {
+      return {
+        id: docente.id,
+        codigoInstitucional: docente.codigoInstitucional || 'Sin código',
+        nombre: docente.usuario?.nombre || 'Sin nombre',
+        correo: docente.usuario?.email || 'Sin correo',
+        rol: docente.usuario?.rol || 'Sin rol',
+        activo: Boolean(docente.usuario?.activo),
+        estado: docente.usuario?.activo ? 'Activo' : 'Inactivo',
+        usuarioId: docente.usuario?.id || null
+      };
+    }
 
     function teacherBadgeClass(estado) {
       return estado === 'Activo' ? 'request-accepted' : 'request-rejected';
@@ -205,18 +216,17 @@
       const total = data.length;
       const activos = data.filter(t => t.estado === 'Activo').length;
       const inactivos = data.filter(t => t.estado === 'Inactivo').length;
-      const zonas = new Set(data.map(t => t.zonaAsignada)).size;
+      const roles = new Set(data.map(t => t.rol)).size;
 
       statTotal.textContent = total;
       statActivos.textContent = activos;
       statInactivos.textContent = inactivos;
-      statZonas.textContent = zonas;
+      statRoles.textContent = roles;
       statActivosPct.textContent = total ? Math.round((activos / total) * 100) + '%' : '0%';
       statInactivosPct.textContent = total ? Math.round((inactivos / total) * 100) + '%' : '0%';
     }
 
     function renderTeacherPanel(teacher) {
-      const punctualityColor = teacher.puntualidad >= 90 ? 'rgb(40, 167, 69)' : 'rgb(252, 99, 0)';
       const statusBadge = teacher.estado === 'Activo' ? 'request-accepted' : 'request-rejected';
 
       teacherPanelContent.innerHTML = `
@@ -228,54 +238,53 @@
 
         <div class="teacher-info-stack">
           <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>#</span><span>ID Docente</span></div>
+            <p>${teacher.id}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>🪪</span><span>Código institucional</span></div>
+            <p>${teacher.codigoInstitucional}</p>
+          </div>
+
+          <div class="teacher-info-box">
             <div class="teacher-info-label"><span>✉</span><span>Correo institucional</span></div>
             <p>${teacher.correo}</p>
           </div>
 
           <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>📍</span><span>Zona asignada</span></div>
-            <p>${teacher.zonaAsignada}</p>
+            <div class="teacher-info-label"><span>🛡</span><span>Rol</span></div>
+            <p>${teacher.rol}</p>
           </div>
 
           <div class="teacher-info-box">
             <div class="teacher-info-label"><span>✔</span><span>Estado de cuenta</span></div>
-            <p>Cuenta ${teacher.estado.toLowerCase()}a desde Mar 2026</p>
-          </div>
-        </div>
-
-        <div class="teacher-history-section">
-          <h4>Historial de Turnos</h4>
-
-          <div class="teacher-info-box">
-            <div class="teacher-metric-row">
-              <span class="teacher-metric-label">Turnos completados</span>
-              <span class="teacher-metric-value">${teacher.turnosCompletados}</span>
-            </div>
-          </div>
-
-          <div class="teacher-info-box">
-            <div class="teacher-metric-row">
-              <span class="teacher-metric-label">Puntualidad</span>
-              <span class="teacher-metric-value">${teacher.puntualidad}%</span>
-            </div>
-            <div class="teacher-progress">
-              <div class="teacher-progress-bar" style="width:${teacher.puntualidad}%; background:${punctualityColor};"></div>
-            </div>
-          </div>
-
-          <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>📅</span><span>Último turno</span></div>
-            <p>15 de marzo, 2026 - ${teacher.zonaAsignada}</p>
+            <p>${teacher.estado}</p>
           </div>
         </div>
 
         <div class="teacher-panel-actions">
-          <button class="btn btn-primary teacher-panel-btn">✎ Editar información</button>
-          <button class="teacher-toggle-btn ${teacher.estado === 'Activo' ? 'teacher-toggle-warning' : 'teacher-toggle-success'}">
+          <button class="btn btn-primary teacher-panel-btn" data-panel-action="edit" data-id="${teacher.id}">✎ Editar información</button>
+          <button class="teacher-toggle-btn ${teacher.estado === 'Activo' ? 'teacher-toggle-warning' : 'teacher-toggle-success'}" data-panel-action="toggle" data-id="${teacher.id}">
             ⏻ ${teacher.estado === 'Activo' ? 'Desactivar profesor' : 'Activar profesor'}
+          </button>
+          <button class="teacher-secondary-btn" data-panel-action="delete" data-id="${teacher.id}">
+            🗑 Eliminar profesor
           </button>
         </div>
       `;
+
+      teacherPanelContent.querySelectorAll('[data-panel-action]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.panelAction;
+          const id = Number(btn.dataset.id);
+
+          if (action === 'edit') await editTeacher(id);
+          if (action === 'toggle') await toggleTeacher(id);
+          if (action === 'delete') await deleteTeacher(id);
+        });
+      });
     }
 
     function renderTable(data) {
@@ -297,8 +306,8 @@
           </td>
           <td>
             <div class="action-cell">
-              <span class="teacher-muted-icon navy-text">📍</span>
-              <span>${teacher.zonaAsignada}</span>
+              <span class="teacher-muted-icon navy-text">🪪</span>
+              <span>${teacher.codigoInstitucional}</span>
             </div>
           </td>
           <td>
@@ -327,43 +336,175 @@
       });
 
       document.querySelectorAll('.mini-action-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
           e.stopPropagation();
           const action = btn.dataset.action;
-          const id = btn.dataset.id;
+          const id = Number(btn.dataset.id);
 
-          if (action === 'edit') alert(`Abriendo formulario para editar profesor ID: ${id}...`);
-          if (action === 'toggle') alert(`Cambiando estado del profesor ID: ${id}...`);
-          if (action === 'delete') {
-            const ok = confirm('¿Estás seguro de que deseas eliminar este profesor? Esta acción no se puede deshacer.');
-            if (ok) alert(`Profesor ID ${id} eliminado (demo).`);
-          }
+          if (action === 'edit') await editTeacher(id);
+          if (action === 'toggle') await toggleTeacher(id);
+          if (action === 'delete') await deleteTeacher(id);
         });
       });
     }
 
     function applyFilters() {
       const search = teacherSearch.value.toLowerCase().trim();
-      const zone = zoneFilter.value;
+      const role = roleFilter.value;
       const status = statusFilter.value;
 
       const filtered = teachers.filter(teacher => {
         const matchesSearch =
           teacher.nombre.toLowerCase().includes(search) ||
-          teacher.correo.toLowerCase().includes(search);
+          teacher.correo.toLowerCase().includes(search) ||
+          teacher.codigoInstitucional.toLowerCase().includes(search);
 
-        const matchesZone = zone === 'Todas' || teacher.zonaAsignada === zone;
+        const matchesRole = role === 'Todas' || teacher.rol === role;
         const matchesStatus = status === 'Todos' || teacher.estado === status;
 
-        return matchesSearch && matchesZone && matchesStatus;
+        return matchesSearch && matchesRole && matchesStatus;
       });
 
       renderStats(filtered);
       renderTable(filtered);
     }
 
+    async function loadTeachers() {
+      try {
+        const docentes = await ApiServices.docenteService.obtenerTodos();
+        teachers = docentes.map(normalizeTeacher);
+        applyFilters();
+      } catch (error) {
+        alert(`No se pudieron cargar los profesores: ${error.message}`);
+      }
+    }
+
+    async function createTeacher() {
+      const nombre = prompt('Nombre del profesor:');
+      if (nombre === null) return;
+
+      const email = prompt('Correo institucional del profesor:');
+      if (email === null) return;
+
+      const codigoInstitucional = prompt('Código institucional:');
+      if (codigoInstitucional === null) return;
+
+      const rol = prompt('Rol del usuario (ADMIN o DOCENTE):', 'DOCENTE');
+      if (rol === null) return;
+
+      const activoInput = prompt('¿Cuenta activa? (si/no):', 'si');
+      if (activoInput === null) return;
+
+      if (!nombre.trim() || !email.trim() || !codigoInstitucional.trim()) {
+        alert('Nombre, correo y código institucional son obligatorios.');
+        return;
+      }
+
+      const activo = activoInput.trim().toLowerCase() !== 'no';
+
+      try {
+        const usuarioCreado = await ApiServices.usuarioService.crear({
+          nombre: nombre.trim(),
+          email: email.trim(),
+          password: 'temporal123',
+          rol: rol.trim().toUpperCase(),
+          activo
+        });
+
+        await ApiServices.docenteService.crear({
+          codigoInstitucional: codigoInstitucional.trim(),
+          usuario: { id: usuarioCreado.id }
+        });
+
+        await loadTeachers();
+      } catch (error) {
+        alert(`No se pudo crear el profesor: ${error.message}`);
+      }
+    }
+
+    async function editTeacher(id) {
+      const teacher = teachers.find(t => t.id === id);
+      if (!teacher || !teacher.usuarioId) return;
+
+      const nombre = prompt('Editar nombre:', teacher.nombre);
+      if (nombre === null) return;
+
+      const email = prompt('Editar correo institucional:', teacher.correo);
+      if (email === null) return;
+
+      const codigoInstitucional = prompt('Editar código institucional:', teacher.codigoInstitucional);
+      if (codigoInstitucional === null) return;
+
+      const rol = prompt('Editar rol (ADMIN o DOCENTE):', teacher.rol);
+      if (rol === null) return;
+
+      const activoInput = prompt('¿Cuenta activa? (si/no):', teacher.activo ? 'si' : 'no');
+      if (activoInput === null) return;
+
+      if (!nombre.trim() || !email.trim() || !codigoInstitucional.trim()) {
+        alert('Nombre, correo y código institucional son obligatorios.');
+        return;
+      }
+
+      const activo = activoInput.trim().toLowerCase() !== 'no';
+
+      try {
+        await ApiServices.usuarioService.actualizar(teacher.usuarioId, {
+          nombre: nombre.trim(),
+          email: email.trim(),
+          rol: rol.trim().toUpperCase(),
+          activo
+        });
+
+        await ApiServices.docenteService.actualizar(id, {
+          codigoInstitucional: codigoInstitucional.trim(),
+          usuario: { id: teacher.usuarioId }
+        });
+
+        await loadTeachers();
+        teacherOverlay.classList.add('hidden');
+        teacherOverlay.classList.remove('teacher-overlay-flex');
+      } catch (error) {
+        alert(`No se pudo actualizar el profesor: ${error.message}`);
+      }
+    }
+
+    async function toggleTeacher(id) {
+      const teacher = teachers.find(t => t.id === id);
+      if (!teacher || !teacher.usuarioId) return;
+
+      try {
+        await ApiServices.usuarioService.actualizar(teacher.usuarioId, {
+          nombre: teacher.nombre,
+          email: teacher.correo,
+          rol: teacher.rol,
+          activo: !teacher.activo
+        });
+
+        await loadTeachers();
+        const refreshed = teachers.find(t => t.id === id);
+        if (refreshed) renderTeacherPanel(refreshed);
+      } catch (error) {
+        alert(`No se pudo cambiar el estado del profesor: ${error.message}`);
+      }
+    }
+
+    async function deleteTeacher(id) {
+      const ok = confirm('¿Estás seguro de que deseas eliminar este profesor?');
+      if (!ok) return;
+
+      try {
+        await ApiServices.docenteService.eliminar(id);
+        await loadTeachers();
+        teacherOverlay.classList.add('hidden');
+        teacherOverlay.classList.remove('teacher-overlay-flex');
+      } catch (error) {
+        alert(`No se pudo eliminar el profesor: ${error.message}`);
+      }
+    }
+
     teacherSearch.addEventListener('input', applyFilters);
-    zoneFilter.addEventListener('change', applyFilters);
+    roleFilter.addEventListener('change', applyFilters);
     statusFilter.addEventListener('change', applyFilters);
 
     closeTeacherPanel.addEventListener('click', () => {
@@ -378,16 +519,13 @@
       }
     });
 
-    document.getElementById('addTeacherBtn').addEventListener('click', () => {
-      alert('Abriendo formulario para agregar nuevo profesor...');
-    });
+    document.getElementById('addTeacherBtn').addEventListener('click', createTeacher);
 
     document.getElementById('exportTeachersBtn').addEventListener('click', () => {
       alert('Exportando lista de profesores... Esta funcionalidad generaría un archivo CSV o Excel con todos los datos.');
     });
 
-    renderStats(teachers);
-    renderTable(teachers);
+    loadTeachers();
   </script>
 </body>
 </html>

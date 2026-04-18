@@ -13,13 +13,13 @@
   <div class="page">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo">
         <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
       </div>
 
       <div class="profile-box">
         <span>Admin. Patricia Flores</span>
-        <a href="perfil-cuenta.html" class="profile-avatar profile-avatar-admin">👤</a>
+        <a th:href="@{/mi-perfil}" class="profile-avatar profile-avatar-admin">👤</a>
       </div>
     </nav>
 
@@ -45,36 +45,36 @@
                 <div class="admin-stat-icon bg-navy">📍</div>
                 <span class="admin-trend orange-text">↗</span>
               </div>
-              <h3 id="zonesStatTotal">8</h3>
-              <p>Zonas totales</p>
-            </article>
+	              <h3 id="zonesStatTotal">0</h3>
+	              <p>Zonas totales</p>
+	            </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
                 <div class="admin-stat-icon bg-green">✔</div>
-                <span class="admin-trend green-text" id="zonesStatCompletePct">50%</span>
-              </div>
-              <h3 id="zonesStatComplete">4</h3>
-              <p>Cobertura completa</p>
-            </article>
+	                <span class="admin-trend green-text" id="zonesStatCompletePct">0%</span>
+	              </div>
+	              <h3 id="zonesStatComplete">0</h3>
+	              <p>Con descripción</p>
+	            </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
                 <div class="admin-stat-icon bg-yellow">⚠</div>
-                <span class="admin-trend orange-text" id="zonesStatPartialPct">25%</span>
-              </div>
-              <h3 id="zonesStatPartial">2</h3>
-              <p>Cobertura parcial</p>
-            </article>
+	                <span class="admin-trend orange-text" id="zonesStatPartialPct">0%</span>
+	              </div>
+	              <h3 id="zonesStatPartial">0</h3>
+	              <p>Sin descripción</p>
+	            </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
                 <div class="admin-stat-icon bg-red">⚠</div>
-                <span class="admin-trend red-text" id="zonesStatNonePct">25%</span>
-              </div>
-              <h3 id="zonesStatNone">2</h3>
-              <p>Sin cobertura</p>
-            </article>
+	                <span class="admin-trend red-text" id="zonesStatNonePct">0%</span>
+	              </div>
+	              <h3 id="zonesStatNone">0</h3>
+	              <p>Resultados visibles</p>
+	            </article>
           </div>
         </section>
 
@@ -95,35 +95,29 @@
               </div>
 
               <div class="filter-field">
-                <label for="responsableZoneFilter">Responsable</label>
-                <select id="responsableZoneFilter">
-                  <option value="Todos">Todos</option>
-                  <option value="Prof. Carmen Ruiz">Prof. Carmen Ruiz</option>
-                  <option value="Prof. Roberto Silva">Prof. Roberto Silva</option>
-                  <option value="Prof. Laura Pérez">Prof. Laura Pérez</option>
-                  <option value="Prof. Ana Martínez">Prof. Ana Martínez</option>
-                  <option value="Prof. Carlos Mendoza">Prof. Carlos Mendoza</option>
-                  <option value="Prof. María González">Prof. María González</option>
-                  <option value="Sin asignar">Sin asignar</option>
-                </select>
-              </div>
+	                <label for="descriptionFilter">Descripción</label>
+	                <select id="descriptionFilter">
+	                  <option value="Todas">Todas</option>
+	                  <option value="Con descripción">Con descripción</option>
+	                  <option value="Sin descripción">Sin descripción</option>
+	                </select>
+	              </div>
 
-              <div class="filter-field">
-                <label for="coverageFilter">Cobertura</label>
-                <select id="coverageFilter">
-                  <option value="Todas">Todas</option>
-                  <option value="Completa">Completa</option>
-                  <option value="Parcial">Parcial</option>
-                  <option value="Sin cobertura">Sin cobertura</option>
-                </select>
-              </div>
-            </div>
+	              <div class="filter-field">
+	                <label for="sortFilter">Orden</label>
+	                <select id="sortFilter">
+	                  <option value="Todas">Todas</option>
+	                  <option value="Nombre A-Z">Nombre A-Z</option>
+	                  <option value="Nombre Z-A">Nombre Z-A</option>
+	                </select>
+	              </div>
+	            </div>
           </div>
         </section>
 
         <section class="section">
           <div class="teachers-table-head">
-            <h2 id="zonesTableTitle">Listado de Zonas (8)</h2>
+	            <h2 id="zonesTableTitle">Listado de Zonas (0)</h2>
             <button id="exportZonesBtn" class="teachers-export-btn">⬇ Exportar</button>
           </div>
 
@@ -134,10 +128,10 @@
                   <tr>
                     <th>Zona</th>
                     <th>Descripción</th>
-                    <th>Responsable</th>
-                    <th>Cobertura</th>
-                    <th>Acciones</th>
-                  </tr>
+	                    <th>ID</th>
+	                    <th>Estado descripción</th>
+	                    <th>Acciones</th>
+	                  </tr>
                 </thead>
                 <tbody id="zonesTableBody"></tbody>
               </table>
@@ -163,30 +157,31 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
 
-  <script>
-    const zones = [
-      { id: 1, nombre: 'Biblioteca', descripcion: 'Área de lectura y estudio, incluye sala de computación', responsable: 'Prof. Carmen Ruiz', cobertura: 'Completa', puntosControl: 4, capacidad: 60 },
-      { id: 2, nombre: 'Patio Principal', descripcion: 'Zona de recreación principal durante los descansos', responsable: 'Prof. Roberto Silva', cobertura: 'Completa', puntosControl: 6, capacidad: 200 },
-      { id: 3, nombre: 'Cafetería', descripcion: 'Área de alimentación y servicio de comedor escolar', responsable: 'Prof. Laura Pérez', cobertura: 'Parcial', puntosControl: 3, capacidad: 100 },
-      { id: 4, nombre: 'Entrada Principal', descripcion: 'Control de acceso principal del colegio', responsable: 'Sin asignar', cobertura: 'Sin cobertura', puntosControl: 2, capacidad: 50 },
-      { id: 5, nombre: 'Zona de Juegos', descripcion: 'Área recreativa para estudiantes de primaria', responsable: 'Prof. Ana Martínez', cobertura: 'Completa', puntosControl: 5, capacidad: 80 },
-      { id: 6, nombre: 'Pasillo Académico', descripcion: 'Corredor principal que conecta las aulas de clase', responsable: 'Prof. Carlos Mendoza', cobertura: 'Parcial', puntosControl: 8, capacidad: 150 },
-      { id: 7, nombre: 'Laboratorio de Ciencias', descripcion: 'Área de prácticas científicas y experimentación', responsable: 'Prof. María González', cobertura: 'Completa', puntosControl: 3, capacidad: 40 },
-      { id: 8, nombre: 'Cancha Deportiva', descripcion: 'Espacio para actividades deportivas y educación física', responsable: 'Sin asignar', cobertura: 'Sin cobertura', puntosControl: 4, capacidad: 120 }
-    ];
-
-    const zoneSearch = document.getElementById('zoneSearch');
-    const responsableZoneFilter = document.getElementById('responsableZoneFilter');
-    const coverageFilter = document.getElementById('coverageFilter');
-    const zonesTableBody = document.getElementById('zonesTableBody');
-    const zonesTableTitle = document.getElementById('zonesTableTitle');
+	  <script src="/js/api/ApiClient.js"></script>
+	  <script src="/js/api/TurnoService.js"></script>
+	  <script src="/js/api/UsuarioService.js"></script>
+	  <script src="/js/api/DocenteService.js"></script>
+	  <script src="/js/api/ZonaService.js"></script>
+	  <script src="/js/api/AsignacionTurnoService.js"></script>
+	  <script src="/js/api/IncidenteService.js"></script>
+	  <script src="/js/api/CheckpointService.js"></script>
+	  <script src="/js/api/RecorridoService.js"></script>
+	  <script src="/js/api/ReasignacionService.js"></script>
+	  <script src="/js/api/ApiServices.js"></script>
+	  <script>
+	    let zones = [];
+	    const zoneSearch = document.getElementById('zoneSearch');
+	    const descriptionFilter = document.getElementById('descriptionFilter');
+	    const sortFilter = document.getElementById('sortFilter');
+	    const zonesTableBody = document.getElementById('zonesTableBody');
+	    const zonesTableTitle = document.getElementById('zonesTableTitle');
 
     const zoneOverlay = document.getElementById('zoneOverlay');
     const zonePanelContent = document.getElementById('zonePanelContent');
@@ -200,94 +195,79 @@
     const zonesStatPartialPct = document.getElementById('zonesStatPartialPct');
     const zonesStatNonePct = document.getElementById('zonesStatNonePct');
 
-    function coverageBadgeClass(cobertura) {
-      if (cobertura === 'Completa') return 'request-accepted';
-      if (cobertura === 'Parcial') return 'request-pending';
-      return 'request-rejected';
-    }
+	    function descriptionStatus(zone) {
+	      return zone.descripcion && zone.descripcion.trim() ? 'Con descripción' : 'Sin descripción';
+	    }
 
-    function renderZoneStats(data) {
-      const total = data.length;
-      const completa = data.filter(z => z.cobertura === 'Completa').length;
-      const parcial = data.filter(z => z.cobertura === 'Parcial').length;
-      const sinCobertura = data.filter(z => z.cobertura === 'Sin cobertura').length;
+	    function statusBadgeClass(status) {
+	      if (status === 'Con descripción') return 'request-accepted';
+	      return 'request-rejected';
+	    }
 
-      zonesStatTotal.textContent = total;
-      zonesStatComplete.textContent = completa;
-      zonesStatPartial.textContent = parcial;
-      zonesStatNone.textContent = sinCobertura;
-      zonesStatCompletePct.textContent = total ? Math.round((completa / total) * 100) + '%' : '0%';
-      zonesStatPartialPct.textContent = total ? Math.round((parcial / total) * 100) + '%' : '0%';
-      zonesStatNonePct.textContent = total ? Math.round((sinCobertura / total) * 100) + '%' : '0%';
-    }
+	    function renderZoneStats(data) {
+	      const total = data.length;
+	      const conDescripcion = data.filter(z => descriptionStatus(z) === 'Con descripción').length;
+	      const sinDescripcion = data.filter(z => descriptionStatus(z) === 'Sin descripción').length;
 
-    function renderZonePanel(zone) {
-      const coverageBadge = coverageBadgeClass(zone.cobertura);
+	      zonesStatTotal.textContent = total;
+	      zonesStatComplete.textContent = conDescripcion;
+	      zonesStatPartial.textContent = sinDescripcion;
+	      zonesStatNone.textContent = total;
+	      zonesStatCompletePct.textContent = total ? Math.round((conDescripcion / total) * 100) + '%' : '0%';
+	      zonesStatPartialPct.textContent = total ? Math.round((sinDescripcion / total) * 100) + '%' : '0%';
+	      zonesStatNonePct.textContent = '100%';
+	    }
 
-      zonePanelContent.innerHTML = `
-        <div class="teacher-panel-profile">
-          <div class="teacher-panel-avatar">📍</div>
-          <h3>${zone.nombre}</h3>
-          <span class="request-badge ${coverageBadge}">${zone.cobertura}</span>
-        </div>
+	    function renderZonePanel(zone) {
+	      const status = descriptionStatus(zone);
+	      const statusBadge = statusBadgeClass(status);
 
-        <div class="teacher-info-stack">
-          <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>🏢</span><span>Descripción</span></div>
-            <p>${zone.descripcion}</p>
-          </div>
+	      zonePanelContent.innerHTML = `
+	        <div class="teacher-panel-profile">
+	          <div class="teacher-panel-avatar">📍</div>
+	          <h3>${zone.nombre}</h3>
+	          <span class="request-badge ${statusBadge}">${status}</span>
+	        </div>
 
-          <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>👤</span><span>Responsable asignado</span></div>
-            <p>${zone.responsable}</p>
-          </div>
+	        <div class="teacher-info-stack">
+	          <div class="teacher-info-box">
+	            <div class="teacher-info-label"><span>#️⃣</span><span>ID</span></div>
+	            <p>${zone.id}</p>
+	          </div>
 
-          <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>🎯</span><span>Puntos de control</span></div>
-            <p>${zone.puntosControl} puntos activos</p>
-          </div>
+	          <div class="teacher-info-box">
+	            <div class="teacher-info-label"><span>🏢</span><span>Descripción</span></div>
+	            <p>${zone.descripcion || 'Sin descripción registrada'}</p>
+	          </div>
 
-          <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>👥</span><span>Capacidad máxima</span></div>
-            <p>${zone.capacidad} estudiantes</p>
-          </div>
-        </div>
+	          <div class="teacher-info-box">
+	            <div class="teacher-info-label"><span>📋</span><span>Estado</span></div>
+	            <p>${status}</p>
+	          </div>
+	        </div>
 
-        <div class="teacher-history-section">
-          <h4>Estadísticas de Actividad</h4>
+	        <div class="teacher-panel-actions">
+	          <button class="btn btn-primary teacher-panel-btn" data-panel-action="edit" data-id="${zone.id}">✎ Editar zona</button>
+	          <button class="teacher-secondary-btn" data-panel-action="delete" data-id="${zone.id}">🗑 Eliminar zona</button>
+	        </div>
+	      `;
 
-          <div class="teacher-info-box">
-            <div class="teacher-metric-row">
-              <span class="teacher-metric-label">Turnos esta semana</span>
-              <span class="teacher-metric-value">12</span>
-            </div>
-          </div>
+	      zonePanelContent.querySelectorAll('[data-panel-action]').forEach(btn => {
+	        btn.addEventListener('click', async (e) => {
+	          e.stopPropagation();
+	          const id = Number(btn.dataset.id);
+	          if (btn.dataset.panelAction === 'edit') {
+	            await editZone(id);
+	          }
+	          if (btn.dataset.panelAction === 'delete') {
+	            await deleteZone(id);
+	          }
+	        });
+	      });
+	    }
 
-          <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>🕒</span><span>Último registro</span></div>
-            <p>Hoy, 10:30 AM - Punto de control #2</p>
-          </div>
-
-          <div class="teacher-info-box">
-            <div class="teacher-metric-row">
-              <span class="teacher-metric-label">Cobertura promedio</span>
-              <span class="teacher-metric-value">94%</span>
-            </div>
-            <div class="teacher-progress">
-              <div class="teacher-progress-bar" style="width:94%; background:rgb(40, 167, 69);"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="teacher-panel-actions">
-          <button class="btn btn-primary teacher-panel-btn">✎ Editar zona</button>
-          <button class="teacher-secondary-btn">🎯 Ver puntos de control</button>
-        </div>
-      `;
-    }
-
-    function renderZonesTable(data) {
-      zonesTableTitle.textContent = `Listado de Zonas (${data.length})`;
+	    function renderZonesTable(data) {
+	      zonesTableTitle.textContent = `Listado de Zonas (${data.length})`;
 
       zonesTableBody.innerHTML = data.map(zone => `
         <tr class="table-row-hover zone-row" data-id="${zone.id}">
@@ -296,19 +276,19 @@
               <span class="zone-icon">📍</span>
               <span class="action-title">${zone.nombre}</span>
             </div>
-          </td>
-          <td><span>${zone.descripcion}</span></td>
-          <td>
-            <div class="action-cell">
-              <span class="teacher-muted-icon">👤</span>
-              <span>${zone.responsable}</span>
-            </div>
-          </td>
-          <td>
-            <span class="request-badge ${coverageBadgeClass(zone.cobertura)}">${zone.cobertura}</span>
-          </td>
-          <td>
-            <div class="teacher-actions">
+	          </td>
+	          <td><span>${zone.descripcion || 'Sin descripción'}</span></td>
+	          <td>
+	            <div class="action-cell">
+	              <span class="teacher-muted-icon">#️⃣</span>
+	              <span>${zone.id}</span>
+	            </div>
+	          </td>
+	          <td>
+	            <span class="request-badge ${statusBadgeClass(descriptionStatus(zone))}">${descriptionStatus(zone)}</span>
+	          </td>
+	          <td>
+	            <div class="teacher-actions">
               <button class="mini-action-btn bg-orange" data-action="edit" data-id="${zone.id}" title="Editar">✎</button>
               <button class="mini-action-btn bg-red" data-action="delete" data-id="${zone.id}" title="Eliminar">🗑</button>
             </div>
@@ -328,47 +308,126 @@
         });
       });
 
-      document.querySelectorAll('.mini-action-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const action = btn.dataset.action;
-          const id = btn.dataset.id;
+	      document.querySelectorAll('.mini-action-btn').forEach(btn => {
+	        btn.addEventListener('click', async (e) => {
+	          e.stopPropagation();
+	          const action = btn.dataset.action;
+	          const id = Number(btn.dataset.id);
 
-          if (action === 'edit') alert(`Abriendo formulario para editar zona ID: ${id}...`);
-          if (action === 'delete') {
-            const ok = confirm('¿Estás seguro de que deseas eliminar esta zona? Esta acción no se puede deshacer.');
-            if (ok) alert(`Zona ID ${id} eliminada (demo).`);
-          }
-        });
-      });
-    }
+	          if (action === 'edit') {
+	            await editZone(id);
+	          }
+	          if (action === 'delete') {
+	            await deleteZone(id);
+	          }
+	        });
+	      });
+	    }
 
-    function applyZoneFilters() {
-      const search = zoneSearch.value.toLowerCase().trim();
-      const responsable = responsableZoneFilter.value;
-      const cobertura = coverageFilter.value;
+	    function applyZoneFilters() {
+	      const search = zoneSearch.value.toLowerCase().trim();
+	      const description = descriptionFilter.value;
+	      const sort = sortFilter.value;
 
-      const filtered = zones.filter(zone => {
-        const matchesSearch =
-          zone.nombre.toLowerCase().includes(search) ||
-          zone.descripcion.toLowerCase().includes(search);
+	      const filtered = zones.filter(zone => {
+	        const matchesSearch =
+	          zone.nombre.toLowerCase().includes(search) ||
+	          (zone.descripcion || '').toLowerCase().includes(search);
 
-        const matchesResponsable = responsable === 'Todos' || zone.responsable === responsable;
-        const matchesCobertura = cobertura === 'Todas' || zone.cobertura === cobertura;
+	        const status = descriptionStatus(zone);
+	        const matchesDescription = description === 'Todas' || status === description;
 
-        return matchesSearch && matchesResponsable && matchesCobertura;
-      });
+	        return matchesSearch && matchesDescription;
+	      }).sort((a, b) => {
+	        if (sort === 'Nombre A-Z') return a.nombre.localeCompare(b.nombre);
+	        if (sort === 'Nombre Z-A') return b.nombre.localeCompare(a.nombre);
+	        return 0;
+	      });
 
-      renderZoneStats(filtered);
-      renderZonesTable(filtered);
-    }
+	      renderZoneStats(filtered);
+	      renderZonesTable(filtered);
+	    }
 
-    zoneSearch.addEventListener('input', applyZoneFilters);
-    responsableZoneFilter.addEventListener('change', applyZoneFilters);
-    coverageFilter.addEventListener('change', applyZoneFilters);
+	    async function loadZones() {
+	      try {
+	        zones = await ApiServices.zonaService.obtenerTodas();
+	        applyZoneFilters();
+	      } catch (error) {
+	        alert(`No se pudieron cargar las zonas: ${error.message}`);
+	      }
+	    }
 
-    closeZonePanel.addEventListener('click', () => {
-      zoneOverlay.classList.add('hidden');
+	    async function createZone() {
+	      const nombre = prompt('Nombre de la zona:');
+	      if (nombre === null) return;
+
+	      const descripcion = prompt('Descripción de la zona:', '');
+	      if (descripcion === null) return;
+
+	      if (!nombre.trim()) {
+	        alert('El nombre es obligatorio.');
+	        return;
+	      }
+
+	      try {
+	        await ApiServices.zonaService.crear({
+	          nombre: nombre.trim(),
+	          descripcion: descripcion.trim()
+	        });
+	        await loadZones();
+	      } catch (error) {
+	        alert(`No se pudo crear la zona: ${error.message}`);
+	      }
+	    }
+
+	    async function editZone(id) {
+	      const zone = zones.find(z => z.id === id);
+	      if (!zone) return;
+
+	      const nombre = prompt('Editar nombre de la zona:', zone.nombre);
+	      if (nombre === null) return;
+
+	      const descripcion = prompt('Editar descripción de la zona:', zone.descripcion || '');
+	      if (descripcion === null) return;
+
+	      if (!nombre.trim()) {
+	        alert('El nombre es obligatorio.');
+	        return;
+	      }
+
+	      try {
+	        await ApiServices.zonaService.actualizar(id, {
+	          nombre: nombre.trim(),
+	          descripcion: descripcion.trim()
+	        });
+	        await loadZones();
+	        zoneOverlay.classList.add('hidden');
+	        zoneOverlay.classList.remove('teacher-overlay-flex');
+	      } catch (error) {
+	        alert(`No se pudo actualizar la zona: ${error.message}`);
+	      }
+	    }
+
+	    async function deleteZone(id) {
+	      const ok = confirm('¿Estás seguro de que deseas eliminar esta zona? Esta acción no se puede deshacer.');
+	      if (!ok) return;
+
+	      try {
+	        await ApiServices.zonaService.eliminar(id);
+	        await loadZones();
+	        zoneOverlay.classList.add('hidden');
+	        zoneOverlay.classList.remove('teacher-overlay-flex');
+	      } catch (error) {
+	        alert(`No se pudo eliminar la zona: ${error.message}`);
+	      }
+	    }
+
+	    zoneSearch.addEventListener('input', applyZoneFilters);
+	    descriptionFilter.addEventListener('change', applyZoneFilters);
+	    sortFilter.addEventListener('change', applyZoneFilters);
+
+	    closeZonePanel.addEventListener('click', () => {
+	      zoneOverlay.classList.add('hidden');
       zoneOverlay.classList.remove('teacher-overlay-flex');
     });
 
@@ -379,16 +438,13 @@
       }
     });
 
-    document.getElementById('addZoneBtn').addEventListener('click', () => {
-      alert('Abriendo formulario para agregar nueva zona...');
-    });
+	    document.getElementById('addZoneBtn').addEventListener('click', createZone);
 
-    document.getElementById('exportZonesBtn').addEventListener('click', () => {
-      alert('Exportando lista de zonas... Esta funcionalidad generaría un archivo CSV o Excel con todos los datos.');
-    });
+	    document.getElementById('exportZonesBtn').addEventListener('click', () => {
+	      alert('Exportando lista de zonas... Esta funcionalidad generaría un archivo CSV o Excel con todos los datos.');
+	    });
 
-    renderZoneStats(zones);
-    renderZonesTable(zones);
-  </script>
+	    loadZones();
+	  </script>
 </body>
 </html>

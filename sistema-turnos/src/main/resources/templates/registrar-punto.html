@@ -13,13 +13,13 @@
   <div class="page">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo">
         <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
       </div>
 
       <div class="profile-box">
         <span>Prof. María González</span>
-        <a href="perfil-profesor.html" class="profile-avatar">👤</a>
+        <a th:href="@{/mi-perfil-profesor}" class="profile-avatar">👤</a>
       </div>
     </nav>
 
@@ -46,26 +46,18 @@
             <div class="checkpoint-summary-grid checkpoint-summary-grid-4">
               <div class="checkpoint-summary-item">
                 <div class="checkpoint-summary-label">
-                  <span class="checkpoint-mini-icon">📍</span>
-                  <span>Zona asignada</span>
+                  <span class="checkpoint-mini-icon">#</span>
+                  <span>Asignación</span>
                 </div>
-                <p>Patio Principal</p>
+                <p id="summaryAsignacion">Sin seleccionar</p>
               </div>
 
               <div class="checkpoint-summary-item">
                 <div class="checkpoint-summary-label">
                   <span class="checkpoint-mini-icon">🕒</span>
-                  <span>Hora de inicio</span>
+                  <span>Turno asociado</span>
                 </div>
-                <p>14:00</p>
-              </div>
-
-              <div class="checkpoint-summary-item">
-                <div class="checkpoint-summary-label">
-                  <span class="checkpoint-mini-icon">🕒</span>
-                  <span>Hora actual</span>
-                </div>
-                <p>14:35</p>
+                <p id="summaryTurno">Sin seleccionar</p>
               </div>
 
               <div class="checkpoint-summary-item">
@@ -73,7 +65,15 @@
                   <span class="checkpoint-mini-icon">✔</span>
                   <span>Estado del turno</span>
                 </div>
-                <span class="checkpoint-status-badge">Activo</span>
+                <span id="summaryEstado" class="checkpoint-status-badge">Sin seleccionar</span>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">⏱</span>
+                  <span>Hora check-in</span>
+                </div>
+                <p id="summaryCheckin">No registrada</p>
               </div>
             </div>
           </div>
@@ -85,26 +85,37 @@
           <div class="checkpoint-form-card">
             <form id="checkpointForm" class="checkpoint-form">
               <div class="checkpoint-field">
-                <label for="pin">
+                <label for="assignmentSelect">
                   <div class="checkpoint-label-row">
-                    <span class="checkpoint-big-icon">📷</span>
+                    <span class="checkpoint-big-icon">🕒</span>
                     <div>
-                      <div class="checkpoint-main-label">PIN del punto de control</div>
+                      <div class="checkpoint-main-label">Asignación válida</div>
                       <div class="checkpoint-help-text">
-                        Ingresa el código del checkpoint asignado a esta zona.
+                        Selecciona la asignación sobre la que se registrará el recorrido.
                       </div>
                     </div>
                   </div>
                 </label>
-                <input
-                  id="pin"
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="6"
-                  placeholder="000000"
-                  class="checkpoint-pin-input"
-                  required
-                />
+                <select id="assignmentSelect" required>
+                  <option value="">Selecciona una asignación</option>
+                </select>
+              </div>
+
+              <div class="checkpoint-field">
+                <label for="checkpointSelect">
+                  <div class="checkpoint-label-row">
+                    <span class="checkpoint-big-icon">📍</span>
+                    <div>
+                      <div class="checkpoint-main-label">Punto de control</div>
+                      <div class="checkpoint-help-text">
+                        Selecciona un checkpoint real disponible en el sistema.
+                      </div>
+                    </div>
+                  </div>
+                </label>
+                <select id="checkpointSelect" required>
+                  <option value="">Selecciona un checkpoint</option>
+                </select>
               </div>
 
               <div class="checkpoint-field">
@@ -134,60 +145,12 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Ubicación</th>
+                    <th>Checkpoint</th>
                     <th>Hora Registrada</th>
                     <th>Estado</th>
                   </tr>
                 </thead>
-                <tbody id="checkpointTableBody">
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Entrada Patio Principal - Norte</span>
-                      </div>
-                    </td>
-                    <td>14:05</td>
-                    <td>
-                      <div class="checkpoint-status-row">
-                        <span class="green-text">✔</span>
-                        <span class="green-text">Confirmado</span>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Entrada Patio Principal - Sur</span>
-                      </div>
-                    </td>
-                    <td>14:15</td>
-                    <td>
-                      <div class="checkpoint-status-row">
-                        <span class="green-text">✔</span>
-                        <span class="green-text">Confirmado</span>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Zona de Juegos</span>
-                      </div>
-                    </td>
-                    <td>14:25</td>
-                    <td>
-                      <div class="checkpoint-status-row">
-                        <span class="green-text">✔</span>
-                        <span class="green-text">Confirmado</span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
+                <tbody id="checkpointTableBody"></tbody>
               </table>
             </div>
           </div>
@@ -207,58 +170,211 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
 
+  <script src="/js/api/ApiClient.js"></script>
+  <script src="/js/api/TurnoService.js"></script>
+  <script src="/js/api/UsuarioService.js"></script>
+  <script src="/js/api/DocenteService.js"></script>
+  <script src="/js/api/ZonaService.js"></script>
+  <script src="/js/api/AsignacionTurnoService.js"></script>
+  <script src="/js/api/IncidenteService.js"></script>
+  <script src="/js/api/CheckpointService.js"></script>
+  <script src="/js/api/RecorridoService.js"></script>
+  <script src="/js/api/ReasignacionService.js"></script>
+  <script src="/js/api/ApiServices.js"></script>
+
   <script>
+    let assignments = [];
+    let checkpoints = [];
+    let recorridos = [];
+
     const checkpointForm = document.getElementById('checkpointForm');
     const checkpointConfirmation = document.getElementById('checkpointConfirmation');
     const checkpointTableBody = document.getElementById('checkpointTableBody');
-    const pinInput = document.getElementById('pin');
     const notesInput = document.getElementById('notes');
+    const assignmentSelect = document.getElementById('assignmentSelect');
+    const checkpointSelect = document.getElementById('checkpointSelect');
 
-    checkpointForm.addEventListener('submit', function(e) {
+    const summaryAsignacion = document.getElementById('summaryAsignacion');
+    const summaryTurno = document.getElementById('summaryTurno');
+    const summaryEstado = document.getElementById('summaryEstado');
+    const summaryCheckin = document.getElementById('summaryCheckin');
+
+    function formatDateTime(dateTimeString) {
+      if (!dateTimeString) return 'No registrado';
+      const d = new Date(dateTimeString);
+      return d.toLocaleString('es-ES');
+    }
+
+    function checkpointName(checkpointId) {
+      const checkpoint = checkpoints.find(c => c.id === checkpointId);
+      return checkpoint ? checkpoint.nombre : `Checkpoint #${checkpointId}`;
+    }
+
+    function renderAssignments() {
+      assignmentSelect.innerHTML = '<option value="">Selecciona una asignación</option>' +
+        assignments.map(a => `
+          <option value="${a.id}">
+            Asignación #${a.id} - Turno #${a.turnoId || 'Sin turno'}
+          </option>
+        `).join('');
+    }
+
+    function renderCheckpoints() {
+      checkpointSelect.innerHTML = '<option value="">Selecciona un checkpoint</option>' +
+        checkpoints.map(c => `
+          <option value="${c.id}">
+            ${c.nombre}
+          </option>
+        `).join('');
+    }
+
+    function updateAssignmentSummary() {
+      const assignmentId = Number(assignmentSelect.value);
+      const assignment = assignments.find(a => a.id === assignmentId);
+
+      if (!assignment) {
+        summaryAsignacion.textContent = 'Sin seleccionar';
+        summaryTurno.textContent = 'Sin seleccionar';
+        summaryEstado.textContent = 'Sin seleccionar';
+        summaryCheckin.textContent = 'No registrada';
+        return;
+      }
+
+      summaryAsignacion.textContent = `#${assignment.id}`;
+      summaryTurno.textContent = assignment.turnoId ? `Turno #${assignment.turnoId}` : 'Sin turno';
+      summaryEstado.textContent = assignment.estadoCobertura || 'Sin estado';
+      summaryCheckin.textContent = formatDateTime(assignment.horaCheckin);
+    }
+
+    function renderRecorridos() {
+      const assignmentId = Number(assignmentSelect.value);
+
+      if (!assignmentId) {
+        checkpointTableBody.innerHTML = `
+          <tr class="mis-row">
+            <td colspan="3">Selecciona una asignación para ver recorridos registrados.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      const filtered = recorridos
+        .filter(r => r.asignacionId === assignmentId)
+        .sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
+
+      if (!filtered.length) {
+        checkpointTableBody.innerHTML = `
+          <tr class="mis-row">
+            <td colspan="3">No hay checkpoints registrados para esta asignación.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      checkpointTableBody.innerHTML = filtered.map(r => `
+        <tr class="mis-row">
+          <td>
+            <div class="zone-cell">
+              <span class="zone-icon">📍</span>
+              <span>${checkpointName(r.checkpointId)}</span>
+            </div>
+          </td>
+          <td>${formatDateTime(r.fechaHora)}</td>
+          <td>
+            <div class="checkpoint-status-row">
+              <span class="green-text">✔</span>
+              <span class="green-text">Confirmado</span>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadData() {
+      try {
+        const [loadedAssignments, loadedCheckpoints] = await Promise.all([
+          ApiServices.asignacionTurnoService.obtenerTodas(),
+          ApiServices.checkpointService.obtenerTodos()
+        ]);
+
+        assignments = loadedAssignments || [];
+        checkpoints = loadedCheckpoints || [];
+
+        renderAssignments();
+        renderCheckpoints();
+        updateAssignmentSummary();
+        renderRecorridos();
+      } catch (error) {
+        alert(`No se pudieron cargar los datos: ${error.message}`);
+      }
+    }
+
+    async function loadRecorridosByAssignment() {
+      const assignmentId = Number(assignmentSelect.value);
+
+      if (!assignmentId) {
+        recorridos = [];
+        renderRecorridos();
+        return;
+      }
+
+      try {
+        recorridos = await ApiServices.recorridoService.obtenerPorAsignacion(assignmentId);
+        renderRecorridos();
+      } catch (error) {
+        alert(`No se pudieron cargar los recorridos: ${error.message}`);
+      }
+    }
+
+    assignmentSelect.addEventListener('change', async function () {
+      updateAssignmentSummary();
+      await loadRecorridosByAssignment();
+    });
+
+    checkpointForm.addEventListener('submit', async function(e) {
       e.preventDefault();
 
-      const newRow = document.createElement('tr');
-      newRow.className = 'mis-row';
-      newRow.innerHTML = `
-        <td>
-          <div class="zone-cell">
-            <span class="zone-icon">📍</span>
-            <span>Zona Central del Patio</span>
-          </div>
-        </td>
-        <td>14:35</td>
-        <td>
-          <div class="checkpoint-status-row">
-            <span class="green-text">✔</span>
-            <span class="green-text">Confirmado</span>
-          </div>
-        </td>
-      `;
+      const asignacionId = Number(assignmentSelect.value);
+      const checkpointId = Number(checkpointSelect.value);
 
-      checkpointTableBody.appendChild(newRow);
+      if (!asignacionId) {
+        alert('Selecciona una asignación válida.');
+        return;
+      }
 
-      checkpointConfirmation.classList.remove('hidden');
-      checkpointConfirmation.classList.add('fade-in');
+      if (!checkpointId) {
+        alert('Selecciona un checkpoint válido.');
+        return;
+      }
 
-      pinInput.value = '';
-      notesInput.value = '';
+      try {
+        await ApiServices.recorridoService.registrarPaso(checkpointId, asignacionId);
 
-      setTimeout(() => {
-        checkpointConfirmation.classList.add('hidden');
-        checkpointConfirmation.classList.remove('fade-in');
-      }, 5000);
+        checkpointConfirmation.classList.remove('hidden');
+        checkpointConfirmation.classList.add('fade-in');
+
+        checkpointSelect.value = '';
+        notesInput.value = '';
+
+        await loadRecorridosByAssignment();
+
+        setTimeout(() => {
+          checkpointConfirmation.classList.add('hidden');
+          checkpointConfirmation.classList.remove('fade-in');
+        }, 5000);
+      } catch (error) {
+        alert(`No se pudo registrar el checkpoint: ${error.message}`);
+      }
     });
 
-    pinInput.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g, '');
-    });
+    loadData();
   </script>
 </body>
 </html>

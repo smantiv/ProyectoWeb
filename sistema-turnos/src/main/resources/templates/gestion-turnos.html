@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestión de Turnos</title>
+  <title>Gestion de Turnos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,13 +13,13 @@
   <div class="page">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo">
         <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
       </div>
 
       <div class="profile-box">
         <span>Admin. Patricia Flores</span>
-        <a href="perfil-cuenta.html" class="profile-avatar profile-avatar-admin">👤</a>
+        <a th:href="@{/mi-perfil}" class="profile-avatar profile-avatar-admin">👤</a>
       </div>
     </nav>
 
@@ -30,9 +30,9 @@
 
       <div class="container">
         <section class="section-header">
-          <h1>Gestión de Turnos</h1>
+          <h1>Gestion de Turnos</h1>
           <p>Programa y organiza los turnos de vigilancia escolar.</p>
-         <br>
+          <br>
         </section>
 
         <button id="addShiftBtn" class="btn btn-primary teachers-add-btn">
@@ -46,35 +46,35 @@
                 <div class="admin-stat-icon bg-navy">🕒</div>
                 <span class="admin-trend orange-text">↗</span>
               </div>
-              <h3 id="shiftsStatTotal">8</h3>
+              <h3 id="shiftsStatTotal">0</h3>
               <p>Turnos totales</p>
             </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
-                <div class="admin-stat-icon bg-blue">📅</div>
-                <span class="admin-trend blue-text" id="shiftsStatScheduledPct">50%</span>
+                <div class="admin-stat-icon bg-blue">✔</div>
+                <span class="admin-trend blue-text" id="shiftsStatCoveredPct">0%</span>
               </div>
-              <h3 id="shiftsStatScheduled">4</h3>
-              <p>Turnos programados</p>
+              <h3 id="shiftsStatCovered">0</h3>
+              <p>Con cobertura</p>
             </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
                 <div class="admin-stat-icon bg-yellow">↻</div>
-                <span class="admin-trend orange-text">!</span>
+                <span class="admin-trend orange-text" id="shiftsStatUncoveredPct">0%</span>
               </div>
-              <h3 id="shiftsStatInProgress">1</h3>
-              <p>Turnos en curso</p>
+              <h3 id="shiftsStatUncovered">0</h3>
+              <p>Sin cobertura</p>
             </article>
 
             <article class="admin-stat-card">
               <div class="admin-stat-top">
-                <div class="admin-stat-icon bg-green">✔</div>
-                <span class="admin-trend green-text" id="shiftsStatCompletedPct">12%</span>
+                <div class="admin-stat-icon bg-green">📍</div>
+                <span class="admin-trend green-text">✔</span>
               </div>
-              <h3 id="shiftsStatCompleted">1</h3>
-              <p>Turnos completados</p>
+              <h3 id="shiftsStatZones">0</h3>
+              <p>Zonas visibles</p>
             </article>
           </div>
         </section>
@@ -83,7 +83,7 @@
           <div class="filter-card">
             <div class="filter-title-row">
               <span class="filter-icon">⚲</span>
-              <h3>Búsqueda y Filtros</h3>
+              <h3>Busqueda y Filtros</h3>
             </div>
 
             <div class="shifts-filter-grid">
@@ -96,26 +96,6 @@
                 <label for="zoneShiftFilter">Zona</label>
                 <select id="zoneShiftFilter">
                   <option value="Todas">Todas</option>
-                  <option value="Biblioteca">Biblioteca</option>
-                  <option value="Patio Principal">Patio Principal</option>
-                  <option value="Cafetería">Cafetería</option>
-                  <option value="Entrada Principal">Entrada Principal</option>
-                  <option value="Zona de Juegos">Zona de Juegos</option>
-                  <option value="Pasillo Académico">Pasillo Académico</option>
-                </select>
-              </div>
-
-              <div class="filter-field">
-                <label for="profesorShiftFilter">Profesor</label>
-                <select id="profesorShiftFilter">
-                  <option value="Todos">Todos</option>
-                  <option value="Prof. Carmen Ruiz">Prof. Carmen Ruiz</option>
-                  <option value="Prof. Roberto Silva">Prof. Roberto Silva</option>
-                  <option value="Prof. Laura Pérez">Prof. Laura Pérez</option>
-                  <option value="Prof. Ana Martínez">Prof. Ana Martínez</option>
-                  <option value="Prof. Carlos Mendoza">Prof. Carlos Mendoza</option>
-                  <option value="Prof. María González">Prof. María González</option>
-                  <option value="Prof. José Ramírez">Prof. José Ramírez</option>
                 </select>
               </div>
 
@@ -123,10 +103,6 @@
                 <label for="estadoShiftFilter">Estado</label>
                 <select id="estadoShiftFilter">
                   <option value="Todos">Todos</option>
-                  <option value="Programado">Programado</option>
-                  <option value="En curso">En curso</option>
-                  <option value="Completado">Completado</option>
-                  <option value="Cancelado">Cancelado</option>
                 </select>
               </div>
             </div>
@@ -135,7 +111,7 @@
 
         <section class="section">
           <div class="teachers-table-head">
-            <h2 id="shiftsTableTitle">Listado de Turnos (8)</h2>
+            <h2 id="shiftsTableTitle">Listado de Turnos (0)</h2>
             <button id="exportShiftsBtn" class="teachers-export-btn">⬇ Exportar</button>
           </div>
 
@@ -147,7 +123,7 @@
                     <th>Fecha</th>
                     <th>Horario</th>
                     <th>Zona</th>
-                    <th>Profesor</th>
+                    <th>Cobertura</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                   </tr>
@@ -176,28 +152,32 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
 
+  <script src="/js/api/ApiClient.js"></script>
+  <script src="/js/api/TurnoService.js"></script>
+  <script src="/js/api/UsuarioService.js"></script>
+  <script src="/js/api/DocenteService.js"></script>
+  <script src="/js/api/ZonaService.js"></script>
+  <script src="/js/api/AsignacionTurnoService.js"></script>
+  <script src="/js/api/IncidenteService.js"></script>
+  <script src="/js/api/CheckpointService.js"></script>
+  <script src="/js/api/RecorridoService.js"></script>
+  <script src="/js/api/ReasignacionService.js"></script>
+  <script src="/js/api/ApiServices.js"></script>
+
   <script>
-    const shifts = [
-      { id: 1, fecha: '2026-03-17', horaInicio: '07:00', horaFin: '09:00', zona: 'Biblioteca', profesor: 'Prof. Carmen Ruiz', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' },
-      { id: 2, fecha: '2026-03-17', horaInicio: '09:00', horaFin: '11:00', zona: 'Patio Principal', profesor: 'Prof. Roberto Silva', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' },
-      { id: 3, fecha: '2026-03-17', horaInicio: '11:00', horaFin: '13:00', zona: 'Cafetería', profesor: 'Prof. Laura Pérez', estado: 'En curso', estadoColor: 'rgb(40, 167, 69)' },
-      { id: 4, fecha: '2026-03-18', horaInicio: '07:00', horaFin: '09:00', zona: 'Entrada Principal', profesor: 'Prof. Ana Martínez', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' },
-      { id: 5, fecha: '2026-03-18', horaInicio: '13:00', horaFin: '15:00', zona: 'Zona de Juegos', profesor: 'Prof. Carlos Mendoza', estado: 'Completado', estadoColor: 'rgb(40, 167, 69)' },
-      { id: 6, fecha: '2026-03-19', horaInicio: '09:00', horaFin: '11:00', zona: 'Pasillo Académico', profesor: 'Prof. María González', estado: 'Cancelado', estadoColor: 'rgb(220, 53, 69)' },
-      { id: 7, fecha: '2026-03-19', horaInicio: '11:00', horaFin: '13:00', zona: 'Biblioteca', profesor: 'Prof. José Ramírez', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' },
-      { id: 8, fecha: '2026-03-20', horaInicio: '07:00', horaFin: '09:00', zona: 'Patio Principal', profesor: 'Prof. Carmen Ruiz', estado: 'Programado', estadoColor: 'rgb(0, 123, 255)' }
-    ];
+    let shifts = [];
+    let zones = [];
+    let assignments = [];
 
     const fechaShiftFilter = document.getElementById('fechaShiftFilter');
     const zoneShiftFilter = document.getElementById('zoneShiftFilter');
-    const profesorShiftFilter = document.getElementById('profesorShiftFilter');
     const estadoShiftFilter = document.getElementById('estadoShiftFilter');
 
     const shiftsTableBody = document.getElementById('shiftsTableBody');
@@ -208,51 +188,114 @@
     const closeShiftPanel = document.getElementById('closeShiftPanel');
 
     const shiftsStatTotal = document.getElementById('shiftsStatTotal');
-    const shiftsStatScheduled = document.getElementById('shiftsStatScheduled');
-    const shiftsStatInProgress = document.getElementById('shiftsStatInProgress');
-    const shiftsStatCompleted = document.getElementById('shiftsStatCompleted');
-    const shiftsStatScheduledPct = document.getElementById('shiftsStatScheduledPct');
-    const shiftsStatCompletedPct = document.getElementById('shiftsStatCompletedPct');
+    const shiftsStatCovered = document.getElementById('shiftsStatCovered');
+    const shiftsStatUncovered = document.getElementById('shiftsStatUncovered');
+    const shiftsStatZones = document.getElementById('shiftsStatZones');
+    const shiftsStatCoveredPct = document.getElementById('shiftsStatCoveredPct');
+    const shiftsStatUncoveredPct = document.getElementById('shiftsStatUncoveredPct');
+
+    function normalizeShift(turno) {
+      return {
+        id: turno.id,
+        fecha: turno.fecha || '',
+        horaInicio: turno.horaInicio ? String(turno.horaInicio).slice(0, 5) : '',
+        horaFin: turno.horaFin ? String(turno.horaFin).slice(0, 5) : '',
+        estado: turno.estado || 'Sin estado',
+        zonaId: turno.zonaId || null
+      };
+    }
+
+    function getZonaNombre(zonaId) {
+      const zona = zones.find(z => z.id === zonaId);
+      return zona ? zona.nombre : 'Sin zona';
+    }
+
+    function getAssignmentForTurno(turnoId) {
+      return assignments.find(a => a.turnoId === turnoId) || null;
+    }
+
+    function getCoverageLabel(turnoId) {
+      const asignacion = getAssignmentForTurno(turnoId);
+      if (!asignacion) return 'Sin cobertura';
+      return asignacion.estadoCobertura || 'Con cobertura';
+    }
+
+    function coverageBadgeClass(turnoId) {
+      const asignacion = getAssignmentForTurno(turnoId);
+      if (!asignacion) return 'request-rejected';
+
+      const estado = (asignacion.estadoCobertura || '').toLowerCase();
+      if (estado.includes('complet')) return 'request-accepted';
+      if (estado.includes('cobert') || estado.includes('asign')) return 'request-programmed';
+      return 'request-programmed';
+    }
 
     function shiftBadgeClass(estado) {
-      if (estado === 'Programado') return 'request-programmed';
-      if (estado === 'En curso') return 'request-accepted';
-      if (estado === 'Completado') return 'request-accepted';
-      return 'request-rejected';
+      const value = String(estado || '').toLowerCase();
+
+      if (value.includes('cancel')) return 'request-rejected';
+      if (value.includes('complet')) return 'request-accepted';
+      if (value.includes('curso')) return 'request-accepted';
+      if (value.includes('asign')) return 'request-programmed';
+      if (value.includes('dispon')) return 'request-programmed';
+      if (value.includes('program')) return 'request-programmed';
+
+      return 'request-programmed';
     }
 
     function formatDate(dateString) {
+      if (!dateString) return 'Sin fecha';
       const d = new Date(dateString + 'T00:00:00');
       return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
     function formatLongDate(dateString) {
+      if (!dateString) return 'Sin fecha';
       const d = new Date(dateString + 'T00:00:00');
       return d.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
     }
 
+    function formatDateTime(dateTimeString) {
+      if (!dateTimeString) return 'No registrado';
+      const d = new Date(dateTimeString);
+      return d.toLocaleString('es-ES');
+    }
+
+    function populateZoneFilter() {
+      zoneShiftFilter.innerHTML = '<option value="Todas">Todas</option>' +
+        zones.map(zone => `<option value="${zone.id}">${zone.nombre}</option>`).join('');
+    }
+
+    function populateEstadoFilter() {
+      const estados = [...new Set(shifts.map(shift => shift.estado).filter(Boolean))];
+      estadoShiftFilter.innerHTML = '<option value="Todos">Todos</option>' +
+        estados.map(estado => `<option value="${estado}">${estado}</option>`).join('');
+    }
+
     function renderShiftStats(data) {
       const total = data.length;
-      const programados = data.filter(s => s.estado === 'Programado').length;
-      const enCurso = data.filter(s => s.estado === 'En curso').length;
-      const completados = data.filter(s => s.estado === 'Completado').length;
+      const covered = data.filter(s => getAssignmentForTurno(s.id)).length;
+      const uncovered = total - covered;
+      const zonasVisibles = new Set(data.map(s => s.zonaId).filter(Boolean)).size;
 
       shiftsStatTotal.textContent = total;
-      shiftsStatScheduled.textContent = programados;
-      shiftsStatInProgress.textContent = enCurso;
-      shiftsStatCompleted.textContent = completados;
-      shiftsStatScheduledPct.textContent = total ? Math.round((programados / total) * 100) + '%' : '0%';
-      shiftsStatCompletedPct.textContent = total ? Math.round((completados / total) * 100) + '%' : '0%';
+      shiftsStatCovered.textContent = covered;
+      shiftsStatUncovered.textContent = uncovered;
+      shiftsStatZones.textContent = zonasVisibles;
+      shiftsStatCoveredPct.textContent = total ? Math.round((covered / total) * 100) + '%' : '0%';
+      shiftsStatUncoveredPct.textContent = total ? Math.round((uncovered / total) * 100) + '%' : '0%';
     }
 
     function renderShiftPanel(shift) {
-      const badgeClass = shiftBadgeClass(shift.estado);
+      const coverage = getCoverageLabel(shift.id);
+      const coverageClass = coverageBadgeClass(shift.id);
+      const assignment = getAssignmentForTurno(shift.id);
 
       shiftPanelContent.innerHTML = `
         <div class="teacher-panel-profile">
           <div class="teacher-panel-avatar">🕒</div>
           <h3>Turno #${shift.id}</h3>
-          <span class="request-badge ${badgeClass}">${shift.estado}</span>
+          <span class="request-badge ${shiftBadgeClass(shift.estado)}">${shift.estado}</span>
         </div>
 
         <div class="teacher-info-stack">
@@ -268,20 +311,41 @@
 
           <div class="teacher-info-box">
             <div class="teacher-info-label"><span>📍</span><span>Zona asignada</span></div>
-            <p>${shift.zona}</p>
+            <p>${getZonaNombre(shift.zonaId)}</p>
           </div>
 
           <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>👤</span><span>Profesor responsable</span></div>
-            <p>${shift.profesor}</p>
+            <div class="teacher-info-label"><span>✔</span><span>Cobertura</span></div>
+            <p><span class="request-badge ${coverageClass}">${coverage}</span></p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>⏱</span><span>Check-in</span></div>
+            <p>${assignment ? formatDateTime(assignment.horaCheckin) : 'No registrado'}</p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>🏁</span><span>Cierre</span></div>
+            <p>${assignment ? formatDateTime(assignment.horaCierre) : 'No registrado'}</p>
           </div>
         </div>
 
         <div class="teacher-panel-actions">
-          <button class="btn btn-primary teacher-panel-btn">✎ Editar turno</button>
-          <button class="teacher-secondary-btn">↻ Reasignar profesor</button>
+          <button class="btn btn-primary teacher-panel-btn" data-panel-action="edit" data-id="${shift.id}">✎ Editar turno</button>
+          <button class="teacher-secondary-btn" data-panel-action="delete" data-id="${shift.id}">🗑 Eliminar turno</button>
         </div>
       `;
+
+      shiftPanelContent.querySelectorAll('[data-panel-action]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.panelAction;
+          const id = Number(btn.dataset.id);
+
+          if (action === 'edit') await editShift(id);
+          if (action === 'delete') await deleteShift(id);
+        });
+      });
     }
 
     function renderShiftsTable(data) {
@@ -304,14 +368,11 @@
           <td>
             <div class="action-cell">
               <span class="teacher-muted-icon navy-text">📍</span>
-              <span>${shift.zona}</span>
+              <span>${getZonaNombre(shift.zonaId)}</span>
             </div>
           </td>
           <td>
-            <div class="action-cell">
-              <span class="teacher-muted-icon">👤</span>
-              <span>${shift.profesor}</span>
-            </div>
+            <span class="request-badge ${coverageBadgeClass(shift.id)}">${getCoverageLabel(shift.id)}</span>
           </td>
           <td>
             <span class="request-badge ${shiftBadgeClass(shift.estado)}">${shift.estado}</span>
@@ -338,16 +399,13 @@
       });
 
       document.querySelectorAll('.mini-action-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
           e.stopPropagation();
           const action = btn.dataset.action;
-          const id = btn.dataset.id;
+          const id = Number(btn.dataset.id);
 
-          if (action === 'edit') alert(`Abriendo formulario para editar turno ID: ${id}...`);
-          if (action === 'delete') {
-            const ok = confirm('¿Estás seguro de que deseas eliminar este turno? Esta acción no se puede deshacer.');
-            if (ok) alert(`Turno ID ${id} eliminado (demo).`);
-          }
+          if (action === 'edit') await editShift(id);
+          if (action === 'delete') await deleteShift(id);
         });
       });
     }
@@ -355,25 +413,138 @@
     function applyShiftFilters() {
       const fecha = fechaShiftFilter.value;
       const zona = zoneShiftFilter.value;
-      const profesor = profesorShiftFilter.value;
       const estado = estadoShiftFilter.value;
 
       const filtered = shifts.filter(shift => {
         const matchesFecha = !fecha || shift.fecha === fecha;
-        const matchesZona = zona === 'Todas' || shift.zona === zona;
-        const matchesProfesor = profesor === 'Todos' || shift.profesor === profesor;
+        const matchesZona = zona === 'Todas' || String(shift.zonaId) === zona;
         const matchesEstado = estado === 'Todos' || shift.estado === estado;
 
-        return matchesFecha && matchesZona && matchesProfesor && matchesEstado;
+        return matchesFecha && matchesZona && matchesEstado;
       });
 
       renderShiftStats(filtered);
       renderShiftsTable(filtered);
     }
 
+    async function loadData() {
+      try {
+        const [turnos, zonas, asignaciones] = await Promise.all([
+          ApiServices.turnoService.obtenerTodos(),
+          ApiServices.zonaService.obtenerTodas(),
+          ApiServices.asignacionTurnoService.obtenerTodas()
+        ]);
+
+        shifts = turnos.map(normalizeShift);
+        zones = zonas || [];
+        assignments = asignaciones || [];
+
+        populateZoneFilter();
+        populateEstadoFilter();
+        applyShiftFilters();
+      } catch (error) {
+        alert(`No se pudieron cargar los turnos: ${error.message}`);
+      }
+    }
+
+    function buildZonePrompt() {
+      if (!zones.length) return 'No hay zonas disponibles.';
+      return zones.map(zone => `${zone.id}: ${zone.nombre}`).join('\n');
+    }
+
+    async function createShift() {
+      const fecha = prompt('Fecha del turno (YYYY-MM-DD):');
+      if (fecha === null) return;
+
+      const horaInicio = prompt('Hora de inicio (HH:mm):');
+      if (horaInicio === null) return;
+
+      const horaFin = prompt('Hora de fin (HH:mm):');
+      if (horaFin === null) return;
+
+      const zonaIdInput = prompt(`Seleccione zona por ID:\n${buildZonePrompt()}`);
+      if (zonaIdInput === null) return;
+
+      const estado = prompt('Estado del turno:', 'disponible');
+      if (estado === null) return;
+
+      if (!fecha.trim() || !horaInicio.trim() || !horaFin.trim() || !zonaIdInput.trim()) {
+        alert('Fecha, hora inicio, hora fin y zona son obligatorios.');
+        return;
+      }
+
+      try {
+        await ApiServices.turnoService.crear({
+          fecha: fecha.trim(),
+          horaInicio: horaInicio.trim(),
+          horaFin: horaFin.trim(),
+          estado: estado.trim(),
+          zonaId: Number(zonaIdInput)
+        });
+
+        await loadData();
+      } catch (error) {
+        alert(`No se pudo crear el turno: ${error.message}`);
+      }
+    }
+
+    async function editShift(id) {
+      const shift = shifts.find(s => s.id === id);
+      if (!shift) return;
+
+      const fecha = prompt('Editar fecha (YYYY-MM-DD):', shift.fecha);
+      if (fecha === null) return;
+
+      const horaInicio = prompt('Editar hora de inicio (HH:mm):', shift.horaInicio);
+      if (horaInicio === null) return;
+
+      const horaFin = prompt('Editar hora de fin (HH:mm):', shift.horaFin);
+      if (horaFin === null) return;
+
+      const zonaIdInput = prompt(`Editar zona por ID:\n${buildZonePrompt()}`, String(shift.zonaId || ''));
+      if (zonaIdInput === null) return;
+
+      const estado = prompt('Editar estado del turno:', shift.estado);
+      if (estado === null) return;
+
+      if (!fecha.trim() || !horaInicio.trim() || !horaFin.trim() || !zonaIdInput.trim()) {
+        alert('Fecha, hora inicio, hora fin y zona son obligatorios.');
+        return;
+      }
+
+      try {
+        await ApiServices.turnoService.actualizar(id, {
+          fecha: fecha.trim(),
+          horaInicio: horaInicio.trim(),
+          horaFin: horaFin.trim(),
+          estado: estado.trim(),
+          zonaId: Number(zonaIdInput)
+        });
+
+        await loadData();
+        shiftOverlay.classList.add('hidden');
+        shiftOverlay.classList.remove('teacher-overlay-flex');
+      } catch (error) {
+        alert(`No se pudo actualizar el turno: ${error.message}`);
+      }
+    }
+
+    async function deleteShift(id) {
+      const ok = confirm('¿Estas seguro de que deseas eliminar este turno? Esta accion no se puede deshacer.');
+      if (!ok) return;
+
+      try {
+        await ApiServices.turnoService.eliminar(id);
+        await loadData();
+        shiftOverlay.classList.add('hidden');
+        shiftOverlay.classList.remove('teacher-overlay-flex');
+      } catch (error) {
+        alert(`No se pudo eliminar el turno: ${error.message}`);
+      }
+    }
+
     fechaShiftFilter.addEventListener('change', applyShiftFilters);
     zoneShiftFilter.addEventListener('change', applyShiftFilters);
-    profesorShiftFilter.addEventListener('change', applyShiftFilters);
     estadoShiftFilter.addEventListener('change', applyShiftFilters);
 
     closeShiftPanel.addEventListener('click', () => {
@@ -388,16 +559,13 @@
       }
     });
 
-    document.getElementById('addShiftBtn').addEventListener('click', () => {
-      alert('Abriendo formulario para programar nuevo turno...');
-    });
+    document.getElementById('addShiftBtn').addEventListener('click', createShift);
 
     document.getElementById('exportShiftsBtn').addEventListener('click', () => {
-      alert('Exportando lista de turnos... Esta funcionalidad generaría un archivo CSV o Excel con todos los datos.');
+      alert('Exportando lista de turnos... Esta funcionalidad permanece visual y no cambia la integracion real.');
     });
 
-    renderShiftStats(shifts);
-    renderShiftsTable(shifts);
+    loadData();
   </script>
 </body>
 </html>
