@@ -175,6 +175,7 @@
     let shifts = [];
     let zones = [];
     let assignments = [];
+    let editingShiftId = null;
 
     const fechaShiftFilter = document.getElementById('fechaShiftFilter');
     const zoneShiftFilter = document.getElementById('zoneShiftFilter');
@@ -210,8 +211,51 @@
       return zona ? zona.nombre : 'Sin zona';
     }
 
+    function renderZoneOptions(selectedZonaId) {
+      return zones.map(zone => `
+        <option value="${zone.id}" ${Number(zone.id) === Number(selectedZonaId) ? 'selected' : ''}>
+          ${zone.nombre}
+        </option>
+      `).join('');
+    }
+
     function getAssignmentForTurno(turnoId) {
       return assignments.find(a => a.turnoId === turnoId) || null;
+    }
+
+    function getEstadoTurno(turno, asignacion) {
+      if (!turno || !turno.fecha || !turno.horaInicio || !turno.horaFin) {
+        return 'pendiente';
+      }
+
+      const horaInicio = String(turno.horaInicio).length === 5
+        ? `${turno.horaInicio}:00`
+        : String(turno.horaInicio).slice(0, 8);
+
+      const horaFin = String(turno.horaFin).length === 5
+        ? `${turno.horaFin}:00`
+        : String(turno.horaFin).slice(0, 8);
+
+      const inicio = new Date(`${turno.fecha}T${horaInicio}`);
+      const fin = new Date(`${turno.fecha}T${horaFin}`);
+      const ahora = new Date();
+
+      const tieneCheckin = Boolean(asignacion?.horaCheckin);
+      const tieneCierre = Boolean(asignacion?.horaCierre);
+
+      if (tieneCierre || ahora >= fin) {
+        return 'cerrado';
+      }
+
+      if (tieneCheckin) {
+        return 'en curso';
+      }
+
+      if (ahora >= inicio && ahora < fin) {
+        return 'por iniciar';
+      }
+
+      return 'pendiente';
     }
 
     function getCoverageLabel(turnoId) {
@@ -233,12 +277,10 @@
     function shiftBadgeClass(estado) {
       const value = String(estado || '').toLowerCase();
 
-      if (value.includes('cancel')) return 'request-rejected';
-      if (value.includes('complet')) return 'request-accepted';
+      if (value.includes('cerrad')) return 'request-rejected';
       if (value.includes('curso')) return 'request-accepted';
-      if (value.includes('asign')) return 'request-programmed';
-      if (value.includes('dispon')) return 'request-programmed';
-      if (value.includes('program')) return 'request-programmed';
+      if (value.includes('iniciar')) return 'request-programmed';
+      if (value.includes('pendiente')) return 'request-pending';
 
       return 'request-programmed';
     }
@@ -290,28 +332,51 @@
       const coverage = getCoverageLabel(shift.id);
       const coverageClass = coverageBadgeClass(shift.id);
       const assignment = getAssignmentForTurno(shift.id);
+      const estadoDinamico = getEstadoTurno(shift, assignment);
+      const isEditing = editingShiftId === shift.id;
 
       shiftPanelContent.innerHTML = `
         <div class="teacher-panel-profile">
           <div class="teacher-panel-avatar">🕒</div>
           <h3>Turno #${shift.id}</h3>
-          <span class="request-badge ${shiftBadgeClass(shift.estado)}">${shift.estado}</span>
+          <span class="request-badge ${shiftBadgeClass(estadoDinamico)}">${estadoDinamico}</span>
         </div>
 
         <div class="teacher-info-stack">
           <div class="teacher-info-box">
             <div class="teacher-info-label"><span>📅</span><span>Fecha</span></div>
-            <p>${formatLongDate(shift.fecha)}</p>
+            ${isEditing
+              ? `<input id="editShiftFecha" type="date" value="${shift.fecha}" class="form-input">`
+              : `<p>${formatLongDate(shift.fecha)}</p>`
+            }
           </div>
 
           <div class="teacher-info-box">
-            <div class="teacher-info-label"><span>🕒</span><span>Horario</span></div>
-            <p>${shift.horaInicio} - ${shift.horaFin}</p>
+            <div class="teacher-info-label"><span>🕒</span><span>Hora de inicio</span></div>
+            ${isEditing
+              ? `<input id="editShiftHoraInicio" type="time" value="${shift.horaInicio}" class="form-input">`
+              : `<p>${shift.horaInicio}</p>`
+            }
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>🕒</span><span>Hora de fin</span></div>
+            ${isEditing
+              ? `<input id="editShiftHoraFin" type="time" value="${shift.horaFin}" class="form-input">`
+              : `<p>${shift.horaFin}</p>`
+            }
           </div>
 
           <div class="teacher-info-box">
             <div class="teacher-info-label"><span>📍</span><span>Zona asignada</span></div>
-            <p>${getZonaNombre(shift.zonaId)}</p>
+            ${isEditing
+              ? `
+                <select id="editShiftZona" class="form-input">
+                  ${renderZoneOptions(shift.zonaId)}
+                </select>
+              `
+              : `<p>${getZonaNombre(shift.zonaId)}</p>`
+            }
           </div>
 
           <div class="teacher-info-box">
@@ -331,8 +396,16 @@
         </div>
 
         <div class="teacher-panel-actions">
-          <button class="btn btn-primary teacher-panel-btn" data-panel-action="edit" data-id="${shift.id}">✎ Editar turno</button>
-          <button class="teacher-secondary-btn" data-panel-action="delete" data-id="${shift.id}">🗑 Eliminar turno</button>
+          ${isEditing
+            ? `
+              <button class="btn btn-primary teacher-panel-btn" data-panel-action="save" data-id="${shift.id}">✔ Guardar cambios</button>
+              <button class="teacher-secondary-btn" data-panel-action="cancel" data-id="${shift.id}">Cancelar</button>
+            `
+            : `
+              <button class="btn btn-primary teacher-panel-btn" data-panel-action="edit" data-id="${shift.id}">✎ Editar turno</button>
+              <button class="teacher-secondary-btn" data-panel-action="delete" data-id="${shift.id}">🗑 Eliminar turno</button>
+            `
+          }
         </div>
       `;
 
@@ -343,6 +416,8 @@
           const id = Number(btn.dataset.id);
 
           if (action === 'edit') await editShift(id);
+          if (action === 'save') await saveShiftInline(id);
+          if (action === 'cancel') cancelShiftEdit(id);
           if (action === 'delete') await deleteShift(id);
         });
       });
@@ -351,40 +426,45 @@
     function renderShiftsTable(data) {
       shiftsTableTitle.textContent = `Listado de Turnos (${data.length})`;
 
-      shiftsTableBody.innerHTML = data.map(shift => `
-        <tr class="table-row-hover shift-row" data-id="${shift.id}">
-          <td>
-            <div class="action-cell">
-              <span class="zone-icon">📅</span>
-              <span class="action-title">${formatDate(shift.fecha)}</span>
-            </div>
-          </td>
-          <td>
-            <div class="action-cell">
-              <span class="teacher-muted-icon">🕒</span>
-              <span>${shift.horaInicio} - ${shift.horaFin}</span>
-            </div>
-          </td>
-          <td>
-            <div class="action-cell">
-              <span class="teacher-muted-icon navy-text">📍</span>
-              <span>${getZonaNombre(shift.zonaId)}</span>
-            </div>
-          </td>
-          <td>
-            <span class="request-badge ${coverageBadgeClass(shift.id)}">${getCoverageLabel(shift.id)}</span>
-          </td>
-          <td>
-            <span class="request-badge ${shiftBadgeClass(shift.estado)}">${shift.estado}</span>
-          </td>
-          <td>
-            <div class="teacher-actions">
-              <button class="mini-action-btn bg-orange" data-action="edit" data-id="${shift.id}" title="Editar">✎</button>
-              <button class="mini-action-btn bg-red" data-action="delete" data-id="${shift.id}" title="Eliminar">🗑</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
+      shiftsTableBody.innerHTML = data.map(shift => {
+        const assignment = getAssignmentForTurno(shift.id);
+        const estadoDinamico = getEstadoTurno(shift, assignment);
+
+        return `
+          <tr class="table-row-hover shift-row" data-id="${shift.id}">
+            <td>
+              <div class="action-cell">
+                <span class="zone-icon">📅</span>
+                <span class="action-title">${formatDate(shift.fecha)}</span>
+              </div>
+            </td>
+            <td>
+              <div class="action-cell">
+                <span class="teacher-muted-icon">🕒</span>
+                <span>${shift.horaInicio} - ${shift.horaFin}</span>
+              </div>
+            </td>
+            <td>
+              <div class="action-cell">
+                <span class="teacher-muted-icon navy-text">📍</span>
+                <span>${getZonaNombre(shift.zonaId)}</span>
+              </div>
+            </td>
+            <td>
+              <span class="request-badge ${coverageBadgeClass(shift.id)}">${getCoverageLabel(shift.id)}</span>
+            </td>
+            <td>
+              <span class="request-badge ${shiftBadgeClass(estadoDinamico)}">${estadoDinamico}</span>
+            </td>
+            <td>
+              <div class="teacher-actions">
+                <button class="mini-action-btn bg-orange" data-action="edit" data-id="${shift.id}" title="Editar">✎</button>
+                <button class="mini-action-btn bg-red" data-action="delete" data-id="${shift.id}" title="Eliminar">🗑</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
 
       document.querySelectorAll('.shift-row').forEach(row => {
         row.addEventListener('click', () => {
@@ -492,22 +572,20 @@
       const shift = shifts.find(s => s.id === id);
       if (!shift) return;
 
-      const fecha = prompt('Editar fecha (YYYY-MM-DD):', shift.fecha);
-      if (fecha === null) return;
+      editingShiftId = id;
+      renderShiftPanel(shift);
+    }
 
-      const horaInicio = prompt('Editar hora de inicio (HH:mm):', shift.horaInicio);
-      if (horaInicio === null) return;
+    async function saveShiftInline(id) {
+      const shift = shifts.find(s => s.id === id);
+      if (!shift) return;
 
-      const horaFin = prompt('Editar hora de fin (HH:mm):', shift.horaFin);
-      if (horaFin === null) return;
+      const fecha = document.getElementById('editShiftFecha')?.value || '';
+      const horaInicio = document.getElementById('editShiftHoraInicio')?.value || '';
+      const horaFin = document.getElementById('editShiftHoraFin')?.value || '';
+      const zonaId = document.getElementById('editShiftZona')?.value || '';
 
-      const zonaIdInput = prompt(`Editar zona por ID:\n${buildZonePrompt()}`, String(shift.zonaId || ''));
-      if (zonaIdInput === null) return;
-
-      const estado = prompt('Editar estado del turno:', shift.estado);
-      if (estado === null) return;
-
-      if (!fecha.trim() || !horaInicio.trim() || !horaFin.trim() || !zonaIdInput.trim()) {
+      if (!fecha.trim() || !horaInicio.trim() || !horaFin.trim() || !zonaId.trim()) {
         alert('Fecha, hora inicio, hora fin y zona son obligatorios.');
         return;
       }
@@ -517,15 +595,29 @@
           fecha: fecha.trim(),
           horaInicio: horaInicio.trim(),
           horaFin: horaFin.trim(),
-          estado: estado.trim(),
-          zonaId: Number(zonaIdInput)
+          estado: shift.estado,
+          zonaId: Number(zonaId)
         });
 
+        editingShiftId = null;
         await loadData();
-        shiftOverlay.classList.add('hidden');
-        shiftOverlay.classList.remove('teacher-overlay-flex');
+
+        const updatedShift = shifts.find(s => s.id === id);
+        if (updatedShift) {
+          renderShiftPanel(updatedShift);
+          shiftOverlay.classList.remove('hidden');
+          shiftOverlay.classList.add('teacher-overlay-flex');
+        }
       } catch (error) {
         alert(`No se pudo actualizar el turno: ${error.message}`);
+      }
+    }
+
+    function cancelShiftEdit(id) {
+      const shift = shifts.find(s => s.id === id);
+      editingShiftId = null;
+      if (shift) {
+        renderShiftPanel(shift);
       }
     }
 

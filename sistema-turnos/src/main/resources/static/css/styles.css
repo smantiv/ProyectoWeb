@@ -1921,15 +1921,17 @@ tbody td:nth-child(3) {
 .teacher-overlay-flex {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  padding: 24px;
 }
 
 .teacher-side-panel {
-  height: 100%;
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
+  max-height: calc(100vh - 48px);
   background: white;
-  box-shadow: -8px 0 24px rgba(0,0,0,0.2);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
   overflow-y: auto;
 }
 
@@ -2112,8 +2114,14 @@ tbody td:nth-child(3) {
     align-items: flex-start;
   }
 
+  .teacher-overlay-flex {
+    padding: 12px;
+  }
+
   .teacher-side-panel {
     max-width: 100%;
+    max-height: calc(100vh - 24px);
+    border-radius: 16px;
   }
 }
 .teacher-secondary-btn {

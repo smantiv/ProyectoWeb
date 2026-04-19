@@ -53,6 +53,18 @@ public class AsignacionTurnoRestController {
         }
     }
 
+    @PostMapping("/{id}/checkin")
+    public ResponseEntity<AsignacionTurnoDTO> registrarCheckin(@PathVariable Long id) {
+        try {
+            AsignacionTurnoDTO asignacionActualizada = asignacionTurnoService.registrarCheckin(id);
+            return asignacionActualizada != null
+                    ? ResponseEntity.ok(asignacionActualizada)
+                    : ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         return asignacionTurnoService.eliminarAsignacion(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
