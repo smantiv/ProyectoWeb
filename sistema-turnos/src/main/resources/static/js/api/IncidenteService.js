@@ -45,16 +45,18 @@ class IncidenteService {
     /**
      * Reportar incidente
      */
-    async reportar(asignacionId, tipo, severidad, descripcion) {
+    async reportar(asignacionId, tipo, severidad, descripcion, ubicacion) {
         return this.crear({
             asignacionId,
             tipo,
             severidad,
             descripcion,
-            fechaHora: new Date().toISOString()
+            ubicacion,
+            fechaHora: new Date().toISOString(),
         });
     }
 }
+
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = IncidenteService;

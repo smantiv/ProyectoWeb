@@ -28,6 +28,7 @@ public class IncidenteService {
         incidente.setDescripcion(incidenteDTO.getDescripcion());
         incidente.setFechaHora(incidenteDTO.getFechaHora());
         incidente.setEstado(incidenteDTO.getEstado());
+        incidente.setUbicacion(incidenteDTO.getUbicacion());
         
 
         if (incidenteDTO.getAsignacionId() != null) {
@@ -123,7 +124,7 @@ public List<IncidenteDTO> obtenerIncidentesPorEstado(String estado) {
     dto.setFechaHora(incidente.getFechaHora());
     dto.setEstado(incidente.getEstado());
     dto.setAsignacionId(asignacionId);
-    dto.setUbicacion(ubicacion);
+    dto.setUbicacion(incidente.getUbicacion());
 
     return dto;
 }

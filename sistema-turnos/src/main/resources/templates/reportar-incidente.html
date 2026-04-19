@@ -332,7 +332,8 @@
           severidad: priorityValue.value,
           descripcion: document.getElementById('description').value.trim(),
           estado: 'reportado',
-          fechaHora: formatLocalDateTimeNow()
+          fechaHora: formatLocalDateTimeNow(),
+          ubicacion: document.getElementById('location').value.trim()
         });
 
         incidentConfirmation.classList.remove('hidden');

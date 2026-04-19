@@ -16,6 +16,7 @@ public class Incidente {
     private String severidad;
     private String descripcion;
     private LocalDateTime fechaHora;
+    private String ubicacion;
  
 
     @ManyToOne
@@ -74,7 +75,12 @@ public class Incidente {
     public void setEstado(String estado) {
         this.estado = estado;
     }
-
+    public String getUbicacion() {
+        return ubicacion;
+    }
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
+    }
    
 
     
