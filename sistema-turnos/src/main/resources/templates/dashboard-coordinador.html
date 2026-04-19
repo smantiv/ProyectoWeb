@@ -306,7 +306,7 @@ async function cargarIncidentesActivos() {
       tabla.innerHTML += `
         <tr class="table-row-hover">
           <td>${inc.tipo ?? "-"}</td>
-          <td>${inc.ubicacion ?? ("Asignación " + (inc.asignacionId ?? "-"))}</td>
+          <td>${inc.ubicacion ?? "-"}</td>
           <td>${inc.fechaHora ? inc.fechaHora.substring(11,16) : "-"}</td>
           <td>${badgeSeveridad(inc.severidad)}</td>
           <td>${badgeEstado(inc.estado)}</td>

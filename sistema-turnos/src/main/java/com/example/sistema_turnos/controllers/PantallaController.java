@@ -114,4 +114,9 @@ public class PantallaController {
     public String contacto() {
         return "contacto";
     }
+
+    @GetMapping("/detalle-turno")
+    public String detalleTurno() {
+    return "detalle-turno";
+    }
 }

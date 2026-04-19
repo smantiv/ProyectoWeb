@@ -16,6 +16,7 @@ public class Incidente {
     private String severidad;
     private String descripcion;
     private LocalDateTime fechaHora;
+ 
 
     @ManyToOne
     @JoinColumn(name = "asignacion_id")
@@ -74,4 +75,7 @@ public class Incidente {
         this.estado = estado;
     }
 
+   
+
+    
 }
