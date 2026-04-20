@@ -40,8 +40,9 @@ class AsignacionTurnoService {
     /**
      * Registrar check-in
      */
-    async registrarCheckin(id, horaCheckin) {
-        return this.actualizar(id, { horaCheckin });
+    async registrarCheckin(id) {
+        const response = await this.apiClient.post(`${this.endpoint}/${id}/checkin`, {});
+        return response.data;
     }
 
     /**

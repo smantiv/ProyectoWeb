@@ -10,6 +10,7 @@ import com.example.sistema_turnos.repositories.TurnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -82,6 +83,20 @@ public class AsignacionTurnoService {
                 Optional<Turno> turno = turnoRepository.findById(asignacionTurnoDTO.getTurnoId());
                 turno.ifPresent(asignacion::setTurno);
             }
+
+            AsignacionTurno asignacionActualizada = asignacionTurnoRepository.save(asignacion);
+            return convertToDTO(asignacionActualizada);
+        }
+        return null;
+    }
+
+    public AsignacionTurnoDTO registrarCheckin(Long id) {
+        Optional<AsignacionTurno> asignacionExistente = asignacionTurnoRepository.findById(id);
+        if (asignacionExistente.isPresent()) {
+            AsignacionTurno asignacion = asignacionExistente.get();
+
+            asignacion.setHoraCheckin(LocalDateTime.now());
+            asignacion.setEstadoCobertura("cubierta");
 
             AsignacionTurno asignacionActualizada = asignacionTurnoRepository.save(asignacion);
             return convertToDTO(asignacionActualizada);
