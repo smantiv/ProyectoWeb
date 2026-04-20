@@ -117,7 +117,7 @@
             <div class="admin-stat-top">
               <div class="admin-stat-icon bg-orange">⚠</div>
             </div>
-            <h3>4</h3>
+            <h3 id="totalIncidentesHoy">0</h3>
             <p>Incidentes reportados hoy</p>
           </article>
 
@@ -295,7 +295,18 @@ async function cargarIncidentesActivos() {
     const incidentes = await response.json();
 
     const tabla = document.getElementById("tablaIncidentesActivos");
+    const totalIncidentesHoy = document.getElementById("totalIncidentesHoy");
     tabla.innerHTML = "";
+
+    const hoy = new Date().toISOString().slice(0, 10);
+
+    const incidentesHoy = incidentes.filter(inc => {
+      if (!inc.fechaHora) return false;
+      return inc.fechaHora.slice(0, 10) === hoy;
+    });
+
+    totalIncidentesHoy.textContent = incidentesHoy.length;
+
 
     // Mostrar solo los incidentes que NO estén resueltos
     const incidentesActivos = incidentes.filter(inc =>

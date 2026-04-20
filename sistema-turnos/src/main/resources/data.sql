@@ -39,8 +39,9 @@ INSERT INTO recorrido (fecha_hora, checkpoint_id, asignacion_id) VALUES
 ('2026-03-18 09:20:00', 3, 2);
 
 
-INSERT INTO incidente (tipo, severidad, descripcion, fecha_hora, estado, asignacion_id) VALUES
-('PELEA', 'alta', 'Discusión entre estudiantes', '2026-03-18 07:45:00', 'reportado', 1),
-('ACCIDENTE', 'media', 'Caída en el patio', '2026-03-18 09:40:00', 'en_revision', 2),
-('BULLYING', 'critica', 'Agresión física en pasillo', '2026-03-18 10:10:00', 'reportado', 1),
-('INFRAESTRUCTURA', 'baja', 'Silla rota en aula', '2026-03-18 11:30:00', 'resuelto', 2);
+INSERT INTO incidente (tipo, severidad, descripcion, fecha_hora, estado, ubicacion, asignacion_id) VALUES
+('PELEA', 'alta', 'Discusión entre estudiantes', '2026-04-20 07:45:00', 'reportado', 'Patio principal', 1),
+('ACCIDENTE', 'media', 'Caída en el patio', '2026-04-20 09:40:00', 'en_revision', 'Biblioteca', 2),
+('ACCIDENTE', 'media', 'Caída en el patio', '2026-04-20 09:40:00', 'en_revision', 'Biblioteca', 2),
+('BULLYING', 'critica', 'Agresión física en pasillo', '2026-04-20 10:10:00', 'reportado', 'Patio principal', 1),
+('INFRAESTRUCTURA', 'baja', 'Silla rota en aula', '2026-04-20 11:30:00', 'resuelto', 'Biblioteca', 2);
