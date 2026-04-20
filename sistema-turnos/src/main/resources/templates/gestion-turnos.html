@@ -258,20 +258,96 @@
       return 'pendiente';
     }
 
+    function getCoberturaTurno(turno, asignacion) {
+      if (!turno || !turno.fecha || !turno.horaInicio || !turno.horaFin) {
+        return 'sin cobertura';
+      }
+
+      const horaInicio = String(turno.horaInicio).length === 5
+        ? `${turno.horaInicio}:00`
+        : String(turno.horaInicio).slice(0, 8);
+
+      const horaFin = String(turno.horaFin).length === 5
+        ? `${turno.horaFin}:00`
+        : String(turno.horaFin).slice(0, 8);
+
+      const inicio = new Date(`${turno.fecha}T${horaInicio}`);
+      const fin = new Date(`${turno.fecha}T${horaFin}`);
+      const ahora = new Date();
+      const toleranciaInicio = new Date(inicio.getTime() + (2 * 60 * 1000));
+
+      const tieneCheckin = Boolean(asignacion?.horaCheckin);
+
+      if (tieneCheckin) {
+        return 'cubierta';
+      }
+
+      if (ahora >= inicio && ahora < toleranciaInicio) {
+        return 'por iniciar';
+      }
+
+      if (ahora >= toleranciaInicio && ahora < fin) {
+        return 'sin cobertura';
+      }
+
+      return 'sin cobertura';
+    }
+
+    function getVentanaInicioTurno(turno) {
+      if (!turno || !turno.fecha || !turno.horaInicio) {
+        return 'Sin datos';
+      }
+
+      const horaInicio = String(turno.horaInicio).length === 5
+        ? `${turno.horaInicio}:00`
+        : String(turno.horaInicio).slice(0, 8);
+
+      const inicio = new Date(`${turno.fecha}T${horaInicio}`);
+      const ahora = new Date();
+      const toleranciaInicio = new Date(inicio.getTime() + (2 * 60 * 1000));
+
+      if (ahora < inicio) {
+        return 'Aun no inicia';
+      }
+
+      if (ahora >= inicio && ahora < toleranciaInicio) {
+        return 'En ventana de inicio';
+      }
+
+      return 'Tolerancia superada';
+    }
+
+    function ventanaInicioBadgeClass(estadoVentana) {
+      const value = String(estadoVentana || '').toLowerCase();
+
+      if (value.includes('aun no inicia')) return 'request-pending';
+      if (value.includes('ventana')) return 'request-programmed';
+      if (value.includes('tolerancia')) return 'request-rejected';
+
+      return 'request-programmed';
+    }
+
+    function coverageBadgeClassForEstado(estadoCobertura) {
+      const estado = String(estadoCobertura || '').toLowerCase();
+
+      if (estado.includes('cubierta')) return 'request-accepted';
+      if (estado.includes('sin cobertura')) return 'request-rejected';
+      if (estado.includes('iniciar')) return 'request-programmed';
+
+      return 'request-programmed';
+    }
+
     function getCoverageLabel(turnoId) {
+      const turno = shifts.find(s => s.id === turnoId);
       const asignacion = getAssignmentForTurno(turnoId);
-      if (!asignacion) return 'Sin cobertura';
-      return asignacion.estadoCobertura || 'Con cobertura';
+      return getCoberturaTurno(turno, asignacion);
     }
 
     function coverageBadgeClass(turnoId) {
+      const turno = shifts.find(s => s.id === turnoId);
       const asignacion = getAssignmentForTurno(turnoId);
-      if (!asignacion) return 'request-rejected';
-
-      const estado = (asignacion.estadoCobertura || '').toLowerCase();
-      if (estado.includes('complet')) return 'request-accepted';
-      if (estado.includes('cobert') || estado.includes('asign')) return 'request-programmed';
-      return 'request-programmed';
+      const estadoCobertura = getCoberturaTurno(turno, asignacion);
+      return coverageBadgeClassForEstado(estadoCobertura);
     }
 
     function shiftBadgeClass(estado) {
@@ -333,6 +409,8 @@
       const coverageClass = coverageBadgeClass(shift.id);
       const assignment = getAssignmentForTurno(shift.id);
       const estadoDinamico = getEstadoTurno(shift, assignment);
+      const ventanaInicio = getVentanaInicioTurno(shift);
+      const ventanaInicioClass = ventanaInicioBadgeClass(ventanaInicio);
       const isEditing = editingShiftId === shift.id;
 
       shiftPanelContent.innerHTML = `
@@ -382,6 +460,11 @@
           <div class="teacher-info-box">
             <div class="teacher-info-label"><span>✔</span><span>Cobertura</span></div>
             <p><span class="request-badge ${coverageClass}">${coverage}</span></p>
+          </div>
+
+          <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>⏳</span><span>Ventana de inicio</span></div>
+            <p><span class="request-badge ${ventanaInicioClass}">${ventanaInicio}</span></p>
           </div>
 
           <div class="teacher-info-box">
