@@ -162,6 +162,51 @@
             </p>
           </div>
         </section>
+        <section class="section">
+  <h2 class="subsection-title">Cierre del Turno</h2>
+
+  <div class="checkpoint-form-card">
+    <form id="cierreTurnoForm" class="checkpoint-form">
+      <div class="checkpoint-field">
+        <label for="calificacionLimpieza">
+          <div class="checkpoint-label-row">
+            <span class="checkpoint-big-icon">🧹</span>
+            <div>
+              <div class="checkpoint-main-label">Calificación de limpieza</div>
+              <div class="checkpoint-help-text">
+                Evalúa cómo quedó la zona al finalizar el turno.
+              </div>
+            </div>
+          </div>
+        </label>
+        <select id="calificacionLimpieza" required>
+          <option value="">Selecciona una opción</option>
+          <option value="1">Muy mala</option>
+          <option value="2">Mala</option>
+          <option value="3">Regular</option>
+          <option value="4">Buena</option>
+          <option value="5">Excelente</option>
+        </select>
+      </div>
+
+      <div class="checkpoint-field">
+        <label for="observacionLimpieza" class="checkpoint-textarea-label">
+          <span class="checkpoint-big-icon">📝</span>
+          <span>Observación final (opcional)</span>
+        </label>
+        <textarea
+          id="observacionLimpieza"
+          rows="4"
+          placeholder="Describe cómo quedó la zona al finalizar el turno..."
+        ></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary checkpoint-submit-btn">
+        ✔ Cerrar Turno
+      </button>
+    </form>
+  </div>
+</section>
       </div>
     </main>
 
@@ -373,6 +418,50 @@
         alert(`No se pudo registrar el checkpoint: ${error.message}`);
       }
     });
+    // 🔥 CIERRE DE TURNO
+document.getElementById("cierreTurnoForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const asignacionId = Number(assignmentSelect.value);
+  const calificacionLimpieza = document.getElementById("calificacionLimpieza").value;
+  const observacionLimpieza = document.getElementById("observacionLimpieza").value;
+
+  if (!asignacionId) {
+    alert("Selecciona una asignación antes de cerrar el turno.");
+    return;
+  }
+
+  if (!calificacionLimpieza) {
+    alert("Selecciona una calificación de limpieza.");
+    return;
+  }
+
+  try {
+    // Traer asignación actual
+    const asignacion = await ApiServices.asignacionTurnoService.obtenerPorId(asignacionId);
+
+    // Actualizar datos
+    asignacion.calificacionLimpieza = Number(calificacionLimpieza);
+    asignacion.observacionLimpieza = observacionLimpieza;
+    asignacion.estadoCobertura = "cerrado";
+    asignacion.horaCierre = new Date().toISOString();
+
+    // Guardar
+    await ApiServices.asignacionTurnoService.actualizar(asignacionId, asignacion);
+
+    alert("Turno cerrado correctamente");
+
+    document.getElementById("cierreTurnoForm").reset();
+
+    // Refrescar datos
+    await loadData();
+    await loadRecorridosByAssignment();
+
+  } catch (error) {
+    console.error("Error:", error);
+    alert("No se pudo cerrar el turno");
+  }
+});
 
     loadData();
   </script>
