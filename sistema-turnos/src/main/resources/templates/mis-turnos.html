@@ -159,141 +159,17 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Zona Asignada</th>
                     <th>Fecha</th>
-                    <th>Hora de Inicio</th>
-                    <th>Hora de Fin</th>
+                    <th>Horario</th>
+                    <th>Zona</th>
                     <th>Estado</th>
-                    <th>Acción</th>
+                    <th>Hora Check-in</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="misTurnosTableBody">
                   <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Patio Principal</span>
-                      </div>
-                    </td>
-                    <td>16 Mar 2026</td>
-                    <td>08:00</td>
-                    <td>09:30</td>
-                    <td><span class="mis-badge bg-green">Completado</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Cafetería</span>
-                      </div>
-                    </td>
-                    <td>16 Mar 2026</td>
-                    <td>14:00</td>
-                    <td>15:30</td>
-                    <td><span class="mis-badge bg-orange">Activo</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Biblioteca</span>
-                      </div>
-                    </td>
-                    <td>17 Mar 2026</td>
-                    <td>10:00</td>
-                    <td>11:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Entrada Principal</span>
-                      </div>
-                    </td>
-                    <td>17 Mar 2026</td>
-                    <td>14:00</td>
-                    <td>15:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Patio Secundario</span>
-                      </div>
-                    </td>
-                    <td>18 Mar 2026</td>
-                    <td>08:00</td>
-                    <td>09:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Sala de Profesores</span>
-                      </div>
-                    </td>
-                    <td>18 Mar 2026</td>
-                    <td>11:00</td>
-                    <td>12:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Cafetería</span>
-                      </div>
-                    </td>
-                    <td>19 Mar 2026</td>
-                    <td>12:00</td>
-                    <td>13:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Patio Principal</span>
-                      </div>
-                    </td>
-                    <td>19 Mar 2026</td>
-                    <td>15:00</td>
-                    <td>16:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
+                    <td colspan="6">Cargando turnos...</td>
                   </tr>
                 </tbody>
               </table>
@@ -314,5 +190,136 @@
       </div>
     </footer>
   </div>
+  <script src="/js/api/ApiClient.js"></script>
+  <script src="/js/api/UsuarioService.js"></script>
+  <script src="/js/api/DocenteService.js"></script>
+  <script src="/js/api/ZonaService.js"></script>
+  <script src="/js/api/TurnoService.js"></script>
+  <script src="/js/api/AsignacionTurnoService.js"></script>
+  <script src="/js/api/IncidenteService.js"></script>
+  <script src="/js/api/CheckpointService.js"></script>
+  <script src="/js/api/RecorridoService.js"></script>
+  <script src="/js/api/ReasignacionService.js"></script>
+  <script src="/js/api/ApiServices.js"></script>
+  <script>
+    let assignments = [];
+    let turnos = [];
+    let zonas = [];
+
+    const misTurnosTableBody = document.getElementById('misTurnosTableBody');
+
+    function formatDate(dateString) {
+      if (!dateString) return 'Sin fecha';
+      const date = new Date(`${dateString}T00:00:00`);
+      return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function formatDateTime(dateTimeString) {
+      if (!dateTimeString) return 'No registrada';
+      return new Date(dateTimeString).toLocaleString('es-ES');
+    }
+
+    function getTurnoById(turnoId) {
+      return turnos.find(turno => turno.id === turnoId) || null;
+    }
+
+    function getZonaById(zonaId) {
+      return zonas.find(zona => zona.id === zonaId) || null;
+    }
+
+    function buildRows() {
+      return assignments.map(asignacion => {
+        const turno = getTurnoById(asignacion.turnoId);
+        const zona = turno ? getZonaById(turno.zonaId) : null;
+
+        return {
+          asignacionId: asignacion.id,
+          fecha: turno?.fecha || '',
+          horario: turno ? `${String(turno.horaInicio || '').slice(0, 5)} - ${String(turno.horaFin || '').slice(0, 5)}` : 'Sin horario',
+          zona: zona?.nombre || 'Sin zona',
+          estado: asignacion.estadoCobertura || 'Sin estado',
+          horaCheckin: asignacion.horaCheckin || null
+        };
+      });
+    }
+
+    function estadoBadgeClass(estado) {
+      const value = String(estado || '').toLowerCase();
+
+      if (value.includes('cubierta')) return 'request-accepted';
+      if (value.includes('iniciar')) return 'request-pending';
+      if (value.includes('sin cobertura')) return 'request-rejected';
+
+      return 'request-programmed';
+    }
+
+    function checkinBadgeClass(horaCheckin) {
+      return horaCheckin ? 'request-accepted' : 'request-rejected';
+    }
+
+    function renderMisTurnos() {
+      const rows = buildRows();
+
+      if (!rows.length) {
+        misTurnosTableBody.innerHTML = `
+          <tr class="mis-row">
+            <td colspan="6">No hay turnos asignados.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      misTurnosTableBody.innerHTML = rows.map(row => `
+        <tr class="mis-row">
+          <td>${formatDate(row.fecha)}</td>
+          <td>${row.horario}</td>
+          <td>
+            <div class="zone-cell">
+              <span class="zone-icon">📍</span>
+              <span>${row.zona}</span>
+            </div>
+          </td>
+          <td>
+            <span class="request-badge ${estadoBadgeClass(row.estado)}">${row.estado}</span>
+          </td>
+          <td>
+            <span class="request-badge ${checkinBadgeClass(row.horaCheckin)}">
+              ${row.horaCheckin ? formatDateTime(row.horaCheckin) : 'No registrada'}
+            </span>
+          </td>
+          <td>
+            <div class="teacher-actions">
+              <a class="view-btn" href="/registrar-punto">✔ Check-in</a>
+              <a class="view-btn" href="/reportar-incidente">⚠ Registrar situación</a>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadData() {
+      try {
+        const [loadedAssignments, loadedTurnos, loadedZonas] = await Promise.all([
+          ApiServices.asignacionTurnoService.obtenerTodas(),
+          ApiServices.turnoService.obtenerTodos(),
+          ApiServices.zonaService.obtenerTodas()
+        ]);
+
+        assignments = loadedAssignments || [];
+        turnos = loadedTurnos || [];
+        zonas = loadedZonas || [];
+
+        renderMisTurnos();
+      } catch (error) {
+        misTurnosTableBody.innerHTML = `
+          <tr class="mis-row">
+            <td colspan="6">No se pudieron cargar los turnos.</td>
+          </tr>
+        `;
+      }
+    }
+
+    loadData();
+  </script>
 </body>
 </html>
