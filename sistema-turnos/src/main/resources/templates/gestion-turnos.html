@@ -258,20 +258,62 @@
       return 'pendiente';
     }
 
+    function getCoberturaTurno(turno, asignacion) {
+      if (!turno || !turno.fecha || !turno.horaInicio || !turno.horaFin) {
+        return 'sin cobertura';
+      }
+
+      const horaInicio = String(turno.horaInicio).length === 5
+        ? `${turno.horaInicio}:00`
+        : String(turno.horaInicio).slice(0, 8);
+
+      const horaFin = String(turno.horaFin).length === 5
+        ? `${turno.horaFin}:00`
+        : String(turno.horaFin).slice(0, 8);
+
+      const inicio = new Date(`${turno.fecha}T${horaInicio}`);
+      const fin = new Date(`${turno.fecha}T${horaFin}`);
+      const ahora = new Date();
+      const toleranciaInicio = new Date(inicio.getTime() + (2 * 60 * 1000));
+
+      const tieneCheckin = Boolean(asignacion?.horaCheckin);
+
+      if (tieneCheckin) {
+        return 'cubierta';
+      }
+
+      if (ahora >= inicio && ahora < toleranciaInicio) {
+        return 'por iniciar';
+      }
+
+      if (ahora >= toleranciaInicio && ahora < fin) {
+        return 'sin cobertura';
+      }
+
+      return 'sin cobertura';
+    }
+
+    function coverageBadgeClassForEstado(estadoCobertura) {
+      const estado = String(estadoCobertura || '').toLowerCase();
+
+      if (estado.includes('cubierta')) return 'request-accepted';
+      if (estado.includes('iniciar')) return 'request-pending';
+      if (estado.includes('sin cobertura')) return 'request-rejected';
+
+      return 'request-programmed';
+    }
+
     function getCoverageLabel(turnoId) {
+      const turno = shifts.find(s => s.id === turnoId);
       const asignacion = getAssignmentForTurno(turnoId);
-      if (!asignacion) return 'Sin cobertura';
-      return asignacion.estadoCobertura || 'Con cobertura';
+      return getCoberturaTurno(turno, asignacion);
     }
 
     function coverageBadgeClass(turnoId) {
+      const turno = shifts.find(s => s.id === turnoId);
       const asignacion = getAssignmentForTurno(turnoId);
-      if (!asignacion) return 'request-rejected';
-
-      const estado = (asignacion.estadoCobertura || '').toLowerCase();
-      if (estado.includes('complet')) return 'request-accepted';
-      if (estado.includes('cobert') || estado.includes('asign')) return 'request-programmed';
-      return 'request-programmed';
+      const estadoCobertura = getCoberturaTurno(turno, asignacion);
+      return coverageBadgeClassForEstado(estadoCobertura);
     }
 
     function shiftBadgeClass(estado) {
