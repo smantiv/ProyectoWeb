@@ -293,12 +293,46 @@
       return 'sin cobertura';
     }
 
+    function getVentanaInicioTurno(turno) {
+      if (!turno || !turno.fecha || !turno.horaInicio) {
+        return 'Sin datos';
+      }
+
+      const horaInicio = String(turno.horaInicio).length === 5
+        ? `${turno.horaInicio}:00`
+        : String(turno.horaInicio).slice(0, 8);
+
+      const inicio = new Date(`${turno.fecha}T${horaInicio}`);
+      const ahora = new Date();
+      const toleranciaInicio = new Date(inicio.getTime() + (2 * 60 * 1000));
+
+      if (ahora < inicio) {
+        return 'Aun no inicia';
+      }
+
+      if (ahora >= inicio && ahora < toleranciaInicio) {
+        return 'En ventana de inicio';
+      }
+
+      return 'Tolerancia superada';
+    }
+
+    function ventanaInicioBadgeClass(estadoVentana) {
+      const value = String(estadoVentana || '').toLowerCase();
+
+      if (value.includes('aun no inicia')) return 'request-pending';
+      if (value.includes('ventana')) return 'request-programmed';
+      if (value.includes('tolerancia')) return 'request-rejected';
+
+      return 'request-programmed';
+    }
+
     function coverageBadgeClassForEstado(estadoCobertura) {
       const estado = String(estadoCobertura || '').toLowerCase();
 
       if (estado.includes('cubierta')) return 'request-accepted';
-      if (estado.includes('iniciar')) return 'request-pending';
       if (estado.includes('sin cobertura')) return 'request-rejected';
+      if (estado.includes('iniciar')) return 'request-programmed';
 
       return 'request-programmed';
     }
@@ -375,6 +409,8 @@
       const coverageClass = coverageBadgeClass(shift.id);
       const assignment = getAssignmentForTurno(shift.id);
       const estadoDinamico = getEstadoTurno(shift, assignment);
+      const ventanaInicio = getVentanaInicioTurno(shift);
+      const ventanaInicioClass = ventanaInicioBadgeClass(ventanaInicio);
       const isEditing = editingShiftId === shift.id;
 
       shiftPanelContent.innerHTML = `
@@ -427,6 +463,11 @@
           </div>
 
           <div class="teacher-info-box">
+            <div class="teacher-info-label"><span>⏳</span><span>Ventana de inicio</span></div>
+            <p><span class="request-badge ${ventanaInicioClass}">${ventanaInicio}</span></p>
+          </div>
+
+          <div class="teacher-info-box">
             <div class="teacher-info-label"><span>⏱</span><span>Check-in</span></div>
             <p>${assignment ? formatDateTime(assignment.horaCheckin) : 'No registrado'}</p>
           </div>
@@ -445,7 +486,6 @@
             `
             : `
               <button class="btn btn-primary teacher-panel-btn" data-panel-action="edit" data-id="${shift.id}">✎ Editar turno</button>
-              <a href="/reportar-incidente" class="btn btn-primary teacher-panel-btn">⚠ Registrar situación</a>
               <button class="teacher-secondary-btn" data-panel-action="delete" data-id="${shift.id}">🗑 Eliminar turno</button>
             `
           }
