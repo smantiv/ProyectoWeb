@@ -379,6 +379,23 @@
         `).join('');
     }
 
+    function preselectCheckpointFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const checkpointIdFromUrl = Number(params.get('checkpointId'));
+
+      if (!checkpointIdFromUrl) {
+        return;
+      }
+
+      const checkpointExists = checkpoints.some(c => c.id === checkpointIdFromUrl);
+
+      if (!checkpointExists) {
+        return;
+      }
+
+      checkpointSelect.value = String(checkpointIdFromUrl);
+    }
+
     function updateAssignmentSummary() {
       const assignmentId = Number(assignmentSelect.value);
       const assignment = assignments.find(a => a.id === assignmentId);
@@ -513,6 +530,7 @@
 
         renderAssignments();
         renderCheckpoints();
+        preselectCheckpointFromUrl();
         updateAssignmentSummary();
         renderRecorridos();
       } catch (error) {
