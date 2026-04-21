@@ -312,13 +312,28 @@
         return;
       }
 
+
+      const tipo = document.getElementById('incidentType').value;
+      const descripcion = document.getElementById('description').value.trim();
+
+      if (!tipo) {
+      alert('Selecciona un tipo de incidente.');
+      return;
+      }
+
+      if (!descripcion) {
+      alert('Escribe una descripción del incidente.');
+      return;
+      }
       try {
         await ApiServices.incidenteService.crear({
           asignacionId: Number(assignmentSelect.value),
           tipo: document.getElementById('incidentType').value,
           severidad: priorityValue.value,
           descripcion: document.getElementById('description').value.trim(),
-          fechaHora: formatLocalDateTimeNow()
+          estado: 'reportado',
+          fechaHora: formatLocalDateTimeNow(),
+          ubicacion: document.getElementById('location').value.trim()
         });
 
         incidentConfirmation.classList.remove('hidden');

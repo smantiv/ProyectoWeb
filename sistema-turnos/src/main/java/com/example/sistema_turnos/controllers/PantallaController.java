@@ -23,7 +23,7 @@ public class PantallaController {
     }
 
     @GetMapping("/incidentes")
-    public String gestionIncidentes() {
+    public String gestionIncidentes() { 
         return "gestion-incidentes";
     }
 
@@ -118,5 +118,10 @@ public class PantallaController {
     @GetMapping("/contacto")
     public String contacto() {
         return "contacto";
+    }
+
+    @GetMapping("/detalle-turno")
+    public String detalleTurno() {
+    return "detalle-turno";
     }
 }

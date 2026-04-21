@@ -117,7 +117,7 @@
             <div class="admin-stat-top">
               <div class="admin-stat-icon bg-orange">⚠</div>
             </div>
-            <h3>4</h3>
+            <h3 id="totalIncidentesHoy">0</h3>
             <p>Incidentes reportados hoy</p>
           </article>
 
@@ -155,62 +155,8 @@
                   <th>Acción</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr class="table-row-hover">
-                  <td>Conflicto entre estudiantes</td>
-                  <td>Patio Principal</td>
-                  <td>08:25</td>
-                  <td><span class="badge badge-yellow">Media</span></td>
-                  <td><span class="request-badge request-pending">Pendiente</span></td>
-                  <td>
-                    <div class="teacher-actions">
-                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
-                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr class="table-row-hover">
-                  <td>Emergencia médica</td>
-                  <td>Cafetería</td>
-                  <td>09:15</td>
-                  <td><span class="request-badge request-rejected">Crítica</span></td>
-                  <td><span class="request-badge request-orange">En proceso</span></td>
-                  <td>
-                    <div class="teacher-actions">
-                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
-                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr class="table-row-hover">
-                  <td>Situación de seguridad</td>
-                  <td>Entrada Principal</td>
-                  <td>10:30</td>
-                  <td><span class="badge badge-orange">Alta</span></td>
-                  <td><span class="request-badge request-pending">Pendiente</span></td>
-                  <td>
-                    <div class="teacher-actions">
-                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
-                      <button type="button" class="coord-btn coord-resolve-btn">✔ Resolver</button>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr class="table-row-hover">
-                  <td>Daño en infraestructura</td>
-                  <td>Biblioteca</td>
-                  <td>11:00</td>
-                  <td><span class="request-badge request-accepted">Baja</span></td>
-                  <td><span class="request-badge request-accepted">Resuelto</span></td>
-                  <td>
-                    <div class="teacher-actions">
-                      <a href="detalle-incidente.html" class="coord-btn coord-view-btn">👁 Ver</a>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="tablaIncidentesActivos"></tbody>
+              
             </table>
           </div>
         </div>
@@ -340,5 +286,145 @@
       </div>
     </footer>
   </div>
+  <script>
+document.addEventListener("DOMContentLoaded", cargarIncidentesActivos);
+
+async function cargarIncidentesActivos() {
+  try {
+    const response = await fetch("/api/v1/incidentes");
+    const incidentes = await response.json();
+
+    const tabla = document.getElementById("tablaIncidentesActivos");
+    const totalIncidentesHoy = document.getElementById("totalIncidentesHoy");
+    tabla.innerHTML = "";
+
+    const hoy = new Date().toISOString().slice(0, 10);
+
+    const incidentesHoy = incidentes.filter(inc => {
+      if (!inc.fechaHora) return false;
+      return inc.fechaHora.slice(0, 10) === hoy;
+    });
+
+    totalIncidentesHoy.textContent = incidentesHoy.length;
+
+
+    // Mostrar solo los incidentes que NO estén resueltos
+    const incidentesActivos = incidentes.filter(inc =>
+      String(inc.estado || "").toLowerCase().trim() !== "resuelto"
+    );
+
+    incidentesActivos.forEach(inc => {
+      tabla.innerHTML += `
+        <tr class="table-row-hover">
+          <td>${inc.tipo ?? "-"}</td>
+          <td>${inc.ubicacion ?? "-"}</td>
+          <td>${inc.fechaHora ? inc.fechaHora.substring(11,16) : "-"}</td>
+          <td>${badgeSeveridad(inc.severidad)}</td>
+          <td>${badgeEstado(inc.estado)}</td>
+          <td>
+            <div class="teacher-actions">
+              <button type="button" class="coord-btn coord-view-btn" onclick="verIncidente(${inc.id})">👁 Ver</button>
+               ${
+            String(inc.estado || "").toLowerCase().trim() === "resuelto"
+               ? `<button type="button" class="coord-btn coord-approve-btn" disabled>✓ Resuelto</button>`
+               : `<button type="button" class="coord-btn coord-resolve-btn" onclick="resolverIncidente(${inc.id})">✔ Resolver</button>`
+                }              
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    if (incidentesActivos.length === 0) {
+      tabla.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center; padding: 20px;">
+            No hay incidentes activos.
+          </td>
+        </tr>
+      `;
+    }
+
+  } catch (error) {
+    console.error("Error cargando incidentes activos:", error);
+  }
+}
+
+function badgeSeveridad(severidad) {
+  const valor = String(severidad || "").toLowerCase().trim();
+
+  if (valor === "baja") {
+    return `<span class="request-badge request-accepted">Baja</span>`;
+  }
+  if (valor === "media") {
+    return `<span class="badge badge-yellow">Media</span>`;
+  }
+  if (valor === "alta") {
+    return `<span class="badge badge-orange">Alta</span>`;
+  }
+  if (valor === "critica" || valor === "crítica") {
+    return `<span class="request-badge request-rejected">Crítica</span>`;
+  }
+
+  return valor || "-";
+}
+
+function badgeEstado(estado) {
+  const valor = String(estado || "").toLowerCase().trim();
+
+  if (valor === "reportado" || valor === "pendiente") {
+    return `<span class="request-badge request-pending">Pendiente</span>`;
+  }
+  if (valor === "en_revision" || valor === "en proceso") {
+    return `<span class="request-badge request-orange">En proceso</span>`;
+  }
+  if (valor === "resuelto") {
+    return `<span class="request-badge request-accepted">Resuelto</span>`;
+  }
+
+  return valor || "-";
+}
+
+async function resolverIncidente(id) {
+  try {
+    const confirmar = confirm("¿Deseas marcar este incidente como resuelto?");
+    if (!confirmar) return;
+
+    const response = await fetch(`/api/v1/incidentes/${id}`);
+    if (!response.ok) {
+      throw new Error("No se pudo obtener el incidente");
+    }
+
+    const incidente = await response.json();
+    console.log("Incidente antes de actualizar:", incidente);
+
+    incidente.estado = "resuelto";
+
+    const updateResponse = await fetch(`/api/v1/incidentes/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(incidente)
+    });
+
+    if (!updateResponse.ok) {
+      const errorText = await updateResponse.text();
+      console.error("Error PUT:", errorText);
+      throw new Error("No se pudo actualizar el incidente");
+    }
+
+    const actualizado = await updateResponse.json();
+    console.log("Incidente actualizado:", actualizado);
+
+    alert("Incidente marcado como resuelto.");
+    cargarIncidentesActivos();
+
+  } catch (error) {
+    console.error("Error al resolver incidente:", error);
+    alert("Hubo un error al actualizar el estado.");
+  }
+}
+</script>
 </body>
 </html>

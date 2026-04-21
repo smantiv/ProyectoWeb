@@ -3,27 +3,31 @@ package com.example.sistema_turnos.dtos;
 import java.time.LocalDateTime;
 
 public class IncidenteDTO {
-    
+
     private Long id;
     private String tipo;
     private String severidad;
     private String descripcion;
     private LocalDateTime fechaHora;
+    private String estado;
     private Long asignacionId;
+    private String ubicacion;
 
     public IncidenteDTO() {
     }
 
-    public IncidenteDTO(Long id, String tipo, String severidad, String descripcion, LocalDateTime fechaHora, Long asignacionId) {
+    public IncidenteDTO(Long id, String tipo, String severidad, String descripcion,
+                        LocalDateTime fechaHora, String estado, Long asignacionId,String ubicacion) {
         this.id = id;
         this.tipo = tipo;
         this.severidad = severidad;
         this.descripcion = descripcion;
         this.fechaHora = fechaHora;
+        this.estado = estado;
         this.asignacionId = asignacionId;
+        this.ubicacion= ubicacion;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -64,6 +68,14 @@ public class IncidenteDTO {
         this.fechaHora = fechaHora;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
     public Long getAsignacionId() {
         return asignacionId;
     }
@@ -71,4 +83,13 @@ public class IncidenteDTO {
     public void setAsignacionId(Long asignacionId) {
         this.asignacionId = asignacionId;
     }
+
+    public String getUbicacion(){
+        return ubicacion;
+    }
+    
+    public void setUbicacion(String ubicacion){
+        this.ubicacion=ubicacion;
+    }
+
 }

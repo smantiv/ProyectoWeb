@@ -12,9 +12,12 @@ public class Incidente {
     private Long id;
 
     private String tipo;
+    private String estado;
     private String severidad;
     private String descripcion;
     private LocalDateTime fechaHora;
+    private String ubicacion;
+ 
 
     @ManyToOne
     @JoinColumn(name = "asignacion_id")
@@ -65,4 +68,20 @@ public class Incidente {
     public void setAsignacionTurno(AsignacionTurno asignacionTurno) {
         this.asignacionTurno = asignacionTurno;
     }
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+    public String getUbicacion() {
+        return ubicacion;
+    }
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
+    }
+   
+
+    
 }

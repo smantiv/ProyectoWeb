@@ -27,6 +27,9 @@ public class IncidenteService {
         incidente.setSeveridad(incidenteDTO.getSeveridad());
         incidente.setDescripcion(incidenteDTO.getDescripcion());
         incidente.setFechaHora(incidenteDTO.getFechaHora());
+        incidente.setEstado(incidenteDTO.getEstado());
+        incidente.setUbicacion(incidenteDTO.getUbicacion());
+        
 
         if (incidenteDTO.getAsignacionId() != null) {
             Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());
@@ -68,6 +71,7 @@ public class IncidenteService {
             incidente.setSeveridad(incidenteDTO.getSeveridad());
             incidente.setDescripcion(incidenteDTO.getDescripcion());
             incidente.setFechaHora(incidenteDTO.getFechaHora());
+            incidente.setEstado(incidenteDTO.getEstado());
 
             if (incidenteDTO.getAsignacionId() != null) {
                 Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());
@@ -79,6 +83,17 @@ public class IncidenteService {
         }
         return null;
     }
+    public List<IncidenteDTO> obtenerIncidentesPorSeveridad(String severidad) {
+    return incidenteRepository.findBySeveridad(severidad).stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+}
+
+public List<IncidenteDTO> obtenerIncidentesPorEstado(String estado) {
+    return incidenteRepository.findByEstado(estado).stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+}
 
     public boolean eliminarIncidente(Long id) {
         if (incidenteRepository.existsById(id)) {
@@ -89,14 +104,28 @@ public class IncidenteService {
     }
 
     private IncidenteDTO convertToDTO(Incidente incidente) {
-        Long asignacionId = incidente.getAsignacionTurno() != null ? incidente.getAsignacionTurno().getId() : null;
-        return new IncidenteDTO(
-                incidente.getId(),
-                incidente.getTipo(),
-                incidente.getSeveridad(),
-                incidente.getDescripcion(),
-                incidente.getFechaHora(),
-                asignacionId
-        );
+    Long asignacionId = incidente.getAsignacionTurno() != null
+            ? incidente.getAsignacionTurno().getId()
+            : null;
+
+    String ubicacion = null;
+
+    if (incidente.getAsignacionTurno() != null
+            && incidente.getAsignacionTurno().getTurno() != null
+            && incidente.getAsignacionTurno().getTurno().getZona() != null) {
+        ubicacion = incidente.getAsignacionTurno().getTurno().getZona().getNombre();
     }
+
+    IncidenteDTO dto = new IncidenteDTO();
+    dto.setId(incidente.getId());
+    dto.setTipo(incidente.getTipo());
+    dto.setSeveridad(incidente.getSeveridad());
+    dto.setDescripcion(incidente.getDescripcion());
+    dto.setFechaHora(incidente.getFechaHora());
+    dto.setEstado(incidente.getEstado());
+    dto.setAsignacionId(asignacionId);
+    dto.setUbicacion(incidente.getUbicacion());
+
+    return dto;
+}
 }
