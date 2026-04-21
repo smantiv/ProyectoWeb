@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Check-in por Punto</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+  <main>
+    <section>
+      <h1>Check-in por Punto</h1>
+      <p>Valida tu presencia en este checkpoint usando el PIN dinamico vigente.</p>
+    </section>
+
+    <section>
+      <div>
+        <strong>Punto:</strong>
+        <span id="checkpointNombre">Cargando...</span>
+      </div>
+
+      <div>
+        <strong>PIN dinamico:</strong>
+        <span id="pinActual">----</span>
+      </div>
+
+      <div>
+        <strong>Tiempo restante:</strong>
+        <span id="pinCountdown">00:30</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/api/ApiClient.js"></script>
+  <script src="/js/api/UsuarioService.js"></script>
+  <script src="/js/api/DocenteService.js"></script>
+  <script src="/js/api/ZonaService.js"></script>
+  <script src="/js/api/TurnoService.js"></script>
+  <script src="/js/api/AsignacionTurnoService.js"></script>
+  <script src="/js/api/IncidenteService.js"></script>
+  <script src="/js/api/CheckpointService.js"></script>
+  <script src="/js/api/RecorridoService.js"></script>
+  <script src="/js/api/ReasignacionService.js"></script>
+  <script src="/js/api/ApiServices.js"></script>
+
+  <script>
+    let checkpointId = null;
+    let checkpointActual = null;
+    let currentPin = '';
+    let currentWindow = null;
+    let pinInterval = null;
+
+    const checkpointNombre = document.getElementById('checkpointNombre');
+    const pinActual = document.getElementById('pinActual');
+    const pinCountdown = document.getElementById('pinCountdown');
+
+    function getCheckpointIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return Number(params.get('checkpointId'));
+    }
+
+    async function loadCheckpoint() {
+      checkpointId = getCheckpointIdFromUrl();
+
+      if (!checkpointId) {
+        checkpointNombre.textContent = 'Checkpoint no valido';
+        throw new Error('Falta checkpointId en la URL');
+      }
+
+      checkpointActual = await ApiServices.checkpointService.obtenerPorId(checkpointId);
+      checkpointNombre.textContent = checkpointActual?.nombre || `Checkpoint #${checkpointId}`;
+    }
+
+    function getCurrentWindow() {
+      return Math.floor(Date.now() / 30000);
+    }
+
+    function generateDynamicPin(currentCheckpointId, windowSlot) {
+      const seed = (currentCheckpointId * 7919) + (windowSlot * 104729);
+      return String(Math.abs(seed % 9000) + 1000).slice(0, 4);
+    }
+
+    function formatCountdown(msRemaining) {
+      const totalSeconds = Math.max(0, Math.ceil(msRemaining / 1000));
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      return `00:${seconds}`;
+    }
+
+    function updatePinAndCountdown() {
+      if (!checkpointId) return;
+
+      const now = Date.now();
+      const windowSlot = getCurrentWindow();
+      const windowEnd = (windowSlot + 1) * 30000;
+      const remaining = windowEnd - now;
+
+      if (currentWindow !== windowSlot) {
+        currentWindow = windowSlot;
+        currentPin = generateDynamicPin(checkpointId, windowSlot);
+        pinActual.textContent = currentPin;
+      }
+
+      pinCountdown.textContent = formatCountdown(remaining);
+    }
+
+    function startPinTimer() {
+      updatePinAndCountdown();
+
+      if (pinInterval) {
+        clearInterval(pinInterval);
+      }
+
+      pinInterval = setInterval(updatePinAndCountdown, 1000);
+    }
+
+    async function init() {
+      try {
+        await loadCheckpoint();
+        startPinTimer();
+      } catch (error) {
+        alert(error.message || 'No se pudo cargar la pagina.');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

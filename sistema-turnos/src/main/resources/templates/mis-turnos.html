@@ -202,6 +202,8 @@
   <script src="/js/api/ReasignacionService.js"></script>
   <script src="/js/api/ApiServices.js"></script>
   <script>
+    const DEMO_INITIAL_CHECKPOINT_ID = 1;
+
     let assignments = [];
     let turnos = [];
     let zonas = [];
@@ -257,6 +259,65 @@
       return horaCheckin ? 'request-accepted' : 'request-rejected';
     }
 
+    function getCurrentPinWindow() {
+      return Math.floor(Date.now() / 30000);
+    }
+
+    function generateDynamicPin(checkpointId, windowSlot) {
+      const seed = (checkpointId * 7919) + (windowSlot * 104729);
+      return String(Math.abs(seed % 9000) + 1000).slice(0, 4);
+    }
+
+    function getExpectedPinForInitialCheckpoint() {
+      const currentWindow = getCurrentPinWindow();
+      return generateDynamicPin(DEMO_INITIAL_CHECKPOINT_ID, currentWindow);
+    }
+
+    function togglePinBox(asignacionId) {
+      const pinBox = document.getElementById(`pinBox-${asignacionId}`);
+
+      document.querySelectorAll('[id^="pinBox-"]').forEach(box => {
+        if (box.id !== `pinBox-${asignacionId}`) {
+          box.classList.add('hidden');
+        }
+      });
+
+      pinBox.classList.toggle('hidden');
+
+      if (!pinBox.classList.contains('hidden')) {
+        const input = document.getElementById(`pinInput-${asignacionId}`);
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+
+    async function submitTurnoPin(asignacionId) {
+      const input = document.getElementById(`pinInput-${asignacionId}`);
+      const pinIngresado = input.value.trim();
+
+      if (!pinIngresado) {
+        alert('Ingresa el PIN del punto inicial.');
+        return;
+      }
+
+      const pinEsperado = getExpectedPinForInitialCheckpoint();
+
+      if (pinIngresado !== pinEsperado) {
+        alert('PIN invalido.');
+        return;
+      }
+
+      try {
+        await ApiServices.asignacionTurnoService.registrarCheckin(asignacionId);
+        alert('Turno iniciado correctamente.');
+        await loadData();
+      } catch (error) {
+        alert(`No se pudo iniciar el turno: ${error.message}`);
+      }
+    }
+
     function renderMisTurnos() {
       const rows = buildRows();
 
@@ -289,7 +350,31 @@
           </td>
           <td>
             <div class="teacher-actions">
-              <a class="view-btn" href="/registrar-punto">✔ Check-in</a>
+              ${row.horaCheckin ? `
+                <span class="request-badge request-accepted">Turno iniciado</span>
+                <a class="view-btn" href="/registrar-punto">📍 Registrar punto</a>
+              ` : `
+                <button class="view-btn" type="button" onclick="togglePinBox(${row.asignacionId})">
+                  ▶ Iniciar turno
+                </button>
+
+                <div id="pinBox-${row.asignacionId}" class="hidden" style="margin-top: 8px;">
+                  <input
+                    id="pinInput-${row.asignacionId}"
+                    type="text"
+                    maxlength="4"
+                    placeholder="Ingresa PIN"
+                    style="width: 110px;"
+                  />
+                  <button
+                    class="view-btn"
+                    type="button"
+                    onclick="submitTurnoPin(${row.asignacionId})"
+                  >
+                    Validar PIN
+                  </button>
+                </div>
+              `}
               <a class="view-btn" href="/reportar-incidente">⚠ Registrar situación</a>
             </div>
           </td>

@@ -66,6 +66,11 @@ public class PantallaController {
         return "registrar-punto";
     }
 
+    @GetMapping("/check-in-punto")
+    public String checkInPunto() {
+        return "check-in-punto";
+    }
+
     @GetMapping("/reportar-incidente")
     public String reportarIncidente() {
         return "reportar-incidente";

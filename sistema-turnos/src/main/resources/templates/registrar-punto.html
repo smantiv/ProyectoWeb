@@ -130,6 +130,27 @@
                 ></textarea>
               </div>
 
+              <div class="checkpoint-field">
+                <label for="pinInput">
+                  <div class="checkpoint-label-row">
+                    <span class="checkpoint-big-icon">🔐</span>
+                    <div>
+                      <div class="checkpoint-main-label">PIN del checkpoint</div>
+                      <div class="checkpoint-help-text">
+                        Ingresa el PIN dinámico que viste al escanear el QR del checkpoint.
+                      </div>
+                    </div>
+                  </div>
+                </label>
+                <input
+                  id="pinInput"
+                  type="text"
+                  maxlength="4"
+                  placeholder="Ej: 1234"
+                  required
+                />
+              </div>
+
               <button type="submit" class="btn btn-primary checkpoint-submit-btn">
                 ✔ Registrar Checkpoint
               </button>
@@ -198,6 +219,7 @@
     const checkpointConfirmation = document.getElementById('checkpointConfirmation');
     const checkpointTableBody = document.getElementById('checkpointTableBody');
     const notesInput = document.getElementById('notes');
+    const pinInput = document.getElementById('pinInput');
     const assignmentSelect = document.getElementById('assignmentSelect');
     const checkpointSelect = document.getElementById('checkpointSelect');
 
@@ -215,6 +237,25 @@
     function checkpointName(checkpointId) {
       const checkpoint = checkpoints.find(c => c.id === checkpointId);
       return checkpoint ? checkpoint.nombre : `Checkpoint #${checkpointId}`;
+    }
+
+    function getCurrentPinWindow() {
+      return Math.floor(Date.now() / 30000);
+    }
+
+    function generateDynamicPin(checkpointId, windowSlot) {
+      const seed = (checkpointId * 7919) + (windowSlot * 104729);
+      return String(Math.abs(seed % 9000) + 1000).slice(0, 4);
+    }
+
+    function getExpectedPinForCheckpoint(checkpointId) {
+      const currentWindow = getCurrentPinWindow();
+      return generateDynamicPin(checkpointId, currentWindow);
+    }
+
+    function isCheckpointPinValid(checkpointId, pinIngresado) {
+      const pinEsperado = getExpectedPinForCheckpoint(checkpointId);
+      return pinIngresado === pinEsperado;
     }
 
     function renderAssignments() {
@@ -343,6 +384,7 @@
 
       const asignacionId = Number(assignmentSelect.value);
       const checkpointId = Number(checkpointSelect.value);
+      const pinIngresado = pinInput.value.trim();
 
       if (!asignacionId) {
         alert('Selecciona una asignación válida.');
@@ -354,6 +396,16 @@
         return;
       }
 
+      if (!pinIngresado) {
+        alert('Ingresa el PIN del checkpoint.');
+        return;
+      }
+
+      if (!isCheckpointPinValid(checkpointId, pinIngresado)) {
+        alert('PIN inválido para el checkpoint seleccionado.');
+        return;
+      }
+
       try {
         await ApiServices.recorridoService.registrarPaso(checkpointId, asignacionId);
 
@@ -361,6 +413,7 @@
         checkpointConfirmation.classList.add('fade-in');
 
         checkpointSelect.value = '';
+        pinInput.value = '';
         notesInput.value = '';
 
         await loadRecorridosByAssignment();
