@@ -161,6 +161,26 @@
         <section class="section">
           <h2 class="subsection-title">Checkpoints Registrados - Turno Actual</h2>
 
+          <div class="checkpoint-summary-card">
+            <div class="checkpoint-summary-grid">
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">📍</span>
+                  <span>Último checkpoint validado</span>
+                </div>
+                <p id="lastCheckpointNombre">Sin registros</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">⏱</span>
+                  <span>Hora del último recorrido</span>
+                </div>
+                <p id="lastCheckpointHora">No registrada</p>
+              </div>
+            </div>
+          </div>
+
           <div class="table-card">
             <div class="table-wrap">
               <table>
@@ -177,8 +197,8 @@
           </div>
 
           <div class="checkpoint-reminder">
-            <span class="checkpoint-reminder-icon">✔</span>
-            <p>
+            <span id="checkpointReminderIcon" class="checkpoint-reminder-icon">✔</span>
+            <p id="checkpointReminderText">
               Recuerda registrar un checkpoint cada 10 minutos durante tu turno de vigilancia para mantener el registro completo.
             </p>
           </div>
@@ -272,6 +292,10 @@
     const summaryTurno = document.getElementById('summaryTurno');
     const summaryEstado = document.getElementById('summaryEstado');
     const summaryCheckin = document.getElementById('summaryCheckin');
+    const lastCheckpointNombre = document.getElementById('lastCheckpointNombre');
+    const lastCheckpointHora = document.getElementById('lastCheckpointHora');
+    const checkpointReminderIcon = document.getElementById('checkpointReminderIcon');
+    const checkpointReminderText = document.getElementById('checkpointReminderText');
 
     function formatDateTime(dateTimeString) {
       if (!dateTimeString) return 'No registrado';
@@ -339,10 +363,58 @@
       summaryCheckin.textContent = formatDateTime(assignment.horaCheckin);
     }
 
+    function updateLastCheckpointSummary(recorridosOrdenados) {
+      if (!recorridosOrdenados.length) {
+        lastCheckpointNombre.textContent = 'Sin registros';
+        lastCheckpointHora.textContent = 'No registrada';
+        return;
+      }
+
+      const ultimoRecorrido = recorridosOrdenados[0];
+      lastCheckpointNombre.textContent = checkpointName(ultimoRecorrido.checkpointId);
+      lastCheckpointHora.textContent = formatDateTime(ultimoRecorrido.fechaHora);
+    }
+
+    function updateRecorridoReminder(recorridosOrdenados) {
+      const assignmentId = Number(assignmentSelect.value);
+      const assignment = assignments.find(a => a.id === assignmentId);
+
+      if (!assignmentId) {
+        checkpointReminderIcon.textContent = 'ℹ';
+        checkpointReminderText.textContent = 'Selecciona una asignación para revisar el estado del recorrido.';
+        return;
+      }
+
+      if (!assignment || !assignment.horaCheckin) {
+        checkpointReminderIcon.textContent = 'ℹ';
+        checkpointReminderText.textContent = 'Inicia el turno para comenzar a registrar recorridos.';
+        return;
+      }
+
+      const now = Date.now();
+      const ultimoMomento = recorridosOrdenados.length
+        ? new Date(recorridosOrdenados[0].fechaHora).getTime()
+        : new Date(assignment.horaCheckin).getTime();
+
+      const diffMinutes = (now - ultimoMomento) / 60000;
+
+      if (diffMinutes >= 10) {
+        checkpointReminderIcon.textContent = '⚠';
+        checkpointReminderText.textContent = 'Sin evidencia reciente de recorrido. Confirma un checkpoint cuanto antes.';
+        return;
+      }
+
+      checkpointReminderIcon.textContent = '✔';
+      checkpointReminderText.textContent = 'Recorrido al día. Mantén el registro de checkpoints durante el turno.';
+    }
+
     function renderRecorridos() {
       const assignmentId = Number(assignmentSelect.value);
 
       if (!assignmentId) {
+        updateLastCheckpointSummary([]);
+        updateRecorridoReminder([]);
+
         checkpointTableBody.innerHTML = `
           <tr class="mis-row">
             <td colspan="3">Selecciona una asignación para ver recorridos registrados.</td>
@@ -355,6 +427,9 @@
         .filter(r => r.asignacionId === assignmentId)
         .sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
 
+      updateLastCheckpointSummary(filtered);
+      updateRecorridoReminder(filtered);
+
       if (!filtered.length) {
         checkpointTableBody.innerHTML = `
           <tr class="mis-row">
@@ -364,7 +439,7 @@
         return;
       }
 
-      checkpointTableBody.innerHTML = filtered.map(r => `
+      checkpointTableBody.innerHTML = filtered.map((r, index) => `
         <tr class="mis-row">
           <td>
             <div class="zone-cell">
@@ -376,7 +451,7 @@
           <td>
             <div class="checkpoint-status-row">
               <span class="green-text">✔</span>
-              <span class="green-text">Confirmado</span>
+              <span class="green-text">${index === 0 ? 'Último validado' : 'Confirmado'}</span>
             </div>
           </td>
         </tr>
