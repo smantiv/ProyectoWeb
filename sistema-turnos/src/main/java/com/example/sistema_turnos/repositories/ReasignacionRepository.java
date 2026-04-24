@@ -15,4 +15,7 @@ public interface ReasignacionRepository extends JpaRepository<Reasignacion, Long
 
     List<Reasignacion> findByDocenteIdAndEstado(Long docenteId, String estado);
 
+    List<Reasignacion> findByTurnoId(Long turnoId);
+
+    List<Reasignacion> findByTurnoIdAndEstado(Long turnoId, String estado);
 }

@@ -1,13 +1,19 @@
 package com.example.sistema_turnos.services;
 
+import com.example.sistema_turnos.dtos.DocenteDTO;
 import com.example.sistema_turnos.dtos.ReasignacionDTO;
+import com.example.sistema_turnos.dtos.UsuarioDTO;
 import com.example.sistema_turnos.entities.Docente;
 import com.example.sistema_turnos.entities.Reasignacion;
+import com.example.sistema_turnos.entities.Turno;
+import com.example.sistema_turnos.repositories.AsignacionTurnoRepository;
 import com.example.sistema_turnos.repositories.DocenteRepository;
 import com.example.sistema_turnos.repositories.ReasignacionRepository;
+import com.example.sistema_turnos.repositories.TurnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,75 +21,105 @@ import java.util.stream.Collectors;
 @Service
 public class ReasignacionService {
 
-    @Autowired
-    private ReasignacionRepository reasignacionRepository;
+    @Autowired private ReasignacionRepository reasignacionRepository;
+    @Autowired private DocenteRepository docenteRepository;
+    @Autowired private TurnoRepository turnoRepository;
+    @Autowired private AsignacionTurnoRepository asignacionTurnoRepository;
 
-    @Autowired
-    private DocenteRepository docenteRepository;
+    // Crear solicitud de reasignación
+    public ReasignacionDTO crearReasignacion(ReasignacionDTO dto) {
+        Reasignacion r = new Reasignacion();
+        r.setMotivo(dto.getMotivo());
+        r.setFechaSolicitud(LocalDateTime.now());
+        r.setEstado("pendiente");
 
-    public ReasignacionDTO crearReasignacion(ReasignacionDTO reasignacionDTO) {
-        Reasignacion reasignacion = new Reasignacion();
-        reasignacion.setMotivo(reasignacionDTO.getMotivo());
-        reasignacion.setFechaSolicitud(reasignacionDTO.getFechaSolicitud());
-        reasignacion.setFechaRespuesta(reasignacionDTO.getFechaRespuesta());
-        reasignacion.setEstado(reasignacionDTO.getEstado() != null ? reasignacionDTO.getEstado() : "pendiente");
-
-        if (reasignacionDTO.getDocenteId() != null) {
-            Optional<Docente> docente = docenteRepository.findById(reasignacionDTO.getDocenteId());
-            docente.ifPresent(reasignacion::setDocente);
+        if (dto.getDocenteId() != null) {
+            docenteRepository.findById(dto.getDocenteId()).ifPresent(r::setDocente);
+        }
+        if (dto.getTurnoId() != null) {
+            turnoRepository.findById(dto.getTurnoId()).ifPresent(r::setTurno);
         }
 
-        Reasignacion reasignacionGuardada = reasignacionRepository.save(reasignacion);
-        return convertToDTO(reasignacionGuardada);
+        return convertToDTO(reasignacionRepository.save(r));
+    }
+
+    // Candidatos disponibles para cubrir un turno
+    public List<DocenteDTO> obtenerCandidatos(Long turnoId) {
+        List<Long> ocupados = asignacionTurnoRepository.findByTurnoId(turnoId)
+                .stream().map(a -> a.getDocente().getId()).collect(Collectors.toList());
+
+        List<Long> enProceso = reasignacionRepository.findByTurnoIdAndEstado(turnoId, "pendiente")
+                .stream().map(r -> r.getDocente().getId()).collect(Collectors.toList());
+
+        return docenteRepository.findAll().stream()
+                .filter(d -> !ocupados.contains(d.getId()) && !enProceso.contains(d.getId()))
+                .map(this::convertDocenteToDTO)
+                .limit(5)
+                .collect(Collectors.toList());
+    }
+
+    // Aceptar o rechazar una reasignación
+    public ReasignacionDTO responder(Long id, Long docenteReemplazoId, String decision) {
+        Optional<Reasignacion> opt = reasignacionRepository.findById(id);
+        if (opt.isEmpty()) return null;
+
+        Reasignacion r = opt.get();
+        r.setEstado(decision);
+        r.setFechaRespuesta(LocalDateTime.now());
+
+        if ("aceptada".equals(decision) && docenteReemplazoId != null) {
+            docenteRepository.findById(docenteReemplazoId).ifPresent(r::setDocenteReemplazo);
+        }
+
+        return convertToDTO(reasignacionRepository.save(r));
+    }
+
+    // CRUD estándar
+    public List<ReasignacionDTO> obtenerTodasLasReasignaciones() {
+        return reasignacionRepository.findAll().stream()
+                .map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public ReasignacionDTO obtenerReasignacionPorId(Long id) {
-        Optional<Reasignacion> reasignacion = reasignacionRepository.findById(id);
-        return reasignacion.map(this::convertToDTO).orElse(null);
+        return reasignacionRepository.findById(id).map(this::convertToDTO).orElse(null);
     }
 
     public List<ReasignacionDTO> obtenerReasignacionesPorDocente(Long docenteId) {
         return reasignacionRepository.findByDocenteId(docenteId).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public List<ReasignacionDTO> obtenerReasignacionesPorEstado(String estado) {
         return reasignacionRepository.findByEstado(estado).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public List<ReasignacionDTO> obtenerReasignacionesPorDocenteYEstado(Long docenteId, String estado) {
         return reasignacionRepository.findByDocenteIdAndEstado(docenteId, estado).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    public List<ReasignacionDTO> obtenerTodasLasReasignaciones() {
-        return reasignacionRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
+    public ReasignacionDTO actualizarReasignacion(Long id, ReasignacionDTO dto) {
+        Optional<Reasignacion> opt = reasignacionRepository.findById(id);
+        if (opt.isEmpty()) return null;
 
-    public ReasignacionDTO actualizarReasignacion(Long id, ReasignacionDTO reasignacionDTO) {
-        Optional<Reasignacion> reasignacionExistente = reasignacionRepository.findById(id);
-        if (reasignacionExistente.isPresent()) {
-            Reasignacion reasignacion = reasignacionExistente.get();
-            reasignacion.setMotivo(reasignacionDTO.getMotivo());
-            reasignacion.setFechaSolicitud(reasignacionDTO.getFechaSolicitud());
-            reasignacion.setFechaRespuesta(reasignacionDTO.getFechaRespuesta());
-            reasignacion.setEstado(reasignacionDTO.getEstado());
+        Reasignacion r = opt.get();
+        r.setMotivo(dto.getMotivo());
+        r.setFechaSolicitud(dto.getFechaSolicitud());
+        r.setFechaRespuesta(dto.getFechaRespuesta());
+        r.setEstado(dto.getEstado());
 
-            if (reasignacionDTO.getDocenteId() != null) {
-                Optional<Docente> docente = docenteRepository.findById(reasignacionDTO.getDocenteId());
-                docente.ifPresent(reasignacion::setDocente);
-            }
-
-            Reasignacion reasignacionActualizada = reasignacionRepository.save(reasignacion);
-            return convertToDTO(reasignacionActualizada);
+        if (dto.getDocenteId() != null) {
+            docenteRepository.findById(dto.getDocenteId()).ifPresent(r::setDocente);
         }
-        return null;
+        if (dto.getTurnoId() != null) {
+            turnoRepository.findById(dto.getTurnoId()).ifPresent(r::setTurno);
+        }
+        if (dto.getDocenteReemplazoId() != null) {
+            docenteRepository.findById(dto.getDocenteReemplazoId()).ifPresent(r::setDocenteReemplazo);
+        }
+
+        return convertToDTO(reasignacionRepository.save(r));
     }
 
     public boolean eliminarReasignacion(Long id) {
@@ -94,15 +130,45 @@ public class ReasignacionService {
         return false;
     }
 
-    private ReasignacionDTO convertToDTO(Reasignacion reasignacion) {
-        Long docenteId = reasignacion.getDocente() != null ? reasignacion.getDocente().getId() : null;
-        return new ReasignacionDTO(
-                reasignacion.getId(),
-                reasignacion.getMotivo(),
-                reasignacion.getFechaSolicitud(),
-                reasignacion.getFechaRespuesta(),
-                reasignacion.getEstado(),
-                docenteId
-        );
+    // Conversores
+    private ReasignacionDTO convertToDTO(Reasignacion r) {
+        ReasignacionDTO dto = new ReasignacionDTO();
+        dto.setId(r.getId());
+        dto.setMotivo(r.getMotivo());
+        dto.setFechaSolicitud(r.getFechaSolicitud());
+        dto.setFechaRespuesta(r.getFechaRespuesta());
+        dto.setEstado(r.getEstado());
+
+        if (r.getDocente() != null) {
+            dto.setDocenteId(r.getDocente().getId());
+            if (r.getDocente().getUsuario() != null)
+                dto.setDocenteNombre(r.getDocente().getUsuario().getNombre());
+        }
+        if (r.getDocenteReemplazo() != null) {
+            dto.setDocenteReemplazoId(r.getDocenteReemplazo().getId());
+            if (r.getDocenteReemplazo().getUsuario() != null)
+                dto.setDocenteReemplazoNombre(r.getDocenteReemplazo().getUsuario().getNombre());
+        }
+        if (r.getTurno() != null) {
+            dto.setTurnoId(r.getTurno().getId());
+            String zona = r.getTurno().getZona() != null ? r.getTurno().getZona().getNombre() : "Sin zona";
+            dto.setTurnoDescripcion(zona + " — " + r.getTurno().getFecha()
+                    + " — " + r.getTurno().getHoraInicio() + "–" + r.getTurno().getHoraFin());
+        }
+
+        return dto;
+    }
+
+    private DocenteDTO convertDocenteToDTO(Docente d) {
+        UsuarioDTO uDTO = null;
+        if (d.getUsuario() != null) {
+            uDTO = new UsuarioDTO(
+                    d.getUsuario().getId(),
+                    d.getUsuario().getNombre(),
+                    d.getUsuario().getEmail(),
+                    d.getUsuario().getRol(),
+                    d.getUsuario().getActivo());
+        }
+        return new DocenteDTO(d.getId(), d.getCodigoInstitucional(), uDTO);
     }
 }
