@@ -3,72 +3,51 @@ package com.example.sistema_turnos.dtos;
 import java.time.LocalDateTime;
 
 public class ReasignacionDTO {
-    
+
     private Long id;
     private String motivo;
     private LocalDateTime fechaSolicitud;
     private LocalDateTime fechaRespuesta;
     private String estado;
     private Long docenteId;
+    private String docenteNombre;
+    private Long docenteReemplazoId;
+    private String docenteReemplazoNombre;
+    private Long turnoId;
+    private String turnoDescripcion;
 
-    public ReasignacionDTO() {
-    }
+    public ReasignacionDTO() {}
 
-    public ReasignacionDTO(Long id, String motivo, LocalDateTime fechaSolicitud, LocalDateTime fechaRespuesta, String estado, Long docenteId) {
-        this.id = id;
-        this.motivo = motivo;
-        this.fechaSolicitud = fechaSolicitud;
-        this.fechaRespuesta = fechaRespuesta;
-        this.estado = estado;
-        this.docenteId = docenteId;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
-    }
+    public String getMotivo() { return motivo; }
+    public void setMotivo(String motivo) { this.motivo = motivo; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public LocalDateTime getFechaSolicitud() { return fechaSolicitud; }
+    public void setFechaSolicitud(LocalDateTime fechaSolicitud) { this.fechaSolicitud = fechaSolicitud; }
 
-    public String getMotivo() {
-        return motivo;
-    }
+    public LocalDateTime getFechaRespuesta() { return fechaRespuesta; }
+    public void setFechaRespuesta(LocalDateTime fechaRespuesta) { this.fechaRespuesta = fechaRespuesta; }
 
-    public void setMotivo(String motivo) {
-        this.motivo = motivo;
-    }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 
-    public LocalDateTime getFechaSolicitud() {
-        return fechaSolicitud;
-    }
+    public Long getDocenteId() { return docenteId; }
+    public void setDocenteId(Long docenteId) { this.docenteId = docenteId; }
 
-    public void setFechaSolicitud(LocalDateTime fechaSolicitud) {
-        this.fechaSolicitud = fechaSolicitud;
-    }
+    public String getDocenteNombre() { return docenteNombre; }
+    public void setDocenteNombre(String docenteNombre) { this.docenteNombre = docenteNombre; }
 
-    public LocalDateTime getFechaRespuesta() {
-        return fechaRespuesta;
-    }
+    public Long getDocenteReemplazoId() { return docenteReemplazoId; }
+    public void setDocenteReemplazoId(Long docenteReemplazoId) { this.docenteReemplazoId = docenteReemplazoId; }
 
-    public void setFechaRespuesta(LocalDateTime fechaRespuesta) {
-        this.fechaRespuesta = fechaRespuesta;
-    }
+    public String getDocenteReemplazoNombre() { return docenteReemplazoNombre; }
+    public void setDocenteReemplazoNombre(String docenteReemplazoNombre) { this.docenteReemplazoNombre = docenteReemplazoNombre; }
 
-    public String getEstado() {
-        return estado;
-    }
+    public Long getTurnoId() { return turnoId; }
+    public void setTurnoId(Long turnoId) { this.turnoId = turnoId; }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public Long getDocenteId() {
-        return docenteId;
-    }
-
-    public void setDocenteId(Long docenteId) {
-        this.docenteId = docenteId;
-    }
+    public String getTurnoDescripcion() { return turnoDescripcion; }
+    public void setTurnoDescripcion(String turnoDescripcion) { this.turnoDescripcion = turnoDescripcion; }
 }
