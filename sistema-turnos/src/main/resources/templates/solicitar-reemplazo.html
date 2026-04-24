@@ -169,50 +169,126 @@
     </footer>
   </div>
 
+  <script src="/js/api/ApiClient.js"></script>
+  <script src="/js/api/TurnoService.js"></script>
+  <script src="/js/api/DocenteService.js"></script>
+  <script src="/js/api/ReasignacionService.js"></script>
   <script>
-    const replacementForm = document.getElementById('replacementForm');
-    const replacementConfirmation = document.getElementById('replacementConfirmation');
-    const urgencyButtons = document.querySelectorAll('.urgency-btn');
-    const urgencyValue = document.getElementById('urgencyValue');
+    // Cargar turnos disponibles en el select
+    async function cargarTurnos() {
+      try {
+        const res = await fetch('/api/v1/turnos');
+        const turnos = await res.json();
+        const select = document.getElementById('shiftSelect');
+        select.innerHTML = '<option value="">Selecciona un turno</option>';
+        turnos.forEach(t => {
+          const zona = t.zonaNombre || t.zonaId || 'Zona';
+          const opt = document.createElement('option');
+          opt.value = t.id;
+          opt.textContent = `${zona} — ${t.fecha} — ${t.horaInicio}–${t.horaFin}`;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        console.error('Error cargando turnos:', e);
+      }
+    }
 
-    urgencyButtons.forEach(btn => {
-      btn.addEventListener('click', function () {
-        urgencyButtons.forEach(b => {
-          b.classList.remove('urgency-selected-normal', 'urgency-selected-urgent');
+    // Al seleccionar turno, cargar candidatos disponibles
+    document.getElementById('shiftSelect').addEventListener('change', async function () {
+      const turnoId = this.value;
+      const select = document.getElementById('professorSelect');
+      select.innerHTML = '<option value="">Sin preferencia</option>';
+      if (!turnoId) return;
+      try {
+        const res = await fetch(`/api/v1/reasignaciones/candidatos/${turnoId}`);
+        const candidatos = await res.json();
+        candidatos.forEach(d => {
+          const nombre = d.usuario ? d.usuario.nombre : d.codigoInstitucional;
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = nombre;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        console.error('Error cargando candidatos:', e);
+      }
+    });
+
+    // Enviar solicitud de reasignación
+    document.getElementById('replacementForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const turnoId = document.getElementById('shiftSelect').value;
+      const motivo = document.getElementById('replacementReason').value;
+      const docenteReemplazoId = document.getElementById('professorSelect').value || null;
+
+      if (!turnoId || !motivo) {
+        alert('Por favor selecciona un turno e ingresa el motivo.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/v1/reasignaciones', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            docenteId: 1, // temporal hasta que haya sesión de usuario
+            turnoId: Number(turnoId),
+            docenteReemplazoId: docenteReemplazoId ? Number(docenteReemplazoId) : null,
+            motivo: motivo
+          })
         });
 
-        const urgency = this.getAttribute('data-urgency');
-        urgencyValue.value = urgency;
-
-        if (urgency === 'normal') {
-          this.classList.add('urgency-selected-normal');
+        if (res.ok) {
+          const confirmacion = document.getElementById('replacementConfirmation');
+          if (confirmacion) {
+            confirmacion.classList.remove('hidden');
+            setTimeout(() => confirmacion.classList.add('hidden'), 5000);
+          }
+          this.reset();
+          await cargarHistorial();
         } else {
-          this.classList.add('urgency-selected-urgent');
+          alert('Error al enviar la solicitud. Intenta de nuevo.');
         }
-      });
+      } catch (e) {
+        console.error('Error enviando solicitud:', e);
+      }
     });
 
-    replacementForm.addEventListener('submit', function (e) {
-      e.preventDefault();
+    // Cargar historial de reasignaciones en la tabla
+    async function cargarHistorial() {
+      try {
+        const res = await fetch('/api/v1/reasignaciones');
+        const todas = await res.json();
+        const tbody = document.querySelector('tbody');
+        if (!tbody) return;
 
-      replacementConfirmation.classList.remove('hidden');
-      replacementConfirmation.classList.add('fade-in');
+        if (!todas.length) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">No hay solicitudes registradas.</td></tr>';
+          return;
+        }
 
-      replacementForm.reset();
-      urgencyValue.value = 'normal';
+        tbody.innerHTML = todas.map(r => {
+          const badge = r.estado === 'aceptada'
+            ? '<span style="color:green;font-weight:bold">✔ Aceptada</span>'
+            : r.estado === 'rechazada'
+            ? '<span style="color:red;font-weight:bold">✖ Rechazada</span>'
+            : '<span style="color:orange;font-weight:bold">🕒 Pendiente</span>';
 
-      urgencyButtons.forEach(b => {
-        b.classList.remove('urgency-selected-normal', 'urgency-selected-urgent');
-      });
+          return `<tr>
+            <td>${r.turnoDescripcion || '—'}</td>
+            <td>${r.fechaSolicitud ? r.fechaSolicitud.substring(0, 10) : '—'}</td>
+            <td>${r.docenteReemplazoNombre || 'Sin asignar'}</td>
+            <td>${badge}</td>
+          </tr>`;
+        }).join('');
+      } catch (e) {
+        console.error('Error cargando historial:', e);
+      }
+    }
 
-      const normalBtn = document.querySelector('[data-urgency="normal"]');
-      if (normalBtn) normalBtn.classList.add('urgency-selected-normal');
-
-      setTimeout(() => {
-        replacementConfirmation.classList.add('hidden');
-        replacementConfirmation.classList.remove('fade-in');
-      }, 5000);
-    });
+    // Inicializar al cargar la página
+    cargarTurnos();
+    cargarHistorial();
   </script>
 </body>
 </html>
