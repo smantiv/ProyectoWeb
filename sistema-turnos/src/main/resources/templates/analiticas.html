@@ -120,6 +120,7 @@
                 <thead class="thead-admin">
                   <tr>
                     <th>Zona</th>
+                    <th>Tipo de incidentes</th>>
                     <th>Cantidad de incidentes</th>
                     <th>Porcentaje sobre el total</th>
                   </tr>
@@ -295,17 +296,23 @@
 
       data.forEach(incidente => {
         const zonaNombre = resolveZonaNombre(incidente);
-        counts.set(zonaNombre, (counts.get(zonaNombre) || 0) + 1);
+        const tipo = incidente.tipo || 'Sin tipo';
+        const key = zonaNombre + '|||' + tipo;
+        counts.set(key, (counts.get(key) || 0) + 1);
       });
 
       const total = data.length;
 
       return Array.from(counts.entries())
-        .map(([zona, cantidad]) => ({
-          zona,
-          cantidad,
-          porcentaje: total ? ((cantidad / total) * 100) : 0
-        }))
+        .map(([key, cantidad]) => {
+          const [zona, tipo] = key.split('|||');
+          return {
+            zona,
+            tipo,
+            cantidad,
+            porcentaje: total ? ((cantidad / total) * 100) : 0
+          };
+        })
         .sort((a, b) => b.cantidad - a.cantidad || a.zona.localeCompare(b.zona));
     }
 
@@ -354,24 +361,34 @@
       if (!data.length) {
         heatmapTableBody.innerHTML = `
           <tr class="table-row-hover">
-            <td colspan="3">No hay incidentes para los filtros seleccionados.</td>
+            <td colspan="4">No hay incidentes para los filtros seleccionados.</td>
           </tr>
         `;
         return;
       }
 
-      heatmapTableBody.innerHTML = rows.map(row => `
-        <tr class="table-row-hover">
-          <td>
-            <div class="action-cell">
-              <span class="zone-icon">📍</span>
-              <span class="action-title">${row.zona}</span>
-            </div>
-          </td>
-          <td>${row.cantidad}</td>
-          <td>${row.porcentaje.toFixed(2)}%</td>
-        </tr>
-      `).join('');
+      heatmapTableBody.innerHTML = rows.map(row => {
+        const intensidad = row.porcentaje >= 30 ? '#ff4d4d'
+          : row.porcentaje >= 15 ? '#ffa500'
+          : row.porcentaje >= 5  ? '#ffd700'
+          : '#90ee90';
+
+        return `
+          <tr class="table-row-hover">
+            <td>
+              <div class="action-cell">
+                <span class="zone-icon">📍</span>
+                <span class="action-title">${row.zona}</span>
+              </div>
+            </td>
+            <td>${row.tipo}</td>
+            <td>${row.cantidad}</td>
+            <td style="background-color:${intensidad};font-weight:bold;text-align:center">
+              ${row.porcentaje.toFixed(2)}%
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function renderAnalytics() {
