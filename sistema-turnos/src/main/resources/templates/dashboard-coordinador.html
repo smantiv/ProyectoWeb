@@ -125,7 +125,7 @@
             <div class="admin-stat-top">
               <div class="admin-stat-icon bg-red">👥</div>
             </div>
-            <h3>3</h3>
+            <h3 id="contadorReasignacionesPendientes">0</h3>
             <p>Solicitudes de reemplazo pendientes</p>
           </article>
 
@@ -178,7 +178,7 @@
                   <th>Acción</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="tablaReasignaciones">
                 <tr class="table-row-hover">
                   <td>Prof. María González</td>
                   <td>Patio Principal</td>
@@ -287,144 +287,216 @@
     </footer>
   </div>
   <script>
-document.addEventListener("DOMContentLoaded", cargarIncidentesActivos);
+    document.addEventListener("DOMContentLoaded", cargarIncidentesActivos);
 
-async function cargarIncidentesActivos() {
-  try {
-    const response = await fetch("/api/v1/incidentes");
-    const incidentes = await response.json();
+    async function cargarIncidentesActivos() {
+      try {
+        const response = await fetch("/api/v1/incidentes");
+        const incidentes = await response.json();
 
-    const tabla = document.getElementById("tablaIncidentesActivos");
-    const totalIncidentesHoy = document.getElementById("totalIncidentesHoy");
-    tabla.innerHTML = "";
+        const tabla = document.getElementById("tablaIncidentesActivos");
+        const totalIncidentesHoy = document.getElementById("totalIncidentesHoy");
+        tabla.innerHTML = "";
 
-    const hoy = new Date().toISOString().slice(0, 10);
+        const hoy = new Date().toISOString().slice(0, 10);
 
-    const incidentesHoy = incidentes.filter(inc => {
-      if (!inc.fechaHora) return false;
-      return inc.fechaHora.slice(0, 10) === hoy;
-    });
+        const incidentesHoy = incidentes.filter(inc => {
+          if (!inc.fechaHora) return false;
+          return inc.fechaHora.slice(0, 10) === hoy;
+        });
 
-    totalIncidentesHoy.textContent = incidentesHoy.length;
+        totalIncidentesHoy.textContent = incidentesHoy.length;
 
 
-    // Mostrar solo los incidentes que NO estén resueltos
-    const incidentesActivos = incidentes.filter(inc =>
-      String(inc.estado || "").toLowerCase().trim() !== "resuelto"
-    );
+        // Mostrar solo los incidentes que NO estén resueltos
+        const incidentesActivos = incidentes.filter(inc =>
+          String(inc.estado || "").toLowerCase().trim() !== "resuelto"
+        );
 
-    incidentesActivos.forEach(inc => {
-      tabla.innerHTML += `
-        <tr class="table-row-hover">
-          <td>${inc.tipo ?? "-"}</td>
-          <td>${inc.ubicacion ?? "-"}</td>
-          <td>${inc.fechaHora ? inc.fechaHora.substring(11,16) : "-"}</td>
-          <td>${badgeSeveridad(inc.severidad)}</td>
-          <td>${badgeEstado(inc.estado)}</td>
-          <td>
-            <div class="teacher-actions">
-              <button type="button" class="coord-btn coord-view-btn" onclick="verIncidente(${inc.id})">👁 Ver</button>
-               ${
-            String(inc.estado || "").toLowerCase().trim() === "resuelto"
-               ? `<button type="button" class="coord-btn coord-approve-btn" disabled>✓ Resuelto</button>`
-               : `<button type="button" class="coord-btn coord-resolve-btn" onclick="resolverIncidente(${inc.id})">✔ Resolver</button>`
-                }              
-            </div>
-          </td>
-        </tr>
-      `;
-    });
+        incidentesActivos.forEach(inc => {
+          tabla.innerHTML += `
+            <tr class="table-row-hover">
+              <td>${inc.tipo ?? "-"}</td>
+              <td>${inc.ubicacion ?? "-"}</td>
+              <td>${inc.fechaHora ? inc.fechaHora.substring(11,16) : "-"}</td>
+              <td>${badgeSeveridad(inc.severidad)}</td>
+              <td>${badgeEstado(inc.estado)}</td>
+              <td>
+                <div class="teacher-actions">
+                  <button type="button" class="coord-btn coord-view-btn" onclick="verIncidente(${inc.id})">👁 Ver</button>
+                  ${
+                String(inc.estado || "").toLowerCase().trim() === "resuelto"
+                  ? `<button type="button" class="coord-btn coord-approve-btn" disabled>✓ Resuelto</button>`
+                  : `<button type="button" class="coord-btn coord-resolve-btn" onclick="resolverIncidente(${inc.id})">✔ Resolver</button>`
+                    }              
+                </div>
+              </td>
+            </tr>
+          `;
+        });
 
-    if (incidentesActivos.length === 0) {
-      tabla.innerHTML = `
-        <tr>
-          <td colspan="6" style="text-align:center; padding: 20px;">
-            No hay incidentes activos.
-          </td>
-        </tr>
-      `;
+        if (incidentesActivos.length === 0) {
+          tabla.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align:center; padding: 20px;">
+                No hay incidentes activos.
+              </td>
+            </tr>
+          `;
+        }
+
+      } catch (error) {
+        console.error("Error cargando incidentes activos:", error);
+      }
     }
 
-  } catch (error) {
-    console.error("Error cargando incidentes activos:", error);
-  }
-}
+    function badgeSeveridad(severidad) {
+      const valor = String(severidad || "").toLowerCase().trim();
 
-function badgeSeveridad(severidad) {
-  const valor = String(severidad || "").toLowerCase().trim();
+      if (valor === "baja") {
+        return `<span class="request-badge request-accepted">Baja</span>`;
+      }
+      if (valor === "media") {
+        return `<span class="badge badge-yellow">Media</span>`;
+      }
+      if (valor === "alta") {
+        return `<span class="badge badge-orange">Alta</span>`;
+      }
+      if (valor === "critica" || valor === "crítica") {
+        return `<span class="request-badge request-rejected">Crítica</span>`;
+      }
 
-  if (valor === "baja") {
-    return `<span class="request-badge request-accepted">Baja</span>`;
-  }
-  if (valor === "media") {
-    return `<span class="badge badge-yellow">Media</span>`;
-  }
-  if (valor === "alta") {
-    return `<span class="badge badge-orange">Alta</span>`;
-  }
-  if (valor === "critica" || valor === "crítica") {
-    return `<span class="request-badge request-rejected">Crítica</span>`;
-  }
-
-  return valor || "-";
-}
-
-function badgeEstado(estado) {
-  const valor = String(estado || "").toLowerCase().trim();
-
-  if (valor === "reportado" || valor === "pendiente") {
-    return `<span class="request-badge request-pending">Pendiente</span>`;
-  }
-  if (valor === "en_revision" || valor === "en proceso") {
-    return `<span class="request-badge request-orange">En proceso</span>`;
-  }
-  if (valor === "resuelto") {
-    return `<span class="request-badge request-accepted">Resuelto</span>`;
-  }
-
-  return valor || "-";
-}
-
-async function resolverIncidente(id) {
-  try {
-    const confirmar = confirm("¿Deseas marcar este incidente como resuelto?");
-    if (!confirmar) return;
-
-    const response = await fetch(`/api/v1/incidentes/${id}`);
-    if (!response.ok) {
-      throw new Error("No se pudo obtener el incidente");
+      return valor || "-";
     }
 
-    const incidente = await response.json();
-    console.log("Incidente antes de actualizar:", incidente);
+    function badgeEstado(estado) {
+      const valor = String(estado || "").toLowerCase().trim();
 
-    incidente.estado = "resuelto";
+      if (valor === "reportado" || valor === "pendiente") {
+        return `<span class="request-badge request-pending">Pendiente</span>`;
+      }
+      if (valor === "en_revision" || valor === "en proceso") {
+        return `<span class="request-badge request-orange">En proceso</span>`;
+      }
+      if (valor === "resuelto") {
+        return `<span class="request-badge request-accepted">Resuelto</span>`;
+      }
 
-    const updateResponse = await fetch(`/api/v1/incidentes/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(incidente)
-    });
-
-    if (!updateResponse.ok) {
-      const errorText = await updateResponse.text();
-      console.error("Error PUT:", errorText);
-      throw new Error("No se pudo actualizar el incidente");
+      return valor || "-";
     }
 
-    const actualizado = await updateResponse.json();
-    console.log("Incidente actualizado:", actualizado);
+    async function resolverIncidente(id) {
+      try {
+        const confirmar = confirm("¿Deseas marcar este incidente como resuelto?");
+        if (!confirmar) return;
 
-    alert("Incidente marcado como resuelto.");
-    cargarIncidentesActivos();
+        const response = await fetch(`/api/v1/incidentes/${id}`);
+        if (!response.ok) {
+          throw new Error("No se pudo obtener el incidente");
+        }
 
-  } catch (error) {
-    console.error("Error al resolver incidente:", error);
-    alert("Hubo un error al actualizar el estado.");
-  }
-}
-</script>
+        const incidente = await response.json();
+        console.log("Incidente antes de actualizar:", incidente);
+
+        incidente.estado = "resuelto";
+
+        const updateResponse = await fetch(`/api/v1/incidentes/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(incidente)
+        });
+
+        if (!updateResponse.ok) {
+          const errorText = await updateResponse.text();
+          console.error("Error PUT:", errorText);
+          throw new Error("No se pudo actualizar el incidente");
+        }
+
+        const actualizado = await updateResponse.json();
+        console.log("Incidente actualizado:", actualizado);
+
+        alert("Incidente marcado como resuelto.");
+        cargarIncidentesActivos();
+
+      } catch (error) {
+        console.error("Error al resolver incidente:", error);
+        alert("Hubo un error al actualizar el estado.");
+      }
+    }
+    
+    document.addEventListener("DOMContentLoaded", cargarReasignaciones);
+
+    async function cargarReasignaciones() {
+      try {
+        const res = await fetch('/api/v1/reasignaciones');
+        const todas = await res.json();
+
+        // Actualizar contador de pendientes
+        const pendientes = todas.filter(r => r.estado === 'pendiente');
+        const contadorEl = document.getElementById('contadorReasignacionesPendientes');
+        if (contadorEl) contadorEl.textContent = pendientes.length;
+
+        // Llenar tabla
+        const tbody = document.getElementById('tablaReasignaciones');
+        if (!tbody) return;
+
+        if (!todas.length) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px">No hay solicitudes registradas.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = todas.map(r => {
+          const badge = r.estado === 'aceptada'
+            ? '<span class="request-badge request-accepted">Aceptada</span>'
+            : r.estado === 'rechazada'
+            ? '<span class="request-badge request-rejected">Rechazada</span>'
+            : '<span class="request-badge request-pending">Pendiente</span>';
+
+          const acciones = r.estado === 'pendiente'
+            ? `<div class="teacher-actions">
+                <button type="button" class="coord-btn coord-approve-btn" onclick="responderReasignacion(${r.id}, 'aceptada')">👍 Aprobar</button>
+                <button type="button" class="coord-btn coord-reject-btn" onclick="responderReasignacion(${r.id}, 'rechazada')">👎 Rechazar</button>
+              </div>`
+            : `<span style="color:gray;font-size:0.85rem">Sin acciones</span>`;
+
+          return `<tr class="table-row-hover">
+            <td>${r.docenteNombre || '—'}</td>
+            <td>${r.turnoDescripcion || '—'}</td>
+            <td>${r.fechaSolicitud ? r.fechaSolicitud.substring(0, 10) : '—'}</td>
+            <td>${r.motivo || '—'}</td>
+            <td>${badge}</td>
+            <td>${acciones}</td>
+          </tr>`;
+        }).join('');
+
+      } catch (e) {
+        console.error('Error cargando reasignaciones:', e);
+      }
+    }
+
+    async function responderReasignacion(id, decision) {
+      const confirmar = confirm(`¿Deseas ${decision === 'aceptada' ? 'aprobar' : 'rechazar'} esta solicitud?`);
+      if (!confirmar) return;
+
+      try {
+        const res = await fetch(`/api/v1/reasignaciones/${id}/responder`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decision })
+        });
+
+        if (res.ok) {
+          alert(`Solicitud ${decision} correctamente.`);
+          cargarReasignaciones();
+        } else {
+          alert('Error al procesar la solicitud.');
+        }
+      } catch (e) {
+        console.error('Error respondiendo reasignacion:', e);
+      }
+    }
+  </script>
 </body>
 </html>
