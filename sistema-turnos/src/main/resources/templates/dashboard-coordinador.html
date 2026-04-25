@@ -175,6 +175,8 @@
                   <th>Fecha</th>
                   <th>Motivo</th>
                   <th>Estado</th>
+                  <th>Docente reemplazo</th>
+                  <th>Fecha respuesta</th>
                   <th>Acción</th>
                 </tr>
               </thead>
@@ -456,7 +458,7 @@
 
           const acciones = r.estado === 'pendiente'
             ? `<div class="teacher-actions">
-                <button type="button" class="coord-btn coord-approve-btn" onclick="responderReasignacion(${r.id}, 'aceptada')">👍 Aprobar</button>
+                <button type="button" class="coord-btn coord-approve-btn" onclick="responderReasignacion(${r.id}, 'aceptada', ${r.turnoId})">👍 Aprobar</button>
                 <button type="button" class="coord-btn coord-reject-btn" onclick="responderReasignacion(${r.id}, 'rechazada')">👎 Rechazar</button>
               </div>`
             : `<span style="color:gray;font-size:0.85rem">Sin acciones</span>`;
@@ -467,6 +469,8 @@
             <td>${r.fechaSolicitud ? r.fechaSolicitud.substring(0, 10) : '—'}</td>
             <td>${r.motivo || '—'}</td>
             <td>${badge}</td>
+            <td>${r.docenteReemplazoNombre || 'Sin asignar'}</td>
+            <td>${r.fechaRespuesta ? r.fechaRespuesta.substring(0, 10) : '—'}</td>
             <td>${acciones}</td>
           </tr>`;
         }).join('');
@@ -476,27 +480,104 @@
       }
     }
 
-    async function responderReasignacion(id, decision) {
-      const confirmar = confirm(`¿Deseas ${decision === 'aceptada' ? 'aprobar' : 'rechazar'} esta solicitud?`);
-      if (!confirmar) return;
+    let reasignacionPendienteId = null;
+    let turnoIdPendiente = null;
+
+    async function responderReasignacion(reasignacionId, decision, turnoId) {
+      if (decision === 'rechazada') {
+        const confirmar = confirm('¿Deseas rechazar esta solicitud?');
+        if (!confirmar) return;
+        try {
+          const res = await fetch(`/api/v1/reasignaciones/${reasignacionId}/responder`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ decision: 'rechazada' })
+          });
+          if (res.ok) {
+            alert('Solicitud rechazada.');
+            cargarReasignaciones();
+          }
+        } catch (e) {
+          console.error('Error rechazando:', e);
+        }
+        return;
+      }
+
+      // Si es aceptada, abrir modal con candidatos
+      reasignacionPendienteId = reasignacionId;
+      turnoIdPendiente = turnoId;
+
+      const select = document.getElementById('selectCandidatos');
+      select.innerHTML = '<option value="">Cargando...</option>';
+
+      const modal = document.getElementById('modalAprobar');
+      modal.style.display = 'flex';
 
       try {
-        const res = await fetch(`/api/v1/reasignaciones/${id}/responder`, {
+        const res = await fetch(`/api/v1/reasignaciones/candidatos/${turnoId}`);
+        const candidatos = await res.json();
+        select.innerHTML = '<option value="">Selecciona un docente</option>';
+        candidatos.forEach(d => {
+          const nombre = d.usuario ? d.usuario.nombre : d.codigoInstitucional;
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = nombre;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        select.innerHTML = '<option value="">Error cargando candidatos</option>';
+      }
+    }
+
+    function cerrarModalAprobar() {
+      document.getElementById('modalAprobar').style.display = 'none';
+      reasignacionPendienteId = null;
+      turnoIdPendiente = null;
+    }
+
+    async function confirmarAprobacion() {
+      const docenteReemplazoId = document.getElementById('selectCandidatos').value;
+      if (!docenteReemplazoId) {
+        alert('Debes seleccionar un docente reemplazo.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/v1/reasignaciones/${reasignacionPendienteId}/responder`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ decision })
+          body: JSON.stringify({
+            decision: 'aceptada',
+            docenteReemplazoId: Number(docenteReemplazoId)
+          })
         });
 
         if (res.ok) {
-          alert(`Solicitud ${decision} correctamente.`);
+          cerrarModalAprobar();
+          alert('Solicitud aprobada correctamente.');
           cargarReasignaciones();
         } else {
-          alert('Error al procesar la solicitud.');
+          alert('Error al aprobar la solicitud.');
         }
       } catch (e) {
-        console.error('Error respondiendo reasignacion:', e);
+        console.error('Error aprobando:', e);
       }
     }
   </script>
+
+  <!-- Modal aprobar reasignación -->
+  <div id="modalAprobar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:white; border-radius:12px; padding:32px; width:420px; max-width:90%;">
+      <h3 style="margin-bottom:16px">Seleccionar docente reemplazo</h3>
+      <p style="margin-bottom:12px; color:#666">Elige quién va a cubrir este turno:</p>
+      <select id="selectCandidatos" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; margin-bottom:20px; font-size:1rem;">
+        <option value="">Cargando candidatos...</option>
+      </select>
+      <div style="display:flex; gap:12px; justify-content:flex-end;">
+        <button onclick="cerrarModalAprobar()" style="padding:10px 20px; border:1px solid #ddd; border-radius:8px; cursor:pointer; background:white;">Cancelar</button>
+        <button onclick="confirmarAprobacion()" style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Confirmar</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
