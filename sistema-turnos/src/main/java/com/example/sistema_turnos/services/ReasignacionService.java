@@ -22,10 +22,17 @@ import java.util.stream.Collectors;
 @Service
 public class ReasignacionService {
 
-    @Autowired private ReasignacionRepository reasignacionRepository;
-    @Autowired private DocenteRepository docenteRepository;
-    @Autowired private TurnoRepository turnoRepository;
-    @Autowired private AsignacionTurnoRepository asignacionTurnoRepository;
+    @Autowired
+    private ReasignacionRepository reasignacionRepository;
+
+    @Autowired 
+    private DocenteRepository docenteRepository;
+    
+    @Autowired 
+    private TurnoRepository turnoRepository;
+    
+    @Autowired 
+    private AsignacionTurnoRepository asignacionTurnoRepository;
 
     // Crear solicitud de reasignación
     public ReasignacionDTO crearReasignacion(ReasignacionDTO dto) {
