@@ -3,6 +3,7 @@ package com.example.sistema_turnos.services;
 import com.example.sistema_turnos.dtos.DocenteDTO;
 import com.example.sistema_turnos.dtos.ReasignacionDTO;
 import com.example.sistema_turnos.dtos.UsuarioDTO;
+import com.example.sistema_turnos.entities.AsignacionTurno;
 import com.example.sistema_turnos.entities.Docente;
 import com.example.sistema_turnos.entities.Reasignacion;
 import com.example.sistema_turnos.entities.Turno;
@@ -68,7 +69,28 @@ public class ReasignacionService {
         r.setFechaRespuesta(LocalDateTime.now());
 
         if ("aceptada".equals(decision) && docenteReemplazoId != null) {
-            docenteRepository.findById(docenteReemplazoId).ifPresent(r::setDocenteReemplazo);
+            Docente reemplazo = docenteRepository.findById(docenteReemplazoId)
+                    .orElseThrow(() -> new RuntimeException("Docente reemplazo no encontrado"));
+            r.setDocenteReemplazo(reemplazo);
+
+            // Actualizar la AsignacionTurno real del turno
+            if (r.getTurno() != null) {
+                List<AsignacionTurno> asignaciones = asignacionTurnoRepository.findByTurnoId(r.getTurno().getId());
+                if (!asignaciones.isEmpty()) {
+                    // Actualizar la asignación existente con el nuevo docente
+                    AsignacionTurno asignacion = asignaciones.get(0);
+                    asignacion.setDocente(reemplazo);
+                    asignacion.setEstadoCobertura("reasignada");
+                    asignacionTurnoRepository.save(asignacion);
+                } else {
+                    // Si no existe asignación, crear una nueva
+                    AsignacionTurno nueva = new AsignacionTurno();
+                    nueva.setDocente(reemplazo);
+                    nueva.setTurno(r.getTurno());
+                    nueva.setEstadoCobertura("reasignada");
+                    asignacionTurnoRepository.save(nueva);
+                }
+            }
         }
 
         return convertToDTO(reasignacionRepository.save(r));
