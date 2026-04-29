@@ -14,7 +14,9 @@ import com.example.sistema_turnos.repositories.TurnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,14 +55,34 @@ public class ReasignacionService {
 
     // Candidatos disponibles para cubrir un turno
     public List<DocenteDTO> obtenerCandidatos(Long turnoId) {
-        List<Long> ocupados = asignacionTurnoRepository.findByTurnoId(turnoId)
-                .stream().map(a -> a.getDocente().getId()).collect(Collectors.toList());
+        // Obtener el turno que necesita cobertura
+        Turno turno = turnoRepository.findById(turnoId)
+                .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
 
+        LocalDate fechaTurno = turno.getFecha();
+        LocalTime inicioTurno = turno.getHoraInicio();
+        LocalTime finTurno = turno.getHoraFin();
+
+        // Obtener todos los turnos que se solapan en fecha y horario
+        List<Long> docentesOcupados = asignacionTurnoRepository.findAll().stream()
+                .filter(a -> {
+                    Turno t = a.getTurno();
+                    if (t == null || a.getDocente() == null) return false;
+                    // Mismo día
+                    if (!t.getFecha().equals(fechaTurno)) return false;
+                    // Se solapan si no termina antes de que empiece ni empieza después de que termine
+                    return t.getHoraInicio().isBefore(finTurno) && t.getHoraFin().isAfter(inicioTurno);
+                })
+                .map(a -> a.getDocente().getId())
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Docentes con solicitud pendiente en ese mismo turno
         List<Long> enProceso = reasignacionRepository.findByTurnoIdAndEstado(turnoId, "pendiente")
                 .stream().map(r -> r.getDocente().getId()).collect(Collectors.toList());
 
         return docenteRepository.findAll().stream()
-                .filter(d -> !ocupados.contains(d.getId()) && !enProceso.contains(d.getId()))
+                .filter(d -> !docentesOcupados.contains(d.getId()) && !enProceso.contains(d.getId()))
                 .map(this::convertDocenteToDTO)
                 .limit(5)
                 .collect(Collectors.toList());
