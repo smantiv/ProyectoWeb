@@ -1,0 +1,1422 @@
+﻿{
+    "baseUrl":  "http://localhost:8080",
+    "generatedAt":  "2026-04-28T23:02:18",
+    "total":  55,
+    "passed":  55,
+    "failed":  0,
+    "details":  [
+                    {
+                        "name":  "GET usuarios",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/usuarios",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "nombre":  "Admin Sistema",
+                                                           "email":  "admin@test.com",
+                                                           "rol":  "ADMIN",
+                                                           "activo":  true
+                                                       },
+                                                       {
+                                                           "id":  2,
+                                                           "nombre":  "Juan Perez",
+                                                           "email":  "juan@test.com",
+                                                           "rol":  "DOCENTE",
+                                                           "activo":  true
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "nombre":  "Maria Gomez",
+                                                           "email":  "maria@test.com",
+                                                           "rol":  "DOCENTE",
+                                                           "activo":  true
+                                                       },
+                                                       {
+                                                           "id":  4,
+                                                           "nombre":  "Admin Sistema Batch",
+                                                           "email":  "admin.batch@test.com",
+                                                           "rol":  "ADMIN",
+                                                           "activo":  true
+                                                       },
+                                                       {
+                                                           "id":  5,
+                                                           "nombre":  "Docente Batch",
+                                                           "email":  "docente.batch@test.com",
+                                                           "rol":  "DOCENTE",
+                                                           "activo":  true
+                                                       }
+                                                   ],
+                                         "Count":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:13"
+                    },
+                    {
+                        "name":  "GET docentes",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/docentes",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "codigoInstitucional":  "DOC001",
+                                                           "usuario":  {
+                                                                           "id":  2,
+                                                                           "nombre":  "Juan Perez",
+                                                                           "email":  "juan@test.com",
+                                                                           "rol":  "DOCENTE",
+                                                                           "activo":  true
+                                                                       }
+                                                       },
+                                                       {
+                                                           "id":  2,
+                                                           "codigoInstitucional":  "DOC002",
+                                                           "usuario":  {
+                                                                           "id":  3,
+                                                                           "nombre":  "Maria Gomez",
+                                                                           "email":  "maria@test.com",
+                                                                           "rol":  "DOCENTE",
+                                                                           "activo":  true
+                                                                       }
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "codigoInstitucional":  "DOCBATCH001",
+                                                           "usuario":  {
+                                                                           "id":  5,
+                                                                           "nombre":  "Docente Batch",
+                                                                           "email":  "docente.batch@test.com",
+                                                                           "rol":  "DOCENTE",
+                                                                           "activo":  true
+                                                                       }
+                                                       }
+                                                   ],
+                                         "Count":  3
+                                     },
+                        "timestamp":  "2026-04-28T23:02:13"
+                    },
+                    {
+                        "name":  "GET docente actual",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/docentes/actual",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  1,
+                                         "nombre":  "Juan Perez",
+                                         "codigoInstitucional":  "DOC001"
+                                     },
+                        "timestamp":  "2026-04-28T23:02:13"
+                    },
+                    {
+                        "name":  "GET zonas",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/zonas",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "nombre":  "Patio principal",
+                                                           "descripcion":  "Zona central de recreo"
+                                                       },
+                                                       {
+                                                           "id":  2,
+                                                           "nombre":  "Biblioteca",
+                                                           "descripcion":  "Ãrea de estudio y consulta"
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "nombre":  "CafeterÃ­a",
+                                                           "descripcion":  "Zona de alimentaciÃ³n"
+                                                       },
+                                                       {
+                                                           "id":  4,
+                                                           "nombre":  "Entrada principal",
+                                                           "descripcion":  "Acceso principal al colegio"
+                                                       },
+                                                       {
+                                                           "id":  5,
+                                                           "nombre":  "Zona de juegos",
+                                                           "descripcion":  "Ãrea recreativa"
+                                                       },
+                                                       {
+                                                           "id":  6,
+                                                           "nombre":  "Pasillo acadÃ©mico",
+                                                           "descripcion":  "Corredor de aulas"
+                                                       },
+                                                       {
+                                                           "id":  7,
+                                                           "nombre":  "Zona Batch",
+                                                           "descripcion":  "Zona inicial creada desde CommandLineRunner"
+                                                       }
+                                                   ],
+                                         "Count":  7
+                                     },
+                        "timestamp":  "2026-04-28T23:02:13"
+                    },
+                    {
+                        "name":  "GET turnos",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/turnos",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "fecha":  "2026-03-18",
+                                                           "horaInicio":  "07:00:00",
+                                                           "horaFin":  "09:00:00",
+                                                           "estado":  "PENDIENTE",
+                                                           "zonaId":  1
+                                                       },
+                                                       {
+                                                           "id":  2,
+                                                           "fecha":  "2026-03-18",
+                                                           "horaInicio":  "09:00:00",
+                                                           "horaFin":  "11:00:00",
+                                                           "estado":  "PENDIENTE",
+                                                           "zonaId":  2
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "fecha":  "2026-03-18",
+                                                           "horaInicio":  "11:00:00",
+                                                           "horaFin":  "13:00:00",
+                                                           "estado":  "PENDIENTE",
+                                                           "zonaId":  3
+                                                       }
+                                                   ],
+                                         "Count":  3
+                                     },
+                        "timestamp":  "2026-04-28T23:02:13"
+                    },
+                    {
+                        "name":  "GET asignaciones",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "horaCheckin":  "2026-04-28T22:32:26.681222",
+                                                           "horaCierre":  "2026-04-29T03:38:29.819",
+                                                           "calificacionLimpieza":  4,
+                                                           "estadoCobertura":  "cerrado",
+                                                           "docenteId":  1,
+                                                           "turnoId":  1
+                                                       },
+                                                       {
+                                                           "id":  2,
+                                                           "horaCheckin":  null,
+                                                           "horaCierre":  null,
+                                                           "calificacionLimpieza":  null,
+                                                           "estadoCobertura":  "PENDIENTE",
+                                                           "docenteId":  2,
+                                                           "turnoId":  2
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "horaCheckin":  null,
+                                                           "horaCierre":  null,
+                                                           "calificacionLimpieza":  null,
+                                                           "estadoCobertura":  "PENDIENTE",
+                                                           "docenteId":  3,
+                                                           "turnoId":  1
+                                                       }
+                                                   ],
+                                         "Count":  3
+                                     },
+                        "timestamp":  "2026-04-28T23:02:13"
+                    },
+                    {
+                        "name":  "GET panel docente actual",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos/actual/panel",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "resumen":  {
+                                                         "proximoTurno":  "Sin turnos programados",
+                                                         "totalTurnosSemana":  0,
+                                                         "turnosCompletados":  1
+                                                     },
+                                         "turnos":  [
+                                                        {
+                                                            "asignacionId":  1,
+                                                            "estado":  "cerrado",
+                                                            "fecha":  "2026-03-18",
+                                                            "horaCheckin":  "2026-04-28T22:32:26.681222",
+                                                            "horaFin":  "09:00:00",
+                                                            "horaInicio":  "07:00:00",
+                                                            "turnoId":  1,
+                                                            "zona":  "Patio principal"
+                                                        }
+                                                    ],
+                                         "vistaSemanal":  [
+                                                              {
+                                                                  "cantidadTurnos":  0,
+                                                                  "etiqueta":  "Lun 27",
+                                                                  "fecha":  "2026-04-27"
+                                                              },
+                                                              {
+                                                                  "cantidadTurnos":  0,
+                                                                  "etiqueta":  "Mar 28",
+                                                                  "fecha":  "2026-04-28"
+                                                              },
+                                                              {
+                                                                  "cantidadTurnos":  0,
+                                                                  "etiqueta":  "MiÃ© 29",
+                                                                  "fecha":  "2026-04-29"
+                                                              },
+                                                              {
+                                                                  "cantidadTurnos":  0,
+                                                                  "etiqueta":  "Jue 30",
+                                                                  "fecha":  "2026-04-30"
+                                                              },
+                                                              {
+                                                                  "cantidadTurnos":  0,
+                                                                  "etiqueta":  "Vie 1",
+                                                                  "fecha":  "2026-05-01"
+                                                              },
+                                                              {
+                                                                  "cantidadTurnos":  0,
+                                                                  "etiqueta":  "SÃ¡b 2",
+                                                                  "fecha":  "2026-05-02"
+                                                              },
+                                                              {
+                                                                  "cantidadTurnos":  0,
+                                                                  "etiqueta":  "Dom 3",
+                                                                  "fecha":  "2026-05-03"
+                                                              }
+                                                          ]
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET turnos activos",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos/activas",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+
+                                                   ],
+                                         "Count":  0
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET checkpoints",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/checkpoints",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "nombre":  "Entrada principal"
+                                                       },
+                                                       {
+                                                           "id":  2,
+                                                           "nombre":  "Patio"
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "nombre":  "Pasillo bloque A"
+                                                       },
+                                                       {
+                                                           "id":  4,
+                                                           "nombre":  "Zona deportiva"
+                                                       },
+                                                       {
+                                                           "id":  5,
+                                                           "nombre":  "Checkpoint Batch"
+                                                       }
+                                                   ],
+                                         "Count":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET recorridos",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/recorridos",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "fechaHora":  "2026-03-18T07:15:00",
+                                                           "checkpointId":  1,
+                                                           "asignacionId":  1
+                                                       },
+                                                       {
+                                                           "id":  2,
+                                                           "fechaHora":  "2026-03-18T07:30:00",
+                                                           "checkpointId":  2,
+                                                           "asignacionId":  1
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "fechaHora":  "2026-03-18T09:20:00",
+                                                           "checkpointId":  3,
+                                                           "asignacionId":  2
+                                                       },
+                                                       {
+                                                           "id":  4,
+                                                           "fechaHora":  "2026-04-29T03:33:39.888",
+                                                           "checkpointId":  1,
+                                                           "asignacionId":  1
+                                                       },
+                                                       {
+                                                           "id":  5,
+                                                           "fechaHora":  "2026-04-29T03:34:38.415",
+                                                           "checkpointId":  1,
+                                                           "asignacionId":  1
+                                                       },
+                                                       {
+                                                           "id":  6,
+                                                           "fechaHora":  "2026-04-29T03:36:38.925",
+                                                           "checkpointId":  1,
+                                                           "asignacionId":  1
+                                                       }
+                                                   ],
+                                         "Count":  6
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET incidentes",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/incidentes",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "tipo":  "PELEA",
+                                                           "severidad":  "alta",
+                                                           "descripcion":  "DiscusiÃ³n entre estudiantes",
+                                                           "fechaHora":  "2026-04-20T07:45:00",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  1,
+                                                           "ubicacion":  "Patio principal"
+                                                       },
+                                                       {
+                                                           "id":  2,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "CaÃ­da en el patio",
+                                                           "fechaHora":  "2026-04-20T09:40:00",
+                                                           "estado":  "en_revision",
+                                                           "asignacionId":  2,
+                                                           "ubicacion":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "CaÃ­da en el patio",
+                                                           "fechaHora":  "2026-04-20T09:40:00",
+                                                           "estado":  "en_revision",
+                                                           "asignacionId":  2,
+                                                           "ubicacion":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  4,
+                                                           "tipo":  "BULLYING",
+                                                           "severidad":  "critica",
+                                                           "descripcion":  "AgresiÃ³n fÃ­sica en pasillo",
+                                                           "fechaHora":  "2026-04-20T10:10:00",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  1,
+                                                           "ubicacion":  "Patio principal"
+                                                       },
+                                                       {
+                                                           "id":  5,
+                                                           "tipo":  "INFRAESTRUCTURA",
+                                                           "severidad":  "baja",
+                                                           "descripcion":  "Silla rota en aula",
+                                                           "fechaHora":  "2026-04-20T11:30:00",
+                                                           "estado":  "resuelto",
+                                                           "asignacionId":  2,
+                                                           "ubicacion":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  6,
+                                                           "tipo":  "Emergencia mÃ©dica",
+                                                           "severidad":  "critica",
+                                                           "descripcion":  "dnokcd",
+                                                           "fechaHora":  "2026-04-29T03:41:26",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  1,
+                                                           "ubicacion":  "Patio principal"
+                                                       },
+                                                       {
+                                                           "id":  7,
+                                                           "tipo":  "Emergencia mÃ©dica",
+                                                           "severidad":  "critica",
+                                                           "descripcion":  "dndjd",
+                                                           "fechaHora":  "2026-04-29T03:42:11",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  1,
+                                                           "ubicacion":  "CafeterÃ­a"
+                                                       }
+                                                   ],
+                                         "Count":  7
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET reasignaciones",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/reasignaciones",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+
+                                                   ],
+                                         "Count":  0
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET reasignaciones actual",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/reasignaciones/actual",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+
+                                                   ],
+                                         "Count":  0
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET analiticas mapa calor 7 dias",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/analiticas/mapa-calor?rango=7",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "filas":  [
+
+                                                   ],
+                                         "resumen":  {
+                                                         "tiposVisibles":  0,
+                                                         "totalIncidentes":  0,
+                                                         "zonaTop":  "-",
+                                                         "zonasConIncidentes":  0
+                                                     },
+                                         "tiposIncidente":  [
+                                                                "ACCIDENTE",
+                                                                "BULLYING",
+                                                                "Emergencia mÃ©dica",
+                                                                "INFRAESTRUCTURA",
+                                                                "PELEA"
+                                                            ],
+                                         "zonas":  [
+                                                       {
+                                                           "id":  2,
+                                                           "nombre":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "nombre":  "CafeterÃ­a"
+                                                       },
+                                                       {
+                                                           "id":  4,
+                                                           "nombre":  "Entrada principal"
+                                                       },
+                                                       {
+                                                           "id":  6,
+                                                           "nombre":  "Pasillo acadÃ©mico"
+                                                       },
+                                                       {
+                                                           "id":  1,
+                                                           "nombre":  "Patio principal"
+                                                       },
+                                                       {
+                                                           "id":  7,
+                                                           "nombre":  "Zona Batch"
+                                                       },
+                                                       {
+                                                           "id":  5,
+                                                           "nombre":  "Zona de juegos"
+                                                       }
+                                                   ]
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET analiticas mapa calor 30 dias tipo ACCIDENTE",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/analiticas/mapa-calor?rango=30\u0026tipo=ACCIDENTE",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "filas":  [
+                                                       {
+                                                           "cantidadIncidentes":  2,
+                                                           "incidentesManana":  2,
+                                                           "incidentesTarde":  0,
+                                                           "porcentajeCobertura":  0.0,
+                                                           "porcentajeTotal":  100.0,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "zona":  "Biblioteca",
+                                                           "zonaId":  2
+                                                       }
+                                                   ],
+                                         "resumen":  {
+                                                         "tiposVisibles":  1,
+                                                         "totalIncidentes":  2,
+                                                         "zonaTop":  "Biblioteca",
+                                                         "zonasConIncidentes":  1
+                                                     },
+                                         "tiposIncidente":  [
+                                                                "ACCIDENTE",
+                                                                "BULLYING",
+                                                                "Emergencia mÃ©dica",
+                                                                "INFRAESTRUCTURA",
+                                                                "PELEA"
+                                                            ],
+                                         "zonas":  [
+                                                       {
+                                                           "id":  2,
+                                                           "nombre":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "nombre":  "CafeterÃ­a"
+                                                       },
+                                                       {
+                                                           "id":  4,
+                                                           "nombre":  "Entrada principal"
+                                                       },
+                                                       {
+                                                           "id":  6,
+                                                           "nombre":  "Pasillo acadÃ©mico"
+                                                       },
+                                                       {
+                                                           "id":  1,
+                                                           "nombre":  "Patio principal"
+                                                       },
+                                                       {
+                                                           "id":  7,
+                                                           "nombre":  "Zona Batch"
+                                                       },
+                                                       {
+                                                           "id":  5,
+                                                           "nombre":  "Zona de juegos"
+                                                       }
+                                                   ]
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "POST zona",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/zonas",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  9,
+                                         "nombre":  "Zona Test 20260428230213",
+                                         "descripcion":  "Zona creada por script de prueba"
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET zona por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/zonas/9",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  9,
+                                         "nombre":  "Zona Test 20260428230213",
+                                         "descripcion":  "Zona creada por script de prueba"
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "POST usuario",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/usuarios",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  7,
+                                         "nombre":  "Usuario Test 20260428230213",
+                                         "email":  "test_20260428230213@example.com",
+                                         "rol":  "DOCENTE",
+                                         "activo":  true
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "GET usuario por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/usuarios/7",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  7,
+                                         "nombre":  "Usuario Test 20260428230213",
+                                         "email":  "test_20260428230213@example.com",
+                                         "rol":  "DOCENTE",
+                                         "activo":  true
+                                     },
+                        "timestamp":  "2026-04-28T23:02:14"
+                    },
+                    {
+                        "name":  "POST docente",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/docentes",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  5,
+                                         "codigoInstitucional":  "DOC20260428230213",
+                                         "usuario":  {
+                                                         "id":  7,
+                                                         "nombre":  "Usuario Test 20260428230213",
+                                                         "email":  "test_20260428230213@example.com",
+                                                         "rol":  "DOCENTE",
+                                                         "activo":  true
+                                                     }
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "GET docente por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/docentes/5",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  5,
+                                         "codigoInstitucional":  "DOC20260428230213",
+                                         "usuario":  {
+                                                         "id":  7,
+                                                         "nombre":  "Usuario Test 20260428230213",
+                                                         "email":  "test_20260428230213@example.com",
+                                                         "rol":  "DOCENTE",
+                                                         "activo":  true
+                                                     }
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "POST turno",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/turnos",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  5,
+                                         "fecha":  "2026-04-29",
+                                         "horaInicio":  "08:00:00",
+                                         "horaFin":  "09:30:00",
+                                         "estado":  "PENDIENTE",
+                                         "zonaId":  9
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "GET turno por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/turnos/5",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  5,
+                                         "fecha":  "2026-04-29",
+                                         "horaInicio":  "08:00:00",
+                                         "horaFin":  "09:30:00",
+                                         "estado":  "PENDIENTE",
+                                         "zonaId":  9
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "GET turno por zona",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/turnos/zona/9",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  5,
+                                                           "fecha":  "2026-04-29",
+                                                           "horaInicio":  "08:00:00",
+                                                           "horaFin":  "09:30:00",
+                                                           "estado":  "PENDIENTE",
+                                                           "zonaId":  9
+                                                       }
+                                                   ],
+                                         "Count":  1
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "POST asignacion",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  5,
+                                         "horaCheckin":  null,
+                                         "horaCierre":  null,
+                                         "calificacionLimpieza":  null,
+                                         "estadoCobertura":  "pendiente",
+                                         "docenteId":  5,
+                                         "turnoId":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "GET asignacion por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos/5",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  5,
+                                         "horaCheckin":  null,
+                                         "horaCierre":  null,
+                                         "calificacionLimpieza":  null,
+                                         "estadoCobertura":  "pendiente",
+                                         "docenteId":  5,
+                                         "turnoId":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "GET asignaciones por docente",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos/docente/5",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  5,
+                                                           "horaCheckin":  null,
+                                                           "horaCierre":  null,
+                                                           "calificacionLimpieza":  null,
+                                                           "estadoCobertura":  "pendiente",
+                                                           "docenteId":  5,
+                                                           "turnoId":  5
+                                                       }
+                                                   ],
+                                         "Count":  1
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "POST checkin asignacion",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos/5/checkin",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  5,
+                                         "horaCheckin":  "2026-04-28T23:02:15.6478839",
+                                         "horaCierre":  null,
+                                         "calificacionLimpieza":  null,
+                                         "estadoCobertura":  "cubierta",
+                                         "docenteId":  5,
+                                         "turnoId":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "POST cierre asignacion valido",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos/5/cierre",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  5,
+                                         "horaCheckin":  "2026-04-28T23:02:15.647884",
+                                         "horaCierre":  "2026-04-28T23:02:15",
+                                         "calificacionLimpieza":  4,
+                                         "estadoCobertura":  "cerrado",
+                                         "docenteId":  5,
+                                         "turnoId":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "POST cierre asignacion invalido",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos/5/cierre",
+                        "success":  true,
+                        "statusCode":  400,
+                        "message":  "OK (codigo esperado)",
+                        "response":  {
+                                         "status":  400,
+                                         "message":  "La calificacion de limpieza debe estar entre 1 y 5",
+                                         "error":  "Validacion fallida",
+                                         "path":  "/api/v1/asignaciones-turnos/5/cierre",
+                                         "timestamp":  "2026-04-28T23:02:15"
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "POST checkpoint",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/checkpoints",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  7,
+                                         "nombre":  "Checkpoint Test 20260428230213"
+                                     },
+                        "timestamp":  "2026-04-28T23:02:15"
+                    },
+                    {
+                        "name":  "GET checkpoint por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/checkpoints/7",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  7,
+                                         "nombre":  "Checkpoint Test 20260428230213"
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "POST recorrido",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/recorridos",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  8,
+                                         "fechaHora":  "2026-04-28T23:02:16",
+                                         "checkpointId":  7,
+                                         "asignacionId":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "GET recorrido por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/recorridos/8",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  8,
+                                         "fechaHora":  "2026-04-28T23:02:16",
+                                         "checkpointId":  7,
+                                         "asignacionId":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "GET recorridos por asignacion",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/recorridos/asignacion/5",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  8,
+                                                           "fechaHora":  "2026-04-28T23:02:16",
+                                                           "checkpointId":  7,
+                                                           "asignacionId":  5
+                                                       }
+                                                   ],
+                                         "Count":  1
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "GET recorridos por checkpoint",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/recorridos/checkpoint/7",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  8,
+                                                           "fechaHora":  "2026-04-28T23:02:16",
+                                                           "checkpointId":  7,
+                                                           "asignacionId":  5
+                                                       }
+                                                   ],
+                                         "Count":  1
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "POST incidente",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/incidentes",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  9,
+                                         "tipo":  "ACCIDENTE",
+                                         "severidad":  "media",
+                                         "descripcion":  "Incidente generado por script",
+                                         "fechaHora":  "2026-04-28T23:02:16",
+                                         "estado":  "reportado",
+                                         "asignacionId":  5,
+                                         "ubicacion":  "Zona de prueba"
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "GET incidente por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/incidentes/9",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "id":  9,
+                                         "tipo":  "ACCIDENTE",
+                                         "severidad":  "media",
+                                         "descripcion":  "Incidente generado por script",
+                                         "fechaHora":  "2026-04-28T23:02:16",
+                                         "estado":  "reportado",
+                                         "asignacionId":  5,
+                                         "ubicacion":  "Zona de prueba"
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "GET incidentes por asignacion",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/incidentes/asignacion/5",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  9,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "Incidente generado por script",
+                                                           "fechaHora":  "2026-04-28T23:02:16",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  5,
+                                                           "ubicacion":  "Zona de prueba"
+                                                       }
+                                                   ],
+                                         "Count":  1
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "GET incidentes por tipo",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/incidentes/tipo/ACCIDENTE",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  2,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "CaÃ­da en el patio",
+                                                           "fechaHora":  "2026-04-20T09:40:00",
+                                                           "estado":  "en_revision",
+                                                           "asignacionId":  2,
+                                                           "ubicacion":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "CaÃ­da en el patio",
+                                                           "fechaHora":  "2026-04-20T09:40:00",
+                                                           "estado":  "en_revision",
+                                                           "asignacionId":  2,
+                                                           "ubicacion":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  9,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "Incidente generado por script",
+                                                           "fechaHora":  "2026-04-28T23:02:16",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  5,
+                                                           "ubicacion":  "Zona de prueba"
+                                                       }
+                                                   ],
+                                         "Count":  3
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "GET incidentes por severidad",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/incidentes/severidad/media",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  2,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "CaÃ­da en el patio",
+                                                           "fechaHora":  "2026-04-20T09:40:00",
+                                                           "estado":  "en_revision",
+                                                           "asignacionId":  2,
+                                                           "ubicacion":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "CaÃ­da en el patio",
+                                                           "fechaHora":  "2026-04-20T09:40:00",
+                                                           "estado":  "en_revision",
+                                                           "asignacionId":  2,
+                                                           "ubicacion":  "Biblioteca"
+                                                       },
+                                                       {
+                                                           "id":  9,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "Incidente generado por script",
+                                                           "fechaHora":  "2026-04-28T23:02:16",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  5,
+                                                           "ubicacion":  "Zona de prueba"
+                                                       }
+                                                   ],
+                                         "Count":  3
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "GET incidentes por estado",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/incidentes/estado/reportado",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  1,
+                                                           "tipo":  "PELEA",
+                                                           "severidad":  "alta",
+                                                           "descripcion":  "DiscusiÃ³n entre estudiantes",
+                                                           "fechaHora":  "2026-04-20T07:45:00",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  1,
+                                                           "ubicacion":  "Patio principal"
+                                                       },
+                                                       {
+                                                           "id":  4,
+                                                           "tipo":  "BULLYING",
+                                                           "severidad":  "critica",
+                                                           "descripcion":  "AgresiÃ³n fÃ­sica en pasillo",
+                                                           "fechaHora":  "2026-04-20T10:10:00",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  1,
+                                                           "ubicacion":  "Patio principal"
+                                                       },
+                                                       {
+                                                           "id":  6,
+                                                           "tipo":  "Emergencia mÃ©dica",
+                                                           "severidad":  "critica",
+                                                           "descripcion":  "dnokcd",
+                                                           "fechaHora":  "2026-04-29T03:41:26",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  1,
+                                                           "ubicacion":  "Patio principal"
+                                                       },
+                                                       {
+                                                           "id":  7,
+                                                           "tipo":  "Emergencia mÃ©dica",
+                                                           "severidad":  "critica",
+                                                           "descripcion":  "dndjd",
+                                                           "fechaHora":  "2026-04-29T03:42:11",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  1,
+                                                           "ubicacion":  "CafeterÃ­a"
+                                                       },
+                                                       {
+                                                           "id":  9,
+                                                           "tipo":  "ACCIDENTE",
+                                                           "severidad":  "media",
+                                                           "descripcion":  "Incidente generado por script",
+                                                           "fechaHora":  "2026-04-28T23:02:16",
+                                                           "estado":  "reportado",
+                                                           "asignacionId":  5,
+                                                           "ubicacion":  "Zona de prueba"
+                                                       }
+                                                   ],
+                                         "Count":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:16"
+                    },
+                    {
+                        "name":  "POST reasignacion",
+                        "method":  "POST",
+                        "url":  "http://localhost:8080/api/v1/reasignaciones",
+                        "success":  true,
+                        "statusCode":  201,
+                        "message":  "OK",
+                        "response":  {
+                                         "docenteId":  1,
+                                         "docenteNombre":  "Juan Perez",
+                                         "docenteReemplazoId":  5,
+                                         "docenteReemplazoNombre":  "Usuario Test 20260428230213",
+                                         "estado":  "pendiente",
+                                         "fechaRespuesta":  null,
+                                         "fechaSolicitud":  "2026-04-28T23:02:17.0022197",
+                                         "id":  2,
+                                         "motivo":  "Prueba automatizada",
+                                         "turnoDescripcion":  "Zona Test 20260428230213 â 2026-04-29 â 08:00â09:30",
+                                         "turnoId":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "GET reasignacion por id",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/reasignaciones/2",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "docenteId":  1,
+                                         "docenteNombre":  "Juan Perez",
+                                         "docenteReemplazoId":  5,
+                                         "docenteReemplazoNombre":  "Usuario Test 20260428230213",
+                                         "estado":  "pendiente",
+                                         "fechaRespuesta":  null,
+                                         "fechaSolicitud":  "2026-04-28T23:02:17.00222",
+                                         "id":  2,
+                                         "motivo":  "Prueba automatizada",
+                                         "turnoDescripcion":  "Zona Test 20260428230213 â 2026-04-29 â 08:00â09:30",
+                                         "turnoId":  5
+                                     },
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "GET candidatos por turno",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/reasignaciones/candidatos/5",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "id":  2,
+                                                           "codigoInstitucional":  "DOC002",
+                                                           "usuario":  {
+                                                                           "id":  3,
+                                                                           "nombre":  "Maria Gomez",
+                                                                           "email":  "maria@test.com",
+                                                                           "rol":  "DOCENTE",
+                                                                           "activo":  true
+                                                                       }
+                                                       },
+                                                       {
+                                                           "id":  3,
+                                                           "codigoInstitucional":  "DOCBATCH001",
+                                                           "usuario":  {
+                                                                           "id":  5,
+                                                                           "nombre":  "Docente Batch",
+                                                                           "email":  "docente.batch@test.com",
+                                                                           "rol":  "DOCENTE",
+                                                                           "activo":  true
+                                                                       }
+                                                       }
+                                                   ],
+                                         "Count":  2
+                                     },
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "GET reasignaciones por estado pendiente",
+                        "method":  "GET",
+                        "url":  "http://localhost:8080/api/v1/reasignaciones/estado/pendiente",
+                        "success":  true,
+                        "statusCode":  200,
+                        "message":  "OK",
+                        "response":  {
+                                         "value":  [
+                                                       {
+                                                           "docenteId":  1,
+                                                           "docenteNombre":  "Juan Perez",
+                                                           "docenteReemplazoId":  5,
+                                                           "docenteReemplazoNombre":  "Usuario Test 20260428230213",
+                                                           "estado":  "pendiente",
+                                                           "fechaRespuesta":  null,
+                                                           "fechaSolicitud":  "2026-04-28T23:02:17.00222",
+                                                           "id":  2,
+                                                           "motivo":  "Prueba automatizada",
+                                                           "turnoDescripcion":  "Zona Test 20260428230213 â 2026-04-29 â 08:00â09:30",
+                                                           "turnoId":  5
+                                                       }
+                                                   ],
+                                         "Count":  1
+                                     },
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "DELETE reasignacion cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/reasignaciones/2",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "DELETE incidente cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/incidentes/9",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "DELETE recorrido cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/recorridos/8",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "DELETE asignacion cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/asignaciones-turnos/5",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "DELETE turno cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/turnos/5",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "DELETE checkpoint cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/checkpoints/7",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "DELETE docente cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/docentes/5",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:17"
+                    },
+                    {
+                        "name":  "DELETE usuario cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/usuarios/7",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:18"
+                    },
+                    {
+                        "name":  "DELETE zona cleanup",
+                        "method":  "DELETE",
+                        "url":  "http://localhost:8080/api/v1/zonas/9",
+                        "success":  true,
+                        "statusCode":  204,
+                        "message":  "Eliminado",
+                        "response":  null,
+                        "timestamp":  "2026-04-28T23:02:18"
+                    }
+                ]
+}

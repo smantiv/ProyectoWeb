@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="current-docente-id" th:content="${currentDocenteId}" />
   <title>Solicitar Reemplazo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,13 +14,13 @@
   <div class="page">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo">
         <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
       </div>
 
       <div class="profile-box">
-        <span>Prof. María González</span>
-        <a href="perfil-profesor.html" class="profile-avatar">👤</a>
+        <span th:text="${currentDocenteNombre}">Docente</span>
+        <a th:href="@{/mi-perfil-profesor}" class="profile-avatar">👤</a>
       </div>
     </nav>
 
@@ -46,16 +47,11 @@
             <form id="replacementForm" class="checkpoint-form">
               <div class="checkpoint-field">
                 <label for="shiftSelect" class="checkpoint-textarea-label">
-                  <span class="checkpoint-big-icon">📅</span>
+                  <span class="checkpoint-big-icon">📆</span>
                   <span>Seleccionar turno</span>
                 </label>
                 <select id="shiftSelect" required>
-                  <option value="">Selecciona un turno</option>
-                  <option value="1">Patio Principal — 17 Mar 2026 — 08:00–09:30</option>
-                  <option value="2">Biblioteca — 18 Mar 2026 — 10:00–11:30</option>
-                  <option value="3">Cafetería — 19 Mar 2026 — 14:00–15:30</option>
-                  <option value="4">Entrada Principal — 20 Mar 2026 — 08:00–09:30</option>
-                  <option value="5">Zona de Juegos — 21 Mar 2026 — 10:00–11:30</option>
+                  <option value="">Cargando turnos...</option>
                 </select>
               </div>
 
@@ -66,12 +62,6 @@
                 </label>
                 <select id="professorSelect">
                   <option value="">Sin preferencia</option>
-                  <option value="Prof. Carlos Mendoza">Prof. Carlos Mendoza</option>
-                  <option value="Prof. Ana Martínez">Prof. Ana Martínez</option>
-                  <option value="Prof. Roberto Silva">Prof. Roberto Silva</option>
-                  <option value="Prof. Laura Pérez">Prof. Laura Pérez</option>
-                  <option value="Prof. Diego Torres">Prof. Diego Torres</option>
-                  <option value="Prof. Carmen Ruiz">Prof. Carmen Ruiz</option>
                 </select>
               </div>
 
@@ -86,19 +76,6 @@
                   placeholder="Explica brevemente por qué necesitas un reemplazo."
                   required
                 ></textarea>
-              </div>
-
-              <div class="checkpoint-field">
-                <label class="checkpoint-textarea-label">
-                  <span class="checkpoint-big-icon">❗</span>
-                  <span>Nivel de urgencia</span>
-                </label>
-
-                <div class="urgency-grid">
-                  <button type="button" class="urgency-btn urgency-selected-normal" data-urgency="normal">Normal</button>
-                  <button type="button" class="urgency-btn" data-urgency="urgente">Urgente</button>
-                </div>
-                <input type="hidden" id="urgencyValue" value="normal">
               </div>
 
               <button type="submit" class="btn btn-primary checkpoint-submit-btn">
@@ -122,32 +99,9 @@
                     <th>Estado</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="replacementHistoryBody">
                   <tr class="table-row-hover">
-                    <td>Patio Principal</td>
-                    <td>14 Mar 2026</td>
-                    <td>Prof. Carlos Mendoza</td>
-                    <td>
-                      <span class="request-badge request-accepted">✔ Aceptado</span>
-                    </td>
-                  </tr>
-
-                  <tr class="table-row-hover">
-                    <td>Biblioteca</td>
-                    <td>12 Mar 2026</td>
-                    <td>Prof. Ana Martínez</td>
-                    <td>
-                      <span class="request-badge request-pending">🕒 Pendiente</span>
-                    </td>
-                  </tr>
-
-                  <tr class="table-row-hover">
-                    <td>Cafetería</td>
-                    <td>10 Mar 2026</td>
-                    <td>Prof. Roberto Silva</td>
-                    <td>
-                      <span class="request-badge request-rejected">✖ Rechazado</span>
-                    </td>
+                    <td colspan="4" style="text-align:center">Cargando solicitudes...</td>
                   </tr>
                 </tbody>
               </table>
@@ -162,64 +116,122 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
 
   <script src="/js/api/ApiClient.js"></script>
   <script src="/js/api/TurnoService.js"></script>
+  <script src="/js/api/UsuarioService.js"></script>
   <script src="/js/api/DocenteService.js"></script>
+  <script src="/js/api/ZonaService.js"></script>
+  <script src="/js/api/AsignacionTurnoService.js"></script>
+  <script src="/js/api/IncidenteService.js"></script>
+  <script src="/js/api/CheckpointService.js"></script>
+  <script src="/js/api/RecorridoService.js"></script>
   <script src="/js/api/ReasignacionService.js"></script>
+  <script src="/js/api/ApiServices.js"></script>
   <script>
-    // Cargar turnos disponibles en el select
+    const shiftSelect = document.getElementById('shiftSelect');
+    const professorSelect = document.getElementById('professorSelect');
+    const replacementHistoryBody = document.getElementById('replacementHistoryBody');
+    const replacementForm = document.getElementById('replacementForm');
+
+    function formatFecha(fechaHora) {
+      if (!fechaHora) return '—';
+      return fechaHora.substring(0, 10);
+    }
+
+    function renderHistory(rows) {
+      if (!rows.length) {
+        replacementHistoryBody.innerHTML = '<tr><td colspan="4" style="text-align:center">No hay solicitudes registradas.</td></tr>';
+        return;
+      }
+
+      replacementHistoryBody.innerHTML = rows.map(r => {
+        const badge = r.estado === 'aceptada'
+          ? '<span class="request-badge request-accepted">Aceptada</span>'
+          : r.estado === 'rechazada'
+          ? '<span class="request-badge request-rejected">Rechazada</span>'
+          : '<span class="request-badge request-pending">Pendiente</span>';
+
+        return `<tr>
+          <td>${r.turnoDescripcion || '—'}</td>
+          <td>${formatFecha(r.fechaSolicitud)}</td>
+          <td>${r.docenteReemplazoNombre || 'Sin asignar'}</td>
+          <td>${badge}</td>
+        </tr>`;
+      }).join('');
+    }
+
     async function cargarTurnos() {
       try {
-        const res = await fetch('/api/v1/turnos');
-        const turnos = await res.json();
-        const select = document.getElementById('shiftSelect');
-        select.innerHTML = '<option value="">Selecciona un turno</option>';
-        turnos.forEach(t => {
-          const zona = t.zonaNombre || t.zonaId || 'Zona';
+        const panel = await ApiServices.asignacionTurnoService.obtenerPanelActual();
+        const turnos = panel?.turnos || [];
+
+        shiftSelect.innerHTML = '<option value="">Selecciona un turno</option>';
+        turnos.forEach(turno => {
           const opt = document.createElement('option');
-          opt.value = t.id;
-          opt.textContent = `${zona} — ${t.fecha} — ${t.horaInicio}–${t.horaFin}`;
-          select.appendChild(opt);
+          opt.value = turno.turnoId;
+          opt.textContent = `${turno.zona || 'Zona'} — ${turno.fecha || 'Sin fecha'} — ${String(turno.horaInicio || '').slice(0, 5)}-${String(turno.horaFin || '').slice(0, 5)}`;
+          shiftSelect.appendChild(opt);
         });
+
+        if (!turnos.length) {
+          shiftSelect.innerHTML = '<option value="">No tienes turnos disponibles</option>';
+        }
       } catch (e) {
         console.error('Error cargando turnos:', e);
+        shiftSelect.innerHTML = '<option value="">No se pudieron cargar los turnos</option>';
       }
     }
 
-    // Al seleccionar turno, cargar candidatos disponibles
-    document.getElementById('shiftSelect').addEventListener('change', async function () {
-      const turnoId = this.value;
-      const select = document.getElementById('professorSelect');
-      select.innerHTML = '<option value="">Sin preferencia</option>';
-      if (!turnoId) return;
+    async function cargarCandidatos(turnoId) {
+      professorSelect.innerHTML = '<option value="">Sin preferencia</option>';
+      if (!turnoId) {
+        return;
+      }
+
       try {
-        const res = await fetch(`/api/v1/reasignaciones/candidatos/${turnoId}`);
-        const candidatos = await res.json();
+        const response = await fetch(`/api/v1/reasignaciones/candidatos/${turnoId}`);
+        const candidatos = await response.json();
         candidatos.forEach(d => {
           const nombre = d.usuario ? d.usuario.nombre : d.codigoInstitucional;
-          const opt = document.createElement('option');
-          opt.value = d.id;
-          opt.textContent = nombre;
-          select.appendChild(opt);
+          const option = document.createElement('option');
+          option.value = d.id;
+          option.textContent = nombre;
+          professorSelect.appendChild(option);
         });
       } catch (e) {
         console.error('Error cargando candidatos:', e);
       }
+    }
+
+    async function cargarHistorial() {
+      try {
+        // El historial ahora se filtra con el docente actual resuelto en backend.
+        const response = await fetch('/api/v1/reasignaciones/actual');
+        const historial = await response.json();
+        renderHistory(historial || []);
+      } catch (e) {
+        console.error('Error cargando historial:', e);
+        replacementHistoryBody.innerHTML = '<tr><td colspan="4" style="text-align:center">No se pudo cargar el historial.</td></tr>';
+      }
+    }
+
+    shiftSelect.addEventListener('change', async function () {
+      await cargarCandidatos(this.value);
     });
 
-    // Enviar solicitud de reasignación
-    document.getElementById('replacementForm').addEventListener('submit', async function (e) {
+    replacementForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      const turnoId = document.getElementById('shiftSelect').value;
-      const motivo = document.getElementById('replacementReason').value;
-      const docenteReemplazoId = document.getElementById('professorSelect').value || null;
+
+      const turnoId = shiftSelect.value;
+      const motivo = document.getElementById('replacementReason').value.trim();
+      const docenteReemplazoId = professorSelect.value || null;
 
       if (!turnoId || !motivo) {
         alert('Por favor selecciona un turno e ingresa el motivo.');
@@ -227,66 +239,33 @@
       }
 
       try {
-        const res = await fetch('/api/v1/reasignaciones', {
+        const response = await fetch('/api/v1/reasignaciones', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            docenteId: 1, // temporal hasta que haya sesión de usuario
             turnoId: Number(turnoId),
             docenteReemplazoId: docenteReemplazoId ? Number(docenteReemplazoId) : null,
-            motivo: motivo
+            motivo
           })
         });
 
-        if (res.ok) {
-          const confirmacion = document.getElementById('replacementConfirmation');
-          if (confirmacion) {
-            confirmacion.classList.remove('hidden');
-            setTimeout(() => confirmacion.classList.add('hidden'), 5000);
-          }
-          this.reset();
-          await cargarHistorial();
-        } else {
-          alert('Error al enviar la solicitud. Intenta de nuevo.');
+        if (!response.ok) {
+          throw new Error('No se pudo enviar la solicitud');
         }
+
+        const confirmacion = document.getElementById('replacementConfirmation');
+        confirmacion.classList.remove('hidden');
+        setTimeout(() => confirmacion.classList.add('hidden'), 5000);
+
+        this.reset();
+        professorSelect.innerHTML = '<option value="">Sin preferencia</option>';
+        await cargarHistorial();
       } catch (e) {
         console.error('Error enviando solicitud:', e);
+        alert('Error al enviar la solicitud. Intenta de nuevo.');
       }
     });
 
-    // Cargar historial de reasignaciones en la tabla
-    async function cargarHistorial() {
-      try {
-        const res = await fetch('/api/v1/reasignaciones');
-        const todas = await res.json();
-        const tbody = document.querySelector('tbody');
-        if (!tbody) return;
-
-        if (!todas.length) {
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">No hay solicitudes registradas.</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = todas.map(r => {
-          const badge = r.estado === 'aceptada'
-            ? '<span style="color:green;font-weight:bold">✔ Aceptada</span>'
-            : r.estado === 'rechazada'
-            ? '<span style="color:red;font-weight:bold">✖ Rechazada</span>'
-            : '<span style="color:orange;font-weight:bold">🕒 Pendiente</span>';
-
-          return `<tr>
-            <td>${r.turnoDescripcion || '—'}</td>
-            <td>${r.fechaSolicitud ? r.fechaSolicitud.substring(0, 10) : '—'}</td>
-            <td>${r.docenteReemplazoNombre || 'Sin asignar'}</td>
-            <td>${badge}</td>
-          </tr>`;
-        }).join('');
-      } catch (e) {
-        console.error('Error cargando historial:', e);
-      }
-    }
-
-    // Inicializar al cargar la página
     cargarTurnos();
     cargarHistorial();
   </script>

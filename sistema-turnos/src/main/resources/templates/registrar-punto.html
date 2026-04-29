@@ -640,16 +640,17 @@ document.getElementById("cierreTurnoForm").addEventListener("submit", async func
 
   try {
     // Traer asignación actual
-    const asignacion = await ApiServices.asignacionTurnoService.obtenerPorId(asignacionId);
+    const cierrePayload = {
+      calificacionLimpieza: Number(calificacionLimpieza),
+      estadoCobertura: "cerrado",
+      horaCierre: new Date().toISOString()
+    };
 
     // Actualizar datos
-    asignacion.calificacionLimpieza = Number(calificacionLimpieza);
-    asignacion.observacionLimpieza = observacionLimpieza;
-    asignacion.estadoCobertura = "cerrado";
-    asignacion.horaCierre = new Date().toISOString();
+    console.info(observacionLimpieza ? "La observacion final permanece solo en UI hasta que exista un requerimiento persistente." : "");
 
     // Guardar
-    await ApiServices.asignacionTurnoService.actualizar(asignacionId, asignacion);
+    await ApiServices.asignacionTurnoService.registrarCierre(asignacionId, cierrePayload);
 
     alert("Turno cerrado correctamente");
 

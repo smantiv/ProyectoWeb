@@ -26,19 +26,27 @@ public class ReasignacionService {
     @Autowired private DocenteRepository docenteRepository;
     @Autowired private TurnoRepository turnoRepository;
     @Autowired private AsignacionTurnoRepository asignacionTurnoRepository;
+    @Autowired private CurrentDocenteContextService currentDocenteContextService;
 
     // Crear solicitud de reasignación
     public ReasignacionDTO crearReasignacion(ReasignacionDTO dto) {
+        return crearReasignacion(dto, currentDocenteContextService.obtenerDocenteActualId());
+    }
+
+    public ReasignacionDTO crearReasignacion(ReasignacionDTO dto, Long docenteId) {
         Reasignacion r = new Reasignacion();
         r.setMotivo(dto.getMotivo());
         r.setFechaSolicitud(LocalDateTime.now());
         r.setEstado("pendiente");
 
-        if (dto.getDocenteId() != null) {
-            docenteRepository.findById(dto.getDocenteId()).ifPresent(r::setDocente);
+        if (docenteId != null) {
+            docenteRepository.findById(docenteId).ifPresent(r::setDocente);
         }
         if (dto.getTurnoId() != null) {
             turnoRepository.findById(dto.getTurnoId()).ifPresent(r::setTurno);
+        }
+        if (dto.getDocenteReemplazoId() != null) {
+            docenteRepository.findById(dto.getDocenteReemplazoId()).ifPresent(r::setDocenteReemplazo);
         }
 
         return convertToDTO(reasignacionRepository.save(r));
@@ -119,6 +127,10 @@ public class ReasignacionService {
     public List<ReasignacionDTO> obtenerReasignacionesPorDocenteYEstado(Long docenteId, String estado) {
         return reasignacionRepository.findByDocenteIdAndEstado(docenteId, estado).stream()
                 .map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public Long obtenerDocenteActualId() {
+        return currentDocenteContextService.obtenerDocenteActualId();
     }
 
     public ReasignacionDTO actualizarReasignacion(Long id, ReasignacionDTO dto) {

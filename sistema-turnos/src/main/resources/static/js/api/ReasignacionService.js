@@ -23,6 +23,11 @@ class ReasignacionService {
         return response.data || [];
     }
 
+    async obtenerActual() {
+        const response = await this.apiClient.get(`${this.endpoint}/actual`);
+        return response.data || [];
+    }
+
     async obtenerPorEstado(estado) {
         const response = await this.apiClient.get(`${this.endpoint}/estado/${estado}`);
         return response.data || [];
@@ -52,7 +57,6 @@ class ReasignacionService {
      */
     async solicitarReasignacion(docenteId, motivo) {
         return this.crear({
-            docenteId,
             motivo,
             fechaSolicitud: new Date().toISOString(),
             estado: 'pendiente'

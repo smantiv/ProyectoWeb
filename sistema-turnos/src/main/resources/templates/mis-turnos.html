@@ -13,13 +13,13 @@
   <div class="page">
     <nav class="topbar">
       <div class="brand">
-        <img src="assets/logo-sfr.png" alt="Logo Santa Francisca Romana" class="brand-logo">
+        <img th:src="@{/assets/logo-sfr.png}" alt="Logo Santa Francisca Romana" class="brand-logo">
         <span class="brand-title small-text">Sistema de Vigilancia Escolar</span>
       </div>
 
       <div class="profile-box">
-        <span>Prof. María González</span>
-        <a href="perfil-profesor.html" class="profile-avatar">👤</a>
+        <span th:text="${currentDocenteNombre}">Docente</span>
+        <a th:href="@{/mi-perfil-profesor}" class="profile-avatar">👤</a>
       </div>
     </nav>
 
@@ -37,9 +37,9 @@
         <section class="section">
           <div class="mis-stats-grid">
             <article class="mis-stat-card">
-              <div class="mis-stat-icon">📅</div>
+              <div class="mis-stat-icon">📆</div>
               <div class="mis-stat-content">
-                <div class="mis-stat-value navy-text">12</div>
+                <div id="statTotalSemana" class="mis-stat-value navy-text">—</div>
                 <div class="mis-stat-label">Total de turnos esta semana</div>
               </div>
             </article>
@@ -47,7 +47,7 @@
             <article class="mis-stat-card">
               <div class="mis-stat-icon">🕒</div>
               <div class="mis-stat-content">
-                <div class="mis-stat-value orange-text">Hoy 14:00</div>
+                <div id="statProximoTurno" class="mis-stat-value orange-text">Cargando...</div>
                 <div class="mis-stat-label">Próximo turno programado</div>
               </div>
             </article>
@@ -55,7 +55,7 @@
             <article class="mis-stat-card">
               <div class="mis-stat-icon">✔</div>
               <div class="mis-stat-content">
-                <div class="mis-stat-value green-text">8</div>
+                <div id="statCompletados" class="mis-stat-value green-text">—</div>
                 <div class="mis-stat-label">Turnos completados</div>
               </div>
             </article>
@@ -79,12 +79,6 @@
                 <label for="zona-filter">Zona</label>
                 <select id="zona-filter">
                   <option value="">Todas las zonas</option>
-                  <option value="patio-principal">Patio Principal</option>
-                  <option value="cafeteria">Cafetería</option>
-                  <option value="biblioteca">Biblioteca</option>
-                  <option value="entrada">Entrada Principal</option>
-                  <option value="patio-secundario">Patio Secundario</option>
-                  <option value="sala-profesores">Sala de Profesores</option>
                 </select>
               </div>
 
@@ -92,9 +86,6 @@
                 <label for="estado-filter">Estado del turno</label>
                 <select id="estado-filter">
                   <option value="">Todos los estados</option>
-                  <option value="pendiente">Pendiente</option>
-                  <option value="activo">Activo</option>
-                  <option value="completado">Completado</option>
                 </select>
               </div>
             </div>
@@ -105,47 +96,11 @@
           <h3 class="subsection-title">Vista Semanal</h3>
 
           <div class="weekly-card">
-            <div class="weekly-grid">
-              <div class="weekly-day has-shifts">
-                <div class="weekly-day-name">Lun 17</div>
-                <div class="weekly-day-number">2</div>
-                <div class="weekly-day-text">turnos</div>
-              </div>
-
-              <div class="weekly-day has-shifts">
-                <div class="weekly-day-name">Mar 18</div>
-                <div class="weekly-day-number">2</div>
-                <div class="weekly-day-text">turnos</div>
-              </div>
-
-              <div class="weekly-day has-shifts">
-                <div class="weekly-day-name">Mié 19</div>
-                <div class="weekly-day-number">2</div>
-                <div class="weekly-day-text">turnos</div>
-              </div>
-
-              <div class="weekly-day has-shifts">
-                <div class="weekly-day-name">Jue 20</div>
-                <div class="weekly-day-number">1</div>
-                <div class="weekly-day-text">turno</div>
-              </div>
-
-              <div class="weekly-day has-shifts">
-                <div class="weekly-day-name">Vie 21</div>
-                <div class="weekly-day-number">1</div>
-                <div class="weekly-day-text">turno</div>
-              </div>
-
+            <div id="weeklyGrid" class="weekly-grid">
               <div class="weekly-day no-shifts">
-                <div class="weekly-day-name">Sáb 22</div>
-                <div class="weekly-day-number">0</div>
-                <div class="weekly-day-text">Sin turnos</div>
-              </div>
-
-              <div class="weekly-day no-shifts">
-                <div class="weekly-day-name">Dom 23</div>
-                <div class="weekly-day-number">0</div>
-                <div class="weekly-day-text">Sin turnos</div>
+                <div class="weekly-day-name">Cargando</div>
+                <div class="weekly-day-number">—</div>
+                <div class="weekly-day-text">turnos</div>
               </div>
             </div>
           </div>
@@ -205,131 +160,7 @@
                 </thead>
                 <tbody id="misTurnosTableBody">
                   <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Patio Principal</span>
-                      </div>
-                    </td>
-                    <td>16 Mar 2026</td>
-                    <td>08:00</td>
-                    <td>09:30</td>
-                    <td><span class="mis-badge bg-green">Completado</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Cafetería</span>
-                      </div>
-                    </td>
-                    <td>16 Mar 2026</td>
-                    <td>14:00</td>
-                    <td>15:30</td>
-                    <td><span class="mis-badge bg-orange">Activo</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Biblioteca</span>
-                      </div>
-                    </td>
-                    <td>17 Mar 2026</td>
-                    <td>10:00</td>
-                    <td>11:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Entrada Principal</span>
-                      </div>
-                    </td>
-                    <td>17 Mar 2026</td>
-                    <td>14:00</td>
-                    <td>15:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Patio Secundario</span>
-                      </div>
-                    </td>
-                    <td>18 Mar 2026</td>
-                    <td>08:00</td>
-                    <td>09:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Sala de Profesores</span>
-                      </div>
-                    </td>
-                    <td>18 Mar 2026</td>
-                    <td>11:00</td>
-                    <td>12:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Cafetería</span>
-                      </div>
-                    </td>
-                    <td>19 Mar 2026</td>
-                    <td>12:00</td>
-                    <td>13:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
-                  </tr>
-
-                  <tr class="mis-row">
-                    <td>
-                      <div class="zone-cell">
-                        <span class="zone-icon">📍</span>
-                        <span>Patio Principal</span>
-                      </div>
-                    </td>
-                    <td>19 Mar 2026</td>
-                    <td>15:00</td>
-                    <td>16:30</td>
-                    <td><span class="mis-badge bg-soft-orange">Pendiente</span></td>
-                    <td>
-                      <a class="view-btn" href="detalle-turno.html">🔍 Ver Turno</a>
-                    </td>
+                    <td colspan="6">Cargando turnos...</td>
                   </tr>
                 </tbody>
               </table>
@@ -344,17 +175,17 @@
         <span class="footer-school">Colegio Santa Francisca Romana</span> &copy; 2026
       </p>
       <div class="footer-links">
-        <a href="soporte.html">Soporte</a>
+        <a th:href="@{/soporte}">Soporte</a>
         <span>|</span>
-        <a href="contacto.html">Contacto</a>
+        <a th:href="@{/contacto}">Contacto</a>
       </div>
     </footer>
   </div>
   <script src="/js/api/ApiClient.js"></script>
+  <script src="/js/api/TurnoService.js"></script>
   <script src="/js/api/UsuarioService.js"></script>
   <script src="/js/api/DocenteService.js"></script>
   <script src="/js/api/ZonaService.js"></script>
-  <script src="/js/api/TurnoService.js"></script>
   <script src="/js/api/AsignacionTurnoService.js"></script>
   <script src="/js/api/IncidenteService.js"></script>
   <script src="/js/api/CheckpointService.js"></script>
@@ -364,13 +195,16 @@
   <script>
     const DEMO_INITIAL_CHECKPOINT_ID = 1;
 
-    let assignments = [];
+    let panel = null;
     let turnos = [];
-    let zonas = [];
     let reminderInterval = null;
     let currentReminderAssignmentId = null;
 
+    const fechaFilter = document.getElementById('fecha-filter');
+    const zonaFilter = document.getElementById('zona-filter');
+    const estadoFilter = document.getElementById('estado-filter');
     const misTurnosTableBody = document.getElementById('misTurnosTableBody');
+    const weeklyGrid = document.getElementById('weeklyGrid');
     const turnoReminderSection = document.getElementById('turnoReminderSection');
     const turnoReminderLabel = document.getElementById('turnoReminderLabel');
     const turnoReminderHora = document.getElementById('turnoReminderHora');
@@ -388,52 +222,17 @@
       return new Date(dateTimeString).toLocaleString('es-ES');
     }
 
-    function getTurnoById(turnoId) {
-      return turnos.find(turno => turno.id === turnoId) || null;
-    }
-
-    function getZonaById(zonaId) {
-      return zonas.find(zona => zona.id === zonaId) || null;
+    function estadoBadgeClass(estado) {
+      const value = String(estado || '').toLowerCase();
+      if (value.includes('cerr')) return 'request-accepted';
+      if (value.includes('cubierta') || value.includes('act')) return 'request-orange';
+      if (value.includes('pend') || value.includes('sin')) return 'request-pending';
+      return 'request-programmed';
     }
 
     function buildTurnoStartDate(turno) {
       if (!turno?.fecha || !turno?.horaInicio) return null;
-
-      const horaInicio = String(turno.horaInicio).length === 5
-        ? `${turno.horaInicio}:00`
-        : String(turno.horaInicio).slice(0, 8);
-
-      return new Date(`${turno.fecha}T${horaInicio}`);
-    }
-
-    function buildRows() {
-      return assignments.map(asignacion => {
-        const turno = getTurnoById(asignacion.turnoId);
-        const zona = turno ? getZonaById(turno.zonaId) : null;
-
-        return {
-          asignacionId: asignacion.id,
-          fecha: turno?.fecha || '',
-          horario: turno ? `${String(turno.horaInicio || '').slice(0, 5)} - ${String(turno.horaFin || '').slice(0, 5)}` : 'Sin horario',
-          zona: zona?.nombre || 'Sin zona',
-          estado: asignacion.estadoCobertura || 'Sin estado',
-          horaCheckin: asignacion.horaCheckin || null
-        };
-      });
-    }
-
-    function estadoBadgeClass(estado) {
-      const value = String(estado || '').toLowerCase();
-
-      if (value.includes('cubierta')) return 'request-accepted';
-      if (value.includes('iniciar')) return 'request-pending';
-      if (value.includes('sin cobertura')) return 'request-rejected';
-
-      return 'request-programmed';
-    }
-
-    function checkinBadgeClass(horaCheckin) {
-      return horaCheckin ? 'request-accepted' : 'request-rejected';
+      return new Date(`${turno.fecha}T${String(turno.horaInicio).slice(0, 8)}`);
     }
 
     function getCurrentPinWindow() {
@@ -446,137 +245,99 @@
     }
 
     function getExpectedPinForInitialCheckpoint() {
-      const currentWindow = getCurrentPinWindow();
-      return generateDynamicPin(DEMO_INITIAL_CHECKPOINT_ID, currentWindow);
+      return generateDynamicPin(DEMO_INITIAL_CHECKPOINT_ID, getCurrentPinWindow());
+    }
+
+    function populateFilters() {
+      const zonas = [...new Set(turnos.map(turno => turno.zona).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      const estados = [...new Set(turnos.map(turno => turno.estado).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+      zonaFilter.innerHTML = '<option value="">Todas las zonas</option>' +
+        zonas.map(zona => `<option value="${zona}">${zona}</option>`).join('');
+
+      estadoFilter.innerHTML = '<option value="">Todos los estados</option>' +
+        estados.map(estado => `<option value="${estado}">${estado}</option>`).join('');
+    }
+
+    function renderStats() {
+      document.getElementById('statTotalSemana').textContent = panel?.resumen?.totalTurnosSemana ?? 0;
+      document.getElementById('statProximoTurno').textContent = panel?.resumen?.proximoTurno || 'Sin turnos programados';
+      document.getElementById('statCompletados').textContent = panel?.resumen?.turnosCompletados ?? 0;
+    }
+
+    function renderWeekly() {
+      const dias = panel?.vistaSemanal || [];
+      if (!dias.length) {
+        weeklyGrid.innerHTML = `
+          <div class="weekly-day no-shifts">
+            <div class="weekly-day-name">Sin semana</div>
+            <div class="weekly-day-number">0</div>
+            <div class="weekly-day-text">Sin turnos</div>
+          </div>
+        `;
+        return;
+      }
+
+      weeklyGrid.innerHTML = dias.map(dia => `
+        <div class="weekly-day ${dia.cantidadTurnos > 0 ? 'has-shifts' : 'no-shifts'}">
+          <div class="weekly-day-name">${dia.etiqueta}</div>
+          <div class="weekly-day-number">${dia.cantidadTurnos}</div>
+          <div class="weekly-day-text">${dia.cantidadTurnos === 1 ? 'turno' : dia.cantidadTurnos === 0 ? 'Sin turnos' : 'turnos'}</div>
+        </div>
+      `).join('');
+    }
+
+    function filteredTurnos() {
+      return turnos.filter(turno => {
+        const matchesFecha = !fechaFilter.value || turno.fecha === fechaFilter.value;
+        const matchesZona = !zonaFilter.value || turno.zona === zonaFilter.value;
+        const matchesEstado = !estadoFilter.value || turno.estado === estadoFilter.value;
+        return matchesFecha && matchesZona && matchesEstado;
+      });
     }
 
     function togglePinBox(asignacionId) {
       const pinBox = document.getElementById(`pinBox-${asignacionId}`);
-
       document.querySelectorAll('[id^="pinBox-"]').forEach(box => {
         if (box.id !== `pinBox-${asignacionId}`) {
           box.classList.add('hidden');
         }
       });
 
-      pinBox.classList.toggle('hidden');
-
-      if (!pinBox.classList.contains('hidden')) {
-        const input = document.getElementById(`pinInput-${asignacionId}`);
-        if (input) {
-          input.value = '';
-          input.focus();
-        }
+      if (pinBox) {
+        pinBox.classList.toggle('hidden');
       }
     }
 
     async function submitTurnoPin(asignacionId) {
       const input = document.getElementById(`pinInput-${asignacionId}`);
-      const pinIngresado = input.value.trim();
+      const pinIngresado = input ? input.value.trim() : '';
 
       if (!pinIngresado) {
         alert('Ingresa el PIN del punto inicial.');
         return;
       }
 
-      const pinEsperado = getExpectedPinForInitialCheckpoint();
-
-      if (pinIngresado !== pinEsperado) {
+      if (pinIngresado !== getExpectedPinForInitialCheckpoint()) {
         alert('PIN invalido.');
         return;
       }
 
       try {
         await ApiServices.asignacionTurnoService.registrarCheckin(asignacionId);
-        alert('Turno iniciado correctamente.');
         await loadData();
       } catch (error) {
         alert(`No se pudo iniciar el turno: ${error.message}`);
       }
     }
 
-    function getUpcomingReminderRow() {
-      const now = Date.now();
-
-      const candidates = assignments
-        .map(asignacion => {
-          const turno = getTurnoById(asignacion.turnoId);
-          const zona = turno ? getZonaById(turno.zonaId) : null;
-          const inicio = buildTurnoStartDate(turno);
-
-          if (!turno || !inicio || asignacion.horaCheckin) return null;
-
-          const diffMinutes = Math.floor((inicio.getTime() - now) / 60000);
-
-          return {
-            asignacionId: asignacion.id,
-            turno,
-            zona,
-            inicio,
-            diffMinutes
-          };
-        })
-        .filter(Boolean)
-        .filter(item => item.diffMinutes >= 0 && item.diffMinutes <= 10)
-        .sort((a, b) => a.inicio - b.inicio);
-
-      return candidates[0] || null;
-    }
-
-    function renderTurnoReminder() {
-      const reminder = getUpcomingReminderRow();
-
-      if (!reminder) {
-        turnoReminderSection.classList.add('hidden');
-        currentReminderAssignmentId = null;
-        return;
-      }
-
-      currentReminderAssignmentId = reminder.asignacionId;
-      turnoReminderSection.classList.remove('hidden');
-
-      turnoReminderLabel.textContent = reminder.diffMinutes <= 5
-        ? 'Faltan 5 minutos para tu turno'
-        : 'Faltan 10 minutos para tu turno';
-
-      turnoReminderHora.textContent = reminder.inicio.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-
-      turnoReminderZona.textContent = reminder.zona?.nombre || 'Sin zona';
-    }
-
-    function openReminderTurno() {
-      if (!currentReminderAssignmentId) return;
-
-      const pinBox = document.getElementById(`pinBox-${currentReminderAssignmentId}`);
-      if (pinBox) {
-        togglePinBox(currentReminderAssignmentId);
-        pinBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-
-      window.location.href = '/mis-turnos';
-    }
-
-    function startReminderTimer() {
-      renderTurnoReminder();
-
-      if (reminderInterval) {
-        clearInterval(reminderInterval);
-      }
-
-      reminderInterval = setInterval(renderTurnoReminder, 30000);
-    }
-
-    function renderMisTurnos() {
-      const rows = buildRows();
+    function renderTable() {
+      const rows = filteredTurnos();
 
       if (!rows.length) {
         misTurnosTableBody.innerHTML = `
           <tr class="mis-row">
-            <td colspan="6">No hay turnos asignados.</td>
+            <td colspan="6">No hay turnos para los filtros seleccionados.</td>
           </tr>
         `;
         return;
@@ -585,46 +346,27 @@
       misTurnosTableBody.innerHTML = rows.map(row => `
         <tr class="mis-row">
           <td>${formatDate(row.fecha)}</td>
-          <td>${row.horario}</td>
+          <td>${String(row.horaInicio || '').slice(0, 5)} - ${String(row.horaFin || '').slice(0, 5)}</td>
           <td>
             <div class="zone-cell">
               <span class="zone-icon">📍</span>
-              <span>${row.zona}</span>
+              <span>${row.zona || 'Sin zona'}</span>
             </div>
           </td>
           <td>
-            <span class="request-badge ${estadoBadgeClass(row.estado)}">${row.estado}</span>
+            <span class="request-badge ${estadoBadgeClass(row.estado)}">${row.estado || 'Sin estado'}</span>
           </td>
-          <td>
-            <span class="request-badge ${checkinBadgeClass(row.horaCheckin)}">
-              ${row.horaCheckin ? formatDateTime(row.horaCheckin) : 'No registrada'}
-            </span>
-          </td>
+          <td>${row.horaCheckin ? formatDateTime(row.horaCheckin) : 'No registrada'}</td>
           <td>
             <div class="teacher-actions">
               ${row.horaCheckin ? `
                 <span class="request-badge request-accepted">Turno iniciado</span>
                 <a class="view-btn" href="/registrar-punto">📍 Registrar punto</a>
               ` : `
-                <button class="view-btn" type="button" onclick="togglePinBox(${row.asignacionId})">
-                  ▶ Iniciar turno
-                </button>
-
+                <button class="view-btn" type="button" onclick="togglePinBox(${row.asignacionId})">▶ Iniciar turno</button>
                 <div id="pinBox-${row.asignacionId}" class="hidden" style="margin-top: 8px;">
-                  <input
-                    id="pinInput-${row.asignacionId}"
-                    type="text"
-                    maxlength="4"
-                    placeholder="Ingresa PIN"
-                    style="width: 110px;"
-                  />
-                  <button
-                    class="view-btn"
-                    type="button"
-                    onclick="submitTurnoPin(${row.asignacionId})"
-                  >
-                    Validar PIN
-                  </button>
+                  <input id="pinInput-${row.asignacionId}" type="text" maxlength="4" placeholder="Ingresa PIN" style="width: 110px;" />
+                  <button class="view-btn" type="button" onclick="submitTurnoPin(${row.asignacionId})">Validar PIN</button>
                 </div>
               `}
               <a class="view-btn" href="/reportar-incidente">⚠ Registrar situación</a>
@@ -634,20 +376,67 @@
       `).join('');
     }
 
+    function getUpcomingReminderRow() {
+      const now = Date.now();
+      const candidates = turnos
+        .filter(turno => !turno.horaCheckin)
+        .map(turno => {
+          const inicio = buildTurnoStartDate(turno);
+          if (!inicio) return null;
+          return {
+            ...turno,
+            inicio,
+            diffMinutes: Math.floor((inicio.getTime() - now) / 60000)
+          };
+        })
+        .filter(Boolean)
+        .filter(turno => turno.diffMinutes >= 0 && turno.diffMinutes <= 10)
+        .sort((a, b) => a.inicio - b.inicio);
+
+      return candidates[0] || null;
+    }
+
+    function renderTurnoReminder() {
+      const reminder = getUpcomingReminderRow();
+      if (!reminder) {
+        turnoReminderSection.classList.add('hidden');
+        currentReminderAssignmentId = null;
+        return;
+      }
+
+      currentReminderAssignmentId = reminder.asignacionId;
+      turnoReminderSection.classList.remove('hidden');
+      turnoReminderLabel.textContent = reminder.diffMinutes <= 5 ? 'Faltan 5 minutos para tu turno' : 'Faltan 10 minutos para tu turno';
+      turnoReminderHora.textContent = reminder.inicio.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      turnoReminderZona.textContent = reminder.zona || 'Sin zona';
+    }
+
+    function openReminderTurno() {
+      if (!currentReminderAssignmentId) return;
+      const pinBox = document.getElementById(`pinBox-${currentReminderAssignmentId}`);
+      if (pinBox) {
+        togglePinBox(currentReminderAssignmentId);
+        pinBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function startReminderTimer() {
+      renderTurnoReminder();
+      if (reminderInterval) {
+        clearInterval(reminderInterval);
+      }
+      reminderInterval = setInterval(renderTurnoReminder, 30000);
+    }
+
     async function loadData() {
       try {
-        const [loadedAssignments, loadedTurnos, loadedZonas] = await Promise.all([
-          ApiServices.asignacionTurnoService.obtenerTodas(),
-          ApiServices.turnoService.obtenerTodos(),
-          ApiServices.zonaService.obtenerTodas()
-        ]);
-
-        assignments = loadedAssignments || [];
-        turnos = loadedTurnos || [];
-        zonas = loadedZonas || [];
-
-        renderMisTurnos();
-        renderTurnoReminder();
+        // El panel del docente trae resumen, vista semanal y tabla desde un solo endpoint.
+        panel = await ApiServices.asignacionTurnoService.obtenerPanelActual();
+        turnos = panel?.turnos || [];
+        renderStats();
+        renderWeekly();
+        populateFilters();
+        renderTable();
         startReminderTimer();
       } catch (error) {
         misTurnosTableBody.innerHTML = `
@@ -658,7 +447,13 @@
       }
     }
 
+    fechaFilter.addEventListener('change', renderTable);
+    zonaFilter.addEventListener('change', renderTable);
+    estadoFilter.addEventListener('change', renderTable);
     turnoReminderAction.addEventListener('click', openReminderTurno);
+
+    window.togglePinBox = togglePinBox;
+    window.submitTurnoPin = submitTurnoPin;
 
     loadData();
   </script>

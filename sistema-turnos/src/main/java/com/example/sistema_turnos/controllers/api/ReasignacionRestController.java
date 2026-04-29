@@ -35,6 +35,13 @@ public class ReasignacionRestController {
         return ResponseEntity.ok(reasignacionService.obtenerReasignacionesPorDocente(docenteId));
     }
 
+    @GetMapping("/actual")
+    public ResponseEntity<List<ReasignacionDTO>> obtenerActuales() {
+        return ResponseEntity.ok(
+                reasignacionService.obtenerReasignacionesPorDocente(reasignacionService.obtenerDocenteActualId())
+        );
+    }
+
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<ReasignacionDTO>> obtenerPorEstado(@PathVariable String estado) {
         return ResponseEntity.ok(reasignacionService.obtenerReasignacionesPorEstado(estado));
@@ -58,6 +65,7 @@ public class ReasignacionRestController {
     @PostMapping
     public ResponseEntity<ReasignacionDTO> crear(@RequestBody ReasignacionDTO dto) {
         try {
+            // El docente solicitante se resuelve en el servidor para eliminar IDs hardcodeados.
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(reasignacionService.crearReasignacion(dto));
         } catch (Exception e) {

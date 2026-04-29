@@ -109,7 +109,7 @@
             <div class="admin-stat-top">
               <div class="admin-stat-icon bg-navy">📋</div>
             </div>
-            <h3>12</h3>
+            <h3 id="contadorTurnosActivos">0</h3>
             <p>Total turnos activos hoy</p>
           </article>
 
@@ -242,7 +242,7 @@
                   <th>Estado</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="tablaTurnosActivos">
                 <tr class="table-row-hover">
                   <td>Prof. Roberto Silva</td>
                   <td>Patio Principal</td>
@@ -290,6 +290,7 @@
   </div>
   <script>
     document.addEventListener("DOMContentLoaded", cargarIncidentesActivos);
+    document.addEventListener("DOMContentLoaded", cargarTurnosActivos);
 
     async function cargarIncidentesActivos() {
       try {
@@ -349,6 +350,54 @@
 
       } catch (error) {
         console.error("Error cargando incidentes activos:", error);
+      }
+    }
+
+    async function cargarTurnosActivos() {
+      const tabla = document.getElementById("tablaTurnosActivos");
+      const contador = document.getElementById("contadorTurnosActivos");
+
+      if (!tabla || !contador) {
+        return;
+      }
+
+      tabla.innerHTML = `
+        <tr class="table-row-hover">
+          <td colspan="4" style="text-align:center">Cargando turnos activos...</td>
+        </tr>
+      `;
+
+      try {
+        const response = await fetch("/api/v1/asignaciones-turnos/activas");
+        const turnos = await response.json();
+
+        contador.textContent = turnos.length;
+
+        if (!turnos.length) {
+          tabla.innerHTML = `
+            <tr class="table-row-hover">
+              <td colspan="4" style="text-align:center">No hay turnos activos en este momento.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        // Esta tabla se hidrata con datos vivos para reemplazar el contenido demo del HTML.
+        tabla.innerHTML = turnos.map(turno => `
+          <tr class="table-row-hover">
+            <td>${turno.docenteNombre || "Sin docente"}</td>
+            <td>${turno.zona || "Sin zona"}</td>
+            <td>${String(turno.horaInicio || "--:--").slice(0, 5)}</td>
+            <td><span class="request-badge request-accepted">${turno.estado || "Activo"}</span></td>
+          </tr>
+        `).join("");
+      } catch (error) {
+        console.error("Error cargando turnos activos:", error);
+        tabla.innerHTML = `
+          <tr class="table-row-hover">
+            <td colspan="4" style="text-align:center">No se pudieron cargar los turnos activos.</td>
+          </tr>
+        `;
       }
     }
 
