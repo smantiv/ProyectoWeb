@@ -15,6 +15,7 @@ public class ReasignacionDTO {
     private String docenteReemplazoNombre;
     private Long turnoId;
     private String turnoDescripcion;
+    private String aprobador;
 
     public ReasignacionDTO() {}
 
@@ -50,4 +51,7 @@ public class ReasignacionDTO {
 
     public String getTurnoDescripcion() { return turnoDescripcion; }
     public void setTurnoDescripcion(String turnoDescripcion) { this.turnoDescripcion = turnoDescripcion; }
+
+    public String getAprobador() { return aprobador; }
+    public void setAprobador(String aprobador) { this.aprobador = aprobador; }
 }

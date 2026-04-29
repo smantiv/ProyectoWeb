@@ -27,6 +27,7 @@ public class Reasignacion {
     @ManyToOne
     @JoinColumn(name = "turno_id")
     private Turno turno;
+    private String aprobador; 
 
     public Reasignacion() {}
 
@@ -52,4 +53,7 @@ public class Reasignacion {
 
     public Turno getTurno() { return turno; }
     public void setTurno(Turno turno) { this.turno = turno; }
+
+    public String getAprobador() { return aprobador; }
+    public void setAprobador(String aprobador) { this.aprobador = aprobador; }
 }

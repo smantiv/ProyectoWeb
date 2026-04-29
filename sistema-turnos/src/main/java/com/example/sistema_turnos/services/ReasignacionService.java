@@ -96,6 +96,7 @@ public class ReasignacionService {
         Reasignacion r = opt.get();
         r.setEstado(decision);
         r.setFechaRespuesta(LocalDateTime.now());
+        r.setAprobador("Coord. Ana Torres"); // temporal hasta que haya sesión real
 
         if ("aceptada".equals(decision) && docenteReemplazoId != null) {
             Docente reemplazo = docenteRepository.findById(docenteReemplazoId)
@@ -207,6 +208,7 @@ public class ReasignacionService {
                     + " — " + r.getTurno().getHoraInicio() + "–" + r.getTurno().getHoraFin());
         }
 
+        dto.setAprobador(r.getAprobador());
         return dto;
     }
 
