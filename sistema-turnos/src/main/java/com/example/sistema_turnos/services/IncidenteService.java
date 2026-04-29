@@ -29,8 +29,7 @@ public class IncidenteService {
         incidente.setFechaHora(incidenteDTO.getFechaHora());
         incidente.setEstado(incidenteDTO.getEstado());
         incidente.setUbicacion(incidenteDTO.getUbicacion());
-        
-
+            
         if (incidenteDTO.getAsignacionId() != null) {
             Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());
             asignacion.ifPresent(incidente::setAsignacionTurno);
@@ -47,20 +46,20 @@ public class IncidenteService {
 
     public List<IncidenteDTO> obtenerIncidentesPorAsignacion(Long asignacionId) {
         return incidenteRepository.findByAsignacionTurnoId(asignacionId).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
     public List<IncidenteDTO> obtenerIncidentesPorTipo(String tipo) {
         return incidenteRepository.findByTipo(tipo).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
     public List<IncidenteDTO> obtenerTodosLosIncidentes() {
         return incidenteRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 
     public IncidenteDTO actualizarIncidente(Long id, IncidenteDTO incidenteDTO) {
@@ -73,59 +72,60 @@ public class IncidenteService {
             incidente.setFechaHora(incidenteDTO.getFechaHora());
             incidente.setEstado(incidenteDTO.getEstado());
 
-            if (incidenteDTO.getAsignacionId() != null) {
-                Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());
-                asignacion.ifPresent(incidente::setAsignacionTurno);
-            }
+        if (incidenteDTO.getAsignacionId() != null) {
+            Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());
+            asignacion.ifPresent(incidente::setAsignacionTurno);
+        }
 
-            Incidente incidenteActualizado = incidenteRepository.save(incidente);
+        Incidente incidenteActualizado = incidenteRepository.save(incidente);
             return convertToDTO(incidenteActualizado);
         }
-        return null;
-    }
-    public List<IncidenteDTO> obtenerIncidentesPorSeveridad(String severidad) {
-    return incidenteRepository.findBySeveridad(severidad).stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
-}
-
-public List<IncidenteDTO> obtenerIncidentesPorEstado(String estado) {
-    return incidenteRepository.findByEstado(estado).stream()
-            .map(this::convertToDTO)
-            .collect(Collectors.toList());
-}
-
-    public boolean eliminarIncidente(Long id) {
-        if (incidenteRepository.existsById(id)) {
-            incidenteRepository.deleteById(id);
-            return true;
+            return null;
         }
-        return false;
+
+        public List<IncidenteDTO> obtenerIncidentesPorSeveridad(String severidad) {
+        return incidenteRepository.findBySeveridad(severidad).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        }
+
+        public List<IncidenteDTO> obtenerIncidentesPorEstado(String estado) {
+            return incidenteRepository.findByEstado(estado).stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
+
+        public boolean eliminarIncidente(Long id) {
+            if (incidenteRepository.existsById(id)) {
+                incidenteRepository.deleteById(id);
+                return true;
+            }
+            return false;
+        }
+
+        private IncidenteDTO convertToDTO(Incidente incidente) {
+        Long asignacionId = incidente.getAsignacionTurno() != null
+                ? incidente.getAsignacionTurno().getId()
+                : null;
+
+        String ubicacion = null;
+
+        if (incidente.getAsignacionTurno() != null
+                && incidente.getAsignacionTurno().getTurno() != null
+                && incidente.getAsignacionTurno().getTurno().getZona() != null) {
+            ubicacion = incidente.getAsignacionTurno().getTurno().getZona().getNombre();
+        }
+
+        IncidenteDTO dto = new IncidenteDTO();
+        dto.setId(incidente.getId());
+        dto.setTipo(incidente.getTipo());
+        dto.setSeveridad(incidente.getSeveridad());
+        dto.setDescripcion(incidente.getDescripcion());
+        dto.setFechaHora(incidente.getFechaHora());
+        dto.setEstado(incidente.getEstado());
+        dto.setAsignacionId(asignacionId);
+        dto.setUbicacion(incidente.getUbicacion());
+
+        return dto;
     }
-
-    private IncidenteDTO convertToDTO(Incidente incidente) {
-    Long asignacionId = incidente.getAsignacionTurno() != null
-            ? incidente.getAsignacionTurno().getId()
-            : null;
-
-    String ubicacion = null;
-
-    if (incidente.getAsignacionTurno() != null
-            && incidente.getAsignacionTurno().getTurno() != null
-            && incidente.getAsignacionTurno().getTurno().getZona() != null) {
-        ubicacion = incidente.getAsignacionTurno().getTurno().getZona().getNombre();
-    }
-
-    IncidenteDTO dto = new IncidenteDTO();
-    dto.setId(incidente.getId());
-    dto.setTipo(incidente.getTipo());
-    dto.setSeveridad(incidente.getSeveridad());
-    dto.setDescripcion(incidente.getDescripcion());
-    dto.setFechaHora(incidente.getFechaHora());
-    dto.setEstado(incidente.getEstado());
-    dto.setAsignacionId(asignacionId);
-    dto.setUbicacion(incidente.getUbicacion());
-
-    return dto;
-}
 }
