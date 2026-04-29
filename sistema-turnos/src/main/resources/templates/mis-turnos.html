@@ -363,6 +363,7 @@
   <script src="/js/api/ApiServices.js"></script>
   <script>
     const DEMO_INITIAL_CHECKPOINT_ID = 1;
+    const DOCENTE_DEMO_ID = 1;
 
     let assignments = [];
     let turnos = [];
@@ -445,9 +446,18 @@
         const turno = getTurnoById(asignacion.turnoId);
         const zona = turno ? getZonaById(turno.zonaId) : null;
         const inicio = buildTurnoStartDate(turno);
+        const estado = String(asignacion.estadoCobertura || '');
+        const estadoLower = estado.toLowerCase();
+        const isClosed = estadoLower.includes('cerrado');
+        const hasStarted = Boolean(inicio) && now >= inicio.getTime();
+        const minutesUntilStart = inicio
+          ? Math.floor((inicio.getTime() - now) / 60000)
+          : null;
+        const isStartingSoon = minutesUntilStart !== null && minutesUntilStart >= 0 && minutesUntilStart <= 10;
         const hasAbsenceAlert = Boolean(
           turno &&
           inicio &&
+          !isClosed &&
           !asignacion.horaCheckin &&
           now > (inicio.getTime() + (2 * 60 * 1000))
         );
@@ -457,9 +467,12 @@
           fecha: turno?.fecha || '',
           horario: turno ? `${String(turno.horaInicio || '').slice(0, 5)} - ${String(turno.horaFin || '').slice(0, 5)}` : 'Sin horario',
           zona: zona?.nombre || 'Sin zona',
-          estado: asignacion.estadoCobertura || 'Sin estado',
+          estado: estado || 'Sin estado',
           horaCheckin: asignacion.horaCheckin || null,
-          hasAbsenceAlert
+          hasAbsenceAlert,
+          isClosed,
+          hasStarted,
+          isStartingSoon
         };
       });
     }
@@ -663,8 +676,14 @@
             </div>
           </td>
           <td>
-            ${row.hasAbsenceAlert
+            ${row.isClosed
+              ? `<span class="request-badge request-programmed">Cerrado</span>`
+              : row.horaCheckin
+              ? `<span class="request-badge request-accepted">Cubierta</span>`
+              : row.hasAbsenceAlert
               ? `<span class="request-badge request-rejected">Ausencia detectada</span>`
+              : row.isStartingSoon
+              ? `<span class="request-badge request-pending">Por iniciar</span>`
               : `<span class="request-badge ${estadoBadgeClass(row.estado)}">${row.estado}</span>`
             }
           </td>
@@ -675,12 +694,18 @@
           </td>
           <td>
             <div class="teacher-actions">
-              ${row.hasAbsenceAlert ? `
+              ${row.isClosed ? `
+                <span class="request-badge request-programmed">Turno cerrado</span>
+              ` : row.hasAbsenceAlert ? `
                 <span class="request-badge request-rejected">Check-in pendiente</span>
               ` : ''}
-              ${row.horaCheckin ? `
+              ${row.isClosed ? `` : row.horaCheckin ? `
                 <span class="request-badge request-accepted">Turno iniciado</span>
-                <a class="view-btn" href="/registrar-punto">📍 Registrar punto</a>
+                <a class="view-btn" href="/registrar-punto?asignacionId=${row.asignacionId}">📍 Registrar punto</a>
+              ` : !row.hasStarted ? `
+                <button class="view-btn" type="button" disabled>
+                  ${row.isStartingSoon ? 'Disponible pronto' : 'Aún no disponible'}
+                </button>
               ` : `
                 <button class="view-btn" type="button" onclick="togglePinBox(${row.asignacionId})">
                   ▶ Iniciar turno
@@ -713,7 +738,7 @@
     async function loadData() {
       try {
         const [loadedAssignments, loadedTurnos, loadedZonas] = await Promise.all([
-          ApiServices.asignacionTurnoService.obtenerTodas(),
+          ApiServices.asignacionTurnoService.obtenerPorDocente(DOCENTE_DEMO_ID),
           ApiServices.turnoService.obtenerTodos(),
           ApiServices.zonaService.obtenerTodas()
         ]);

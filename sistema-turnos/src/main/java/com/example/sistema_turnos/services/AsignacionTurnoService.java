@@ -166,8 +166,8 @@ public class AsignacionTurnoService {
                 asignacion.getHoraCierre(),
                 asignacion.getCalificacionLimpieza(),
                 asignacion.getEstadoCobertura(),
-                turnoId,
                 docenteId,
+                turnoId,
                 asignacion.getObservacionLimpieza()
         );
     }
