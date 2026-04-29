@@ -18,6 +18,7 @@ public class AsignacionTurno {
     private LocalDateTime horaCierre;
     private Integer calificacionLimpieza;
     private String estadoCobertura;
+    private String observacionLimpieza;
     
 
     @ManyToOne
@@ -80,5 +81,13 @@ public class AsignacionTurno {
 
     public void setTurno(Turno turno) {
         this.turno = turno;
+    }
+
+    public String getObservacionLimpieza() {
+        return observacionLimpieza;
+    }
+
+    public void setObservacionLimpieza(String observacionLimpieza) {
+        this.observacionLimpieza = observacionLimpieza;
     }
 }
