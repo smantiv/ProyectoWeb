@@ -9,6 +9,7 @@ public class AsignacionTurnoDTO {
     private LocalDateTime horaCierre;
     private Integer calificacionLimpieza;
     private String estadoCobertura;
+    private String observacionLimpieza;
     private Long docenteId;
     private Long turnoId;
 
@@ -16,12 +17,13 @@ public class AsignacionTurnoDTO {
     }
 
     public AsignacionTurnoDTO(Long id, LocalDateTime horaCheckin, LocalDateTime horaCierre,
-                             Integer calificacionLimpieza, String estadoCobertura, Long docenteId, Long turnoId) {
+                             Integer calificacionLimpieza, String estadoCobertura, Long docenteId, Long turnoId, String observacionLimpieza) {
         this.id = id;
         this.horaCheckin = horaCheckin;
         this.horaCierre = horaCierre;
         this.calificacionLimpieza = calificacionLimpieza;
         this.estadoCobertura = estadoCobertura;
+        this.observacionLimpieza = observacionLimpieza;
         this.docenteId = docenteId;
         this.turnoId = turnoId;
     }
@@ -81,5 +83,13 @@ public class AsignacionTurnoDTO {
 
     public void setTurnoId(Long turnoId) {
         this.turnoId = turnoId;
+    }
+
+    public String getObservacionLimpieza() {
+        return observacionLimpieza;
+    }
+
+    public void setObservacionLimpieza(String observacionLimpieza) {
+        this.observacionLimpieza = observacionLimpieza;
     }
 }

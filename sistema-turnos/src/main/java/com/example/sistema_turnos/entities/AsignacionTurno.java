@@ -2,6 +2,8 @@ package com.example.sistema_turnos.entities;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;  
 
 @Entity
 @Table(name = "asignacion_turno")
@@ -10,11 +12,14 @@ public class AsignacionTurno {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Min(1)
+    @Max(5)
     private LocalDateTime horaCheckin;
     private LocalDateTime horaCierre;
     private Integer calificacionLimpieza;
     private String estadoCobertura;
+    private String observacionLimpieza;
+    
 
     @ManyToOne
     @JoinColumn(name = "docente_id")
@@ -76,5 +81,13 @@ public class AsignacionTurno {
 
     public void setTurno(Turno turno) {
         this.turno = turno;
+    }
+
+    public String getObservacionLimpieza() {
+        return observacionLimpieza;
+    }
+
+    public void setObservacionLimpieza(String observacionLimpieza) {
+        this.observacionLimpieza = observacionLimpieza;
     }
 }

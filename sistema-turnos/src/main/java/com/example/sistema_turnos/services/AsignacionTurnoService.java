@@ -33,6 +33,7 @@ public class AsignacionTurnoService {
         asignacion.setHoraCierre(asignacionTurnoDTO.getHoraCierre());
         asignacion.setCalificacionLimpieza(asignacionTurnoDTO.getCalificacionLimpieza());
         asignacion.setEstadoCobertura(asignacionTurnoDTO.getEstadoCobertura());
+        asignacion.setObservacionLimpieza(asignacionTurnoDTO.getObservacionLimpieza()); 
 
         if (asignacionTurnoDTO.getDocenteId() != null) {
             Optional<Docente> docente = docenteRepository.findById(asignacionTurnoDTO.getDocenteId());
@@ -121,8 +122,9 @@ public class AsignacionTurnoService {
                 asignacion.getHoraCierre(),
                 asignacion.getCalificacionLimpieza(),
                 asignacion.getEstadoCobertura(),
+                turnoId,
                 docenteId,
-                turnoId
+                asignacion.getObservacionLimpieza()
         );
     }
 }

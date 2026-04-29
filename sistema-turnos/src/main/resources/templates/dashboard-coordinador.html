@@ -109,7 +109,7 @@
             <div class="admin-stat-top">
               <div class="admin-stat-icon bg-navy">📋</div>
             </div>
-            <h3>12</h3>
+            <h3 id="totalTurnosActivos">0</h3>
             <p>Total turnos activos hoy</p>
           </article>
 
@@ -563,6 +563,57 @@
         console.error('Error aprobando:', e);
       }
     }
+    async function obtenerEstadisticasTurnos() {
+            try {
+                const response = await fetch('/api/v1/dashboard/estadisticas-turnos');
+                const data = await response.json();
+
+                // Actualizar los elementos de la UI con los valores obtenidos
+                document.getElementById('totalTurnosActivos').textContent = data.totalTurnosActivosHoy;
+                
+                // Actualizar estado de cobertura
+                const estadoCobertura = data.estadoCobertura;
+                document.getElementById('turnosPendientes').textContent = estadoCobertura.pendiente || 0;
+                document.getElementById('turnosEnCurso').textContent = estadoCobertura.enCurso || 0;
+                document.getElementById('turnosCerrados').textContent = estadoCobertura.cerrado || 0;
+
+            } catch (error) {
+                console.error('Error al obtener estadísticas de turnos:', error);
+            }
+        }
+
+        // Llamar a la función para cargar los datos al cargar la página
+        obtenerEstadisticasTurnos();
+
+        // Función para obtener los turnos activos y mostrar en la tabla
+        async function obtenerTurnosActivos() {
+            try {
+                const response = await fetch('/api/v1/dashboard/turnos-activos');
+                const data = await response.json();
+
+                // Obtener la tabla
+                const tabla = document.getElementById('tablaTurnosActivos').getElementsByTagName('tbody')[0];
+
+                // Limpiar la tabla
+                tabla.innerHTML = '';
+
+                // Llenar la tabla con los datos de turnos activos
+                data.turnos.forEach(turno => {
+                    const row = tabla.insertRow();
+                    row.innerHTML = `
+                        <td>${turno.tipo}</td>
+                        <td>${turno.ubicacion}</td>
+                        <td>${turno.hora}</td>
+                        <td>${turno.estado}</td>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error al obtener los turnos activos:', error);
+            }
+        }
+
+        // Llamar a la función para cargar los turnos activos
+        obtenerTurnosActivos();
   </script>
 
   <!-- Modal aprobar reasignación -->
