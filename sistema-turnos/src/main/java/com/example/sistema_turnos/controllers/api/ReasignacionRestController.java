@@ -1,5 +1,6 @@
 package com.example.sistema_turnos.controllers.api;
 
+import com.example.sistema_turnos.dtos.DocenteDTO;
 import com.example.sistema_turnos.dtos.ReasignacionDTO;
 import com.example.sistema_turnos.services.ReasignacionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/reasignaciones")
@@ -24,8 +26,8 @@ public class ReasignacionRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ReasignacionDTO> obtenerPorId(@PathVariable Long id) {
-        ReasignacionDTO reasignacion = reasignacionService.obtenerReasignacionPorId(id);
-        return reasignacion != null ? ResponseEntity.ok(reasignacion) : ResponseEntity.notFound().build();
+        ReasignacionDTO r = reasignacionService.obtenerReasignacionPorId(id);
+        return r != null ? ResponseEntity.ok(r) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/docente/{docenteId}")
@@ -40,26 +42,51 @@ public class ReasignacionRestController {
 
     @GetMapping("/docente/{docenteId}/estado/{estado}")
     public ResponseEntity<List<ReasignacionDTO>> obtenerPorDocenteYEstado(
-            @PathVariable Long docenteId,
-            @PathVariable String estado) {
+            @PathVariable Long docenteId, @PathVariable String estado) {
         return ResponseEntity.ok(reasignacionService.obtenerReasignacionesPorDocenteYEstado(docenteId, estado));
     }
 
+    // GET /api/v1/reasignaciones/candidatos/{turnoId}
+    // Devuelve docentes disponibles para cubrir ese turno
+    @GetMapping("/candidatos/{turnoId}")
+    public ResponseEntity<List<DocenteDTO>> obtenerCandidatos(@PathVariable Long turnoId) {
+        return ResponseEntity.ok(reasignacionService.obtenerCandidatos(turnoId));
+    }
+
+    // POST /api/v1/reasignaciones
+    // Body: { "docenteId": 1, "turnoId": 2, "motivo": "Cita médica" }
     @PostMapping
-    public ResponseEntity<ReasignacionDTO> crear(@RequestBody ReasignacionDTO reasignacionDTO) {
+    public ResponseEntity<ReasignacionDTO> crear(@RequestBody ReasignacionDTO dto) {
         try {
-            ReasignacionDTO reasignacionCreada = reasignacionService.crearReasignacion(reasignacionDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(reasignacionCreada);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(reasignacionService.crearReasignacion(dto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // PUT /api/v1/reasignaciones/{id}/responder
+    // Body: { "docenteReemplazoId": 3, "decision": "aceptada" }
+    @PutMapping("/{id}/responder")
+    public ResponseEntity<ReasignacionDTO> responder(
+            @PathVariable Long id, @RequestBody Map<String, Object> body) {
+        try {
+            String decision = body.get("decision").toString();
+            Long reemplazoId = body.containsKey("docenteReemplazoId") && body.get("docenteReemplazoId") != null
+                    ? Long.valueOf(body.get("docenteReemplazoId").toString()) : null;
+            ReasignacionDTO result = reasignacionService.responder(id, reemplazoId, decision);
+            return result != null ? ResponseEntity.ok(result) : ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReasignacionDTO> actualizar(@PathVariable Long id, @RequestBody ReasignacionDTO reasignacionDTO) {
+    public ResponseEntity<ReasignacionDTO> actualizar(
+            @PathVariable Long id, @RequestBody ReasignacionDTO dto) {
         try {
-            ReasignacionDTO reasignacionActualizada = reasignacionService.actualizarReasignacion(id, reasignacionDTO);
-            return reasignacionActualizada != null ? ResponseEntity.ok(reasignacionActualizada) : ResponseEntity.notFound().build();
+            ReasignacionDTO actualizada = reasignacionService.actualizarReasignacion(id, dto);
+            return actualizada != null ? ResponseEntity.ok(actualizada) : ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -67,6 +94,8 @@ public class ReasignacionRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        return reasignacionService.eliminarReasignacion(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        return reasignacionService.eliminarReasignacion(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

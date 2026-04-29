@@ -151,6 +151,42 @@
           </div>
         </section>
 
+        <section id="turnoReminderSection" class="section hidden">
+          <div class="checkpoint-summary-card">
+            <div class="checkpoint-summary-grid checkpoint-summary-grid-4">
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">🔔</span>
+                  <span>Recordatorio</span>
+                </div>
+                <p id="turnoReminderLabel">Sin recordatorios</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">🕒</span>
+                  <span>Hora exacta</span>
+                </div>
+                <p id="turnoReminderHora">--:--</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <div class="checkpoint-summary-label">
+                  <span class="checkpoint-mini-icon">📍</span>
+                  <span>Lugar / zona</span>
+                </div>
+                <p id="turnoReminderZona">Sin zona</p>
+              </div>
+
+              <div class="checkpoint-summary-item">
+                <button id="turnoReminderAction" class="btn btn-primary checkpoint-submit-btn" type="button">
+                  Abrir turno
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="section">
           <h3 class="subsection-title">Todos los Turnos</h3>
 
@@ -326,11 +362,20 @@
   <script src="/js/api/ReasignacionService.js"></script>
   <script src="/js/api/ApiServices.js"></script>
   <script>
+    const DEMO_INITIAL_CHECKPOINT_ID = 1;
+
     let assignments = [];
     let turnos = [];
     let zonas = [];
+    let reminderInterval = null;
+    let currentReminderAssignmentId = null;
 
     const misTurnosTableBody = document.getElementById('misTurnosTableBody');
+    const turnoReminderSection = document.getElementById('turnoReminderSection');
+    const turnoReminderLabel = document.getElementById('turnoReminderLabel');
+    const turnoReminderHora = document.getElementById('turnoReminderHora');
+    const turnoReminderZona = document.getElementById('turnoReminderZona');
+    const turnoReminderAction = document.getElementById('turnoReminderAction');
 
     function formatDate(dateString) {
       if (!dateString) return 'Sin fecha';
@@ -349,6 +394,16 @@
 
     function getZonaById(zonaId) {
       return zonas.find(zona => zona.id === zonaId) || null;
+    }
+
+    function buildTurnoStartDate(turno) {
+      if (!turno?.fecha || !turno?.horaInicio) return null;
+
+      const horaInicio = String(turno.horaInicio).length === 5
+        ? `${turno.horaInicio}:00`
+        : String(turno.horaInicio).slice(0, 8);
+
+      return new Date(`${turno.fecha}T${horaInicio}`);
     }
 
     function buildRows() {
@@ -379,6 +434,140 @@
 
     function checkinBadgeClass(horaCheckin) {
       return horaCheckin ? 'request-accepted' : 'request-rejected';
+    }
+
+    function getCurrentPinWindow() {
+      return Math.floor(Date.now() / 30000);
+    }
+
+    function generateDynamicPin(checkpointId, windowSlot) {
+      const seed = (checkpointId * 7919) + (windowSlot * 104729);
+      return String(Math.abs(seed % 9000) + 1000).slice(0, 4);
+    }
+
+    function getExpectedPinForInitialCheckpoint() {
+      const currentWindow = getCurrentPinWindow();
+      return generateDynamicPin(DEMO_INITIAL_CHECKPOINT_ID, currentWindow);
+    }
+
+    function togglePinBox(asignacionId) {
+      const pinBox = document.getElementById(`pinBox-${asignacionId}`);
+
+      document.querySelectorAll('[id^="pinBox-"]').forEach(box => {
+        if (box.id !== `pinBox-${asignacionId}`) {
+          box.classList.add('hidden');
+        }
+      });
+
+      pinBox.classList.toggle('hidden');
+
+      if (!pinBox.classList.contains('hidden')) {
+        const input = document.getElementById(`pinInput-${asignacionId}`);
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+
+    async function submitTurnoPin(asignacionId) {
+      const input = document.getElementById(`pinInput-${asignacionId}`);
+      const pinIngresado = input.value.trim();
+
+      if (!pinIngresado) {
+        alert('Ingresa el PIN del punto inicial.');
+        return;
+      }
+
+      const pinEsperado = getExpectedPinForInitialCheckpoint();
+
+      if (pinIngresado !== pinEsperado) {
+        alert('PIN invalido.');
+        return;
+      }
+
+      try {
+        await ApiServices.asignacionTurnoService.registrarCheckin(asignacionId);
+        alert('Turno iniciado correctamente.');
+        await loadData();
+      } catch (error) {
+        alert(`No se pudo iniciar el turno: ${error.message}`);
+      }
+    }
+
+    function getUpcomingReminderRow() {
+      const now = Date.now();
+
+      const candidates = assignments
+        .map(asignacion => {
+          const turno = getTurnoById(asignacion.turnoId);
+          const zona = turno ? getZonaById(turno.zonaId) : null;
+          const inicio = buildTurnoStartDate(turno);
+
+          if (!turno || !inicio || asignacion.horaCheckin) return null;
+
+          const diffMinutes = Math.floor((inicio.getTime() - now) / 60000);
+
+          return {
+            asignacionId: asignacion.id,
+            turno,
+            zona,
+            inicio,
+            diffMinutes
+          };
+        })
+        .filter(Boolean)
+        .filter(item => item.diffMinutes >= 0 && item.diffMinutes <= 10)
+        .sort((a, b) => a.inicio - b.inicio);
+
+      return candidates[0] || null;
+    }
+
+    function renderTurnoReminder() {
+      const reminder = getUpcomingReminderRow();
+
+      if (!reminder) {
+        turnoReminderSection.classList.add('hidden');
+        currentReminderAssignmentId = null;
+        return;
+      }
+
+      currentReminderAssignmentId = reminder.asignacionId;
+      turnoReminderSection.classList.remove('hidden');
+
+      turnoReminderLabel.textContent = reminder.diffMinutes <= 5
+        ? 'Faltan 5 minutos para tu turno'
+        : 'Faltan 10 minutos para tu turno';
+
+      turnoReminderHora.textContent = reminder.inicio.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      turnoReminderZona.textContent = reminder.zona?.nombre || 'Sin zona';
+    }
+
+    function openReminderTurno() {
+      if (!currentReminderAssignmentId) return;
+
+      const pinBox = document.getElementById(`pinBox-${currentReminderAssignmentId}`);
+      if (pinBox) {
+        togglePinBox(currentReminderAssignmentId);
+        pinBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      window.location.href = '/mis-turnos';
+    }
+
+    function startReminderTimer() {
+      renderTurnoReminder();
+
+      if (reminderInterval) {
+        clearInterval(reminderInterval);
+      }
+
+      reminderInterval = setInterval(renderTurnoReminder, 30000);
     }
 
     function renderMisTurnos() {
@@ -413,7 +602,31 @@
           </td>
           <td>
             <div class="teacher-actions">
-              <a class="view-btn" href="/registrar-punto">✔ Check-in</a>
+              ${row.horaCheckin ? `
+                <span class="request-badge request-accepted">Turno iniciado</span>
+                <a class="view-btn" href="/registrar-punto">📍 Registrar punto</a>
+              ` : `
+                <button class="view-btn" type="button" onclick="togglePinBox(${row.asignacionId})">
+                  ▶ Iniciar turno
+                </button>
+
+                <div id="pinBox-${row.asignacionId}" class="hidden" style="margin-top: 8px;">
+                  <input
+                    id="pinInput-${row.asignacionId}"
+                    type="text"
+                    maxlength="4"
+                    placeholder="Ingresa PIN"
+                    style="width: 110px;"
+                  />
+                  <button
+                    class="view-btn"
+                    type="button"
+                    onclick="submitTurnoPin(${row.asignacionId})"
+                  >
+                    Validar PIN
+                  </button>
+                </div>
+              `}
               <a class="view-btn" href="/reportar-incidente">⚠ Registrar situación</a>
             </div>
           </td>
@@ -434,6 +647,8 @@
         zonas = loadedZonas || [];
 
         renderMisTurnos();
+        renderTurnoReminder();
+        startReminderTimer();
       } catch (error) {
         misTurnosTableBody.innerHTML = `
           <tr class="mis-row">
@@ -442,6 +657,8 @@
         `;
       }
     }
+
+    turnoReminderAction.addEventListener('click', openReminderTurno);
 
     loadData();
   </script>

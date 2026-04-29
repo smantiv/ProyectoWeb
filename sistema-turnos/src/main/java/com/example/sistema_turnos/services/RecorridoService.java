@@ -10,6 +10,7 @@ import com.example.sistema_turnos.repositories.RecorridoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +29,11 @@ public class RecorridoService {
 
     public RecorridoDTO crearRecorrido(RecorridoDTO recorridoDTO) {
         Recorrido recorrido = new Recorrido();
-        recorrido.setFechaHora(recorridoDTO.getFechaHora());
+        recorrido.setFechaHora(
+                recorridoDTO.getFechaHora() != null
+                        ? recorridoDTO.getFechaHora()
+                        : LocalDateTime.now()
+        );
 
         if (recorridoDTO.getCheckpointId() != null) {
             Optional<Checkpoint> checkpoint = checkpointRepository.findById(recorridoDTO.getCheckpointId());
