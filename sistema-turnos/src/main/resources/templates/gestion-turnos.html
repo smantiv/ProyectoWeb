@@ -293,6 +293,38 @@
       return 'sin cobertura';
     }
 
+    function getAbsenceAlertDetail(turno, asignacion) {
+      if (!turno || !turno.fecha || !turno.horaInicio || asignacion?.horaCheckin) {
+        return null;
+      }
+
+      const horaInicio = String(turno.horaInicio).length === 5
+        ? `${turno.horaInicio}:00`
+        : String(turno.horaInicio).slice(0, 8);
+
+      const horaFin = String(turno.horaFin).length === 5
+        ? `${turno.horaFin}:00`
+        : String(turno.horaFin).slice(0, 8);
+
+      const inicio = new Date(`${turno.fecha}T${horaInicio}`);
+      const fin = turno.horaFin ? new Date(`${turno.fecha}T${horaFin}`) : null;
+      const ahora = new Date();
+      const toleranciaInicio = new Date(inicio.getTime() + (2 * 60 * 1000));
+
+      if (ahora <= toleranciaInicio) return null;
+      if (fin && ahora >= fin) return null;
+
+      return {
+        inicio,
+        toleranciaInicio,
+        minutosRetraso: Math.floor((ahora.getTime() - toleranciaInicio.getTime()) / 60000)
+      };
+    }
+
+    function hasAbsenceAlert(turno, asignacion) {
+      return Boolean(getAbsenceAlertDetail(turno, asignacion));
+    }
+
     function getVentanaInicioTurno(turno) {
       if (!turno || !turno.fecha || !turno.horaInicio) {
         return 'Sin datos';
@@ -411,6 +443,7 @@
       const estadoDinamico = getEstadoTurno(shift, assignment);
       const ventanaInicio = getVentanaInicioTurno(shift);
       const ventanaInicioClass = ventanaInicioBadgeClass(ventanaInicio);
+      const absenceAlert = getAbsenceAlertDetail(shift, assignment);
       const isEditing = editingShiftId === shift.id;
 
       shiftPanelContent.innerHTML = `
@@ -419,6 +452,16 @@
           <h3>Turno #${shift.id}</h3>
           <span class="request-badge ${shiftBadgeClass(estadoDinamico)}">${estadoDinamico}</span>
         </div>
+
+        ${absenceAlert ? `
+          <div class="checkpoint-reminder">
+            <span class="checkpoint-reminder-icon">⚠</span>
+            <p>
+              Ausencia detectada: han pasado más de 2 minutos desde el inicio del turno y no se registró check-in.
+              Retraso actual: ${absenceAlert.minutosRetraso} min.
+            </p>
+          </div>
+        ` : ''}
 
         <div class="teacher-info-stack">
           <div class="teacher-info-box">
@@ -459,7 +502,12 @@
 
           <div class="teacher-info-box">
             <div class="teacher-info-label"><span>✔</span><span>Cobertura</span></div>
-            <p><span class="request-badge ${coverageClass}">${coverage}</span></p>
+            <p>
+              ${absenceAlert
+                ? `<span class="request-badge request-rejected">Ausencia detectada</span>`
+                : `<span class="request-badge ${coverageClass}">${coverage}</span>`
+              }
+            </p>
           </div>
 
           <div class="teacher-info-box">
@@ -512,6 +560,7 @@
       shiftsTableBody.innerHTML = data.map(shift => {
         const assignment = getAssignmentForTurno(shift.id);
         const estadoDinamico = getEstadoTurno(shift, assignment);
+        const absenceAlert = hasAbsenceAlert(shift, assignment);
 
         return `
           <tr class="table-row-hover shift-row" data-id="${shift.id}">
@@ -534,7 +583,10 @@
               </div>
             </td>
             <td>
-              <span class="request-badge ${coverageBadgeClass(shift.id)}">${getCoverageLabel(shift.id)}</span>
+              ${absenceAlert
+                ? `<span class="request-badge request-rejected">Ausencia detectada</span>`
+                : `<span class="request-badge ${coverageBadgeClass(shift.id)}">${getCoverageLabel(shift.id)}</span>`
+              }
             </td>
             <td>
               <span class="request-badge ${shiftBadgeClass(estadoDinamico)}">${estadoDinamico}</span>

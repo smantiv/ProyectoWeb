@@ -40,8 +40,8 @@ class AsignacionTurnoService {
     /**
      * Registrar check-in
      */
-    async registrarCheckin(id) {
-        const response = await this.apiClient.post(`${this.endpoint}/${id}/checkin`, {});
+    async registrarCheckin(id, payload) {
+        const response = await this.apiClient.post(`${this.endpoint}/${id}/checkin`, payload);
         return response.data;
     }
 

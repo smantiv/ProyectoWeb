@@ -152,12 +152,12 @@
         </section>
 
         <section id="turnoReminderSection" class="section hidden">
-          <div class="checkpoint-summary-card">
+          <div id="turnoReminderCard" class="checkpoint-summary-card">
             <div class="checkpoint-summary-grid checkpoint-summary-grid-4">
               <div class="checkpoint-summary-item">
                 <div class="checkpoint-summary-label">
-                  <span class="checkpoint-mini-icon">🔔</span>
-                  <span>Recordatorio</span>
+                  <span id="turnoReminderIcon" class="checkpoint-mini-icon">🔔</span>
+                  <span id="turnoReminderType">Recordatorio</span>
                 </div>
                 <p id="turnoReminderLabel">Sin recordatorios</p>
               </div>
@@ -372,6 +372,9 @@
 
     const misTurnosTableBody = document.getElementById('misTurnosTableBody');
     const turnoReminderSection = document.getElementById('turnoReminderSection');
+    const turnoReminderCard = document.getElementById('turnoReminderCard');
+    const turnoReminderIcon = document.getElementById('turnoReminderIcon');
+    const turnoReminderType = document.getElementById('turnoReminderType');
     const turnoReminderLabel = document.getElementById('turnoReminderLabel');
     const turnoReminderHora = document.getElementById('turnoReminderHora');
     const turnoReminderZona = document.getElementById('turnoReminderZona');
@@ -406,10 +409,48 @@
       return new Date(`${turno.fecha}T${horaInicio}`);
     }
 
+    function getAbsenceAlertRow() {
+      const now = Date.now();
+
+      const candidates = assignments
+        .map(asignacion => {
+          const turno = getTurnoById(asignacion.turnoId);
+          const zona = turno ? getZonaById(turno.zonaId) : null;
+          const inicio = buildTurnoStartDate(turno);
+
+          if (!turno || !inicio || asignacion.horaCheckin) return null;
+
+          const limite = inicio.getTime() + (2 * 60 * 1000);
+
+          if (now <= limite) return null;
+
+          return {
+            asignacionId: asignacion.id,
+            turno,
+            zona,
+            inicio,
+            retrasoMinutos: Math.floor((now - limite) / 60000)
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.inicio - b.inicio);
+
+      return candidates[0] || null;
+    }
+
     function buildRows() {
+      const now = Date.now();
+
       return assignments.map(asignacion => {
         const turno = getTurnoById(asignacion.turnoId);
         const zona = turno ? getZonaById(turno.zonaId) : null;
+        const inicio = buildTurnoStartDate(turno);
+        const hasAbsenceAlert = Boolean(
+          turno &&
+          inicio &&
+          !asignacion.horaCheckin &&
+          now > (inicio.getTime() + (2 * 60 * 1000))
+        );
 
         return {
           asignacionId: asignacion.id,
@@ -417,7 +458,8 @@
           horario: turno ? `${String(turno.horaInicio || '').slice(0, 5)} - ${String(turno.horaFin || '').slice(0, 5)}` : 'Sin horario',
           zona: zona?.nombre || 'Sin zona',
           estado: asignacion.estadoCobertura || 'Sin estado',
-          horaCheckin: asignacion.horaCheckin || null
+          horaCheckin: asignacion.horaCheckin || null,
+          hasAbsenceAlert
         };
       });
     }
@@ -487,7 +529,10 @@
       }
 
       try {
-        await ApiServices.asignacionTurnoService.registrarCheckin(asignacionId);
+        await ApiServices.asignacionTurnoService.registrarCheckin(asignacionId, {
+          checkpointId: DEMO_INITIAL_CHECKPOINT_ID,
+          pin: pinIngresado
+        });
         alert('Turno iniciado correctamente.');
         await loadData();
       } catch (error) {
@@ -524,16 +569,39 @@
     }
 
     function renderTurnoReminder() {
+      const absenceAlert = getAbsenceAlertRow();
+
+      if (absenceAlert) {
+        currentReminderAssignmentId = absenceAlert.asignacionId;
+        turnoReminderSection.classList.remove('hidden');
+
+        turnoReminderIcon.textContent = '⚠';
+        turnoReminderType.textContent = 'Alerta de ausencia';
+        turnoReminderLabel.textContent = 'Han pasado más de 2 minutos desde el inicio del turno y no se registró check-in.';
+        turnoReminderHora.textContent = absenceAlert.inicio.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        turnoReminderZona.textContent = absenceAlert.zona?.nombre || 'Sin zona';
+        turnoReminderAction.textContent = 'Iniciar turno ahora';
+        turnoReminderCard.classList.add('checkpoint-reminder');
+
+        return;
+      }
+
       const reminder = getUpcomingReminderRow();
 
       if (!reminder) {
         turnoReminderSection.classList.add('hidden');
         currentReminderAssignmentId = null;
+        turnoReminderCard.classList.remove('checkpoint-reminder');
         return;
       }
 
       currentReminderAssignmentId = reminder.asignacionId;
       turnoReminderSection.classList.remove('hidden');
+      turnoReminderIcon.textContent = '🔔';
+      turnoReminderType.textContent = 'Recordatorio';
 
       turnoReminderLabel.textContent = reminder.diffMinutes <= 5
         ? 'Faltan 5 minutos para tu turno'
@@ -545,6 +613,8 @@
       });
 
       turnoReminderZona.textContent = reminder.zona?.nombre || 'Sin zona';
+      turnoReminderAction.textContent = 'Abrir turno';
+      turnoReminderCard.classList.remove('checkpoint-reminder');
     }
 
     function openReminderTurno() {
@@ -593,7 +663,10 @@
             </div>
           </td>
           <td>
-            <span class="request-badge ${estadoBadgeClass(row.estado)}">${row.estado}</span>
+            ${row.hasAbsenceAlert
+              ? `<span class="request-badge request-rejected">Ausencia detectada</span>`
+              : `<span class="request-badge ${estadoBadgeClass(row.estado)}">${row.estado}</span>`
+            }
           </td>
           <td>
             <span class="request-badge ${checkinBadgeClass(row.horaCheckin)}">
@@ -602,6 +675,9 @@
           </td>
           <td>
             <div class="teacher-actions">
+              ${row.hasAbsenceAlert ? `
+                <span class="request-badge request-rejected">Check-in pendiente</span>
+              ` : ''}
               ${row.horaCheckin ? `
                 <span class="request-badge request-accepted">Turno iniciado</span>
                 <a class="view-btn" href="/registrar-punto">📍 Registrar punto</a>
