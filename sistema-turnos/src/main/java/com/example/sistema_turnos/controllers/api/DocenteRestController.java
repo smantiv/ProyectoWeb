@@ -6,6 +6,7 @@ import com.example.sistema_turnos.services.DocenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class DocenteRestController {
      * GET /api/v1/docentes/{id} - Obtener docente por ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<DocenteDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<DocenteDTO> obtenerPorId(@PathVariable @NonNull Long id) {
         DocenteDTO docente = docenteService.obtenerDocentePorId(id);
         if (docente == null) {
             return ResponseEntity.notFound().build();
@@ -43,7 +44,7 @@ public class DocenteRestController {
      * GET /api/v1/docentes/codigo/{codigo} - Obtener docente por código institucional
      */
     @GetMapping("/codigo/{codigo}")
-    public ResponseEntity<DocenteDTO> obtenerPorCodigo(@PathVariable String codigo) {
+    public ResponseEntity<DocenteDTO> obtenerPorCodigo(@PathVariable @NonNull String codigo) {
         DocenteDTO docente = docenteService.obtenerDocentePorCodigoInstitucional(codigo);
         if (docente == null) {
             return ResponseEntity.notFound().build();
@@ -55,7 +56,7 @@ public class DocenteRestController {
      * GET /api/v1/docentes/usuario/{usuarioId} - Obtener docente por usuario ID
      */
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<DocenteDTO> obtenerPorUsuario(@PathVariable Long usuarioId) {
+    public ResponseEntity<DocenteDTO> obtenerPorUsuario(@PathVariable @NonNull Long usuarioId) {
         DocenteDTO docente = docenteService.obtenerDocentePorUsuarioId(usuarioId);
         if (docente == null) {
             return ResponseEntity.notFound().build();
@@ -72,7 +73,7 @@ public class DocenteRestController {
      * POST /api/v1/docentes - Crear nuevo docente
      */
     @PostMapping
-    public ResponseEntity<DocenteDTO> crear(@RequestBody DocenteDTO docenteDTO) {
+    public ResponseEntity<DocenteDTO> crear(@RequestBody @NonNull DocenteDTO docenteDTO) {
         try {
             DocenteDTO docenteCreado = docenteService.crearDocente(docenteDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(docenteCreado);
@@ -85,7 +86,7 @@ public class DocenteRestController {
      * PUT /api/v1/docentes/{id} - Actualizar docente
      */
     @PutMapping("/{id}")
-    public ResponseEntity<DocenteDTO> actualizar(@PathVariable Long id, @RequestBody DocenteDTO docenteDTO) {
+    public ResponseEntity<DocenteDTO> actualizar(@PathVariable @NonNull Long id, @RequestBody @NonNull DocenteDTO docenteDTO) {
         try {
             DocenteDTO docenteActualizado = docenteService.actualizarDocente(id, docenteDTO);
             if (docenteActualizado == null) {
@@ -101,7 +102,7 @@ public class DocenteRestController {
      * DELETE /api/v1/docentes/{id} - Eliminar docente
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable @NonNull Long id) {
         if (docenteService.eliminarDocente(id)) {
             return ResponseEntity.noContent().build();
         }

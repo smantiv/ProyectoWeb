@@ -6,10 +6,12 @@ import com.example.sistema_turnos.services.ReasignacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/reasignaciones")
@@ -25,45 +27,46 @@ public class ReasignacionRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReasignacionDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<ReasignacionDTO> obtenerPorId(@PathVariable @NonNull Long id) {
         ReasignacionDTO r = reasignacionService.obtenerReasignacionPorId(id);
         return r != null ? ResponseEntity.ok(r) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/docente/{docenteId}")
-    public ResponseEntity<List<ReasignacionDTO>> obtenerPorDocente(@PathVariable Long docenteId) {
+    public ResponseEntity<List<ReasignacionDTO>> obtenerPorDocente(@PathVariable @NonNull Long docenteId) {
         return ResponseEntity.ok(reasignacionService.obtenerReasignacionesPorDocente(docenteId));
     }
 
     @GetMapping("/actual")
     public ResponseEntity<List<ReasignacionDTO>> obtenerActuales() {
+        Long docenteActualId = Objects.requireNonNull(reasignacionService.obtenerDocenteActualId());
         return ResponseEntity.ok(
-                reasignacionService.obtenerReasignacionesPorDocente(reasignacionService.obtenerDocenteActualId())
+                reasignacionService.obtenerReasignacionesPorDocente(docenteActualId)
         );
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<ReasignacionDTO>> obtenerPorEstado(@PathVariable String estado) {
+    public ResponseEntity<List<ReasignacionDTO>> obtenerPorEstado(@PathVariable @NonNull String estado) {
         return ResponseEntity.ok(reasignacionService.obtenerReasignacionesPorEstado(estado));
     }
 
     @GetMapping("/docente/{docenteId}/estado/{estado}")
     public ResponseEntity<List<ReasignacionDTO>> obtenerPorDocenteYEstado(
-            @PathVariable Long docenteId, @PathVariable String estado) {
+            @PathVariable @NonNull Long docenteId, @PathVariable @NonNull String estado) {
         return ResponseEntity.ok(reasignacionService.obtenerReasignacionesPorDocenteYEstado(docenteId, estado));
     }
 
     // GET /api/v1/reasignaciones/candidatos/{turnoId}
     // Devuelve docentes disponibles para cubrir ese turno
     @GetMapping("/candidatos/{turnoId}")
-    public ResponseEntity<List<DocenteDTO>> obtenerCandidatos(@PathVariable Long turnoId) {
+    public ResponseEntity<List<DocenteDTO>> obtenerCandidatos(@PathVariable @NonNull Long turnoId) {
         return ResponseEntity.ok(reasignacionService.obtenerCandidatos(turnoId));
     }
 
     // POST /api/v1/reasignaciones
     // Body: { "docenteId": 1, "turnoId": 2, "motivo": "Cita médica" }
     @PostMapping
-    public ResponseEntity<ReasignacionDTO> crear(@RequestBody ReasignacionDTO dto) {
+    public ResponseEntity<ReasignacionDTO> crear(@RequestBody @NonNull ReasignacionDTO dto) {
         try {
             // El docente solicitante se resuelve en el servidor para eliminar IDs hardcodeados.
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -77,12 +80,12 @@ public class ReasignacionRestController {
     // Body: { "docenteReemplazoId": 3, "decision": "aceptada" }
     @PutMapping("/{id}/responder")
     public ResponseEntity<ReasignacionDTO> responder(
-            @PathVariable Long id, @RequestBody Map<String, Object> body) {
+            @PathVariable @NonNull Long id, @RequestBody @NonNull Map<String, Object> body) {
         try {
-            String decision = body.get("decision").toString();
+            String decision = Objects.requireNonNull(body.get("decision"), "decision requerida").toString();
             Long reemplazoId = body.containsKey("docenteReemplazoId") && body.get("docenteReemplazoId") != null
                     ? Long.valueOf(body.get("docenteReemplazoId").toString()) : null;
-            ReasignacionDTO result = reasignacionService.responder(id, reemplazoId, decision);
+            ReasignacionDTO result = reasignacionService.responder(id, reemplazoId, Objects.requireNonNull(decision));
             return result != null ? ResponseEntity.ok(result) : ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -91,7 +94,7 @@ public class ReasignacionRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ReasignacionDTO> actualizar(
-            @PathVariable Long id, @RequestBody ReasignacionDTO dto) {
+            @PathVariable @NonNull Long id, @RequestBody @NonNull ReasignacionDTO dto) {
         try {
             ReasignacionDTO actualizada = reasignacionService.actualizarReasignacion(id, dto);
             return actualizada != null ? ResponseEntity.ok(actualizada) : ResponseEntity.notFound().build();
@@ -101,7 +104,7 @@ public class ReasignacionRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable @NonNull Long id) {
         return reasignacionService.eliminarReasignacion(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();

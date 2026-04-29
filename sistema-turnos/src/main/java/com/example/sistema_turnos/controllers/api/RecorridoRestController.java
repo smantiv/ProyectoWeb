@@ -5,6 +5,7 @@ import com.example.sistema_turnos.services.RecorridoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,23 +24,23 @@ public class RecorridoRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RecorridoDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<RecorridoDTO> obtenerPorId(@PathVariable @NonNull Long id) {
         RecorridoDTO recorrido = recorridoService.obtenerRecorridoPorId(id);
         return recorrido != null ? ResponseEntity.ok(recorrido) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/asignacion/{asignacionId}")
-    public ResponseEntity<List<RecorridoDTO>> obtenerPorAsignacion(@PathVariable Long asignacionId) {
+    public ResponseEntity<List<RecorridoDTO>> obtenerPorAsignacion(@PathVariable @NonNull Long asignacionId) {
         return ResponseEntity.ok(recorridoService.obtenerRecorridosPorAsignacion(asignacionId));
     }
 
     @GetMapping("/checkpoint/{checkpointId}")
-    public ResponseEntity<List<RecorridoDTO>> obtenerPorCheckpoint(@PathVariable Long checkpointId) {
+    public ResponseEntity<List<RecorridoDTO>> obtenerPorCheckpoint(@PathVariable @NonNull Long checkpointId) {
         return ResponseEntity.ok(recorridoService.obtenerRecorridosPorCheckpoint(checkpointId));
     }
 
     @PostMapping
-    public ResponseEntity<RecorridoDTO> crear(@RequestBody RecorridoDTO recorridoDTO) {
+    public ResponseEntity<RecorridoDTO> crear(@RequestBody @NonNull RecorridoDTO recorridoDTO) {
         try {
             RecorridoDTO recorridoCreado = recorridoService.crearRecorrido(recorridoDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(recorridoCreado);
@@ -49,7 +50,7 @@ public class RecorridoRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RecorridoDTO> actualizar(@PathVariable Long id, @RequestBody RecorridoDTO recorridoDTO) {
+    public ResponseEntity<RecorridoDTO> actualizar(@PathVariable @NonNull Long id, @RequestBody @NonNull RecorridoDTO recorridoDTO) {
         try {
             RecorridoDTO recorridoActualizado = recorridoService.actualizarRecorrido(id, recorridoDTO);
             return recorridoActualizado != null ? ResponseEntity.ok(recorridoActualizado) : ResponseEntity.notFound().build();
@@ -59,7 +60,7 @@ public class RecorridoRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable @NonNull Long id) {
         return recorridoService.eliminarRecorrido(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

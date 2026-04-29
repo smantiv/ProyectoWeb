@@ -4,6 +4,7 @@ import com.example.sistema_turnos.dtos.ZonaDTO;
 import com.example.sistema_turnos.entities.Zona;
 import com.example.sistema_turnos.repositories.ZonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class ZonaService {
     @Autowired
     private ZonaRepository zonaRepository;
 
-    public ZonaDTO crearZona(ZonaDTO zonaDTO) {
+    public ZonaDTO crearZona(@NonNull ZonaDTO zonaDTO) {
         Zona zona = new Zona();
         zona.setNombre(zonaDTO.getNombre());
         zona.setDescripcion(zonaDTO.getDescripcion());
@@ -25,12 +26,12 @@ public class ZonaService {
         return convertToDTO(zonaGuardada);
     }
 
-    public ZonaDTO obtenerZonaPorId(Long id) {
+    public ZonaDTO obtenerZonaPorId(@NonNull Long id) {
         Optional<Zona> zona = zonaRepository.findById(id);
         return zona.map(this::convertToDTO).orElse(null);
     }
 
-    public ZonaDTO obtenerZonaPorNombre(String nombre) {
+    public ZonaDTO obtenerZonaPorNombre(@NonNull String nombre) {
         Optional<Zona> zona = zonaRepository.findByNombre(nombre);
         return zona.map(this::convertToDTO).orElse(null);
     }
@@ -41,7 +42,7 @@ public class ZonaService {
                 .collect(Collectors.toList());
     }
 
-    public ZonaDTO actualizarZona(Long id, ZonaDTO zonaDTO) {
+    public ZonaDTO actualizarZona(@NonNull Long id, @NonNull ZonaDTO zonaDTO) {
         Optional<Zona> zonaExistente = zonaRepository.findById(id);
         if (zonaExistente.isPresent()) {
             Zona zona = zonaExistente.get();
@@ -54,7 +55,7 @@ public class ZonaService {
         return null;
     }
 
-    public boolean eliminarZona(Long id) {
+    public boolean eliminarZona(@NonNull Long id) {
         if (zonaRepository.existsById(id)) {
             zonaRepository.deleteById(id);
             return true;

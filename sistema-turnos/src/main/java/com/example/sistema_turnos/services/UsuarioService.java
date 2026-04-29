@@ -4,6 +4,7 @@ import com.example.sistema_turnos.dtos.UsuarioDTO;
 import com.example.sistema_turnos.entities.Usuario;
 import com.example.sistema_turnos.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
+    public UsuarioDTO crearUsuario(@NonNull UsuarioDTO usuarioDTO) {
         Usuario usuario = new Usuario();
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setEmail(usuarioDTO.getEmail());
@@ -28,12 +29,12 @@ public class UsuarioService {
         return convertToDTO(usuarioGuardado);
     }
 
-    public UsuarioDTO obtenerUsuarioPorId(Long id) {
+    public UsuarioDTO obtenerUsuarioPorId(@NonNull Long id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         return usuario.map(this::convertToDTO).orElse(null);
     }
 
-    public UsuarioDTO obtenerUsuarioPorEmail(String email) {
+    public UsuarioDTO obtenerUsuarioPorEmail(@NonNull String email) {
         Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
         return usuario.map(this::convertToDTO).orElse(null);
     }
@@ -44,13 +45,13 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
-    public List<UsuarioDTO> obtenerUsuariosPorRol(String rol) {
+    public List<UsuarioDTO> obtenerUsuariosPorRol(@NonNull String rol) {
         return usuarioRepository.findByRol(rol).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public UsuarioDTO actualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
+    public UsuarioDTO actualizarUsuario(@NonNull Long id, @NonNull UsuarioDTO usuarioDTO) {
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
         if (usuarioExistente.isPresent()) {
             Usuario usuario = usuarioExistente.get();
@@ -68,7 +69,7 @@ public class UsuarioService {
         return null;
     }
 
-    public boolean eliminarUsuario(Long id) {
+    public boolean eliminarUsuario(@NonNull Long id) {
         if (usuarioRepository.existsById(id)) {
             usuarioRepository.deleteById(id);
             return true;

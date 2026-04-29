@@ -12,6 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,7 +26,7 @@ public class CurrentDocenteContextService {
     public Optional<Docente> obtenerDocenteActualOptional() {
         Optional<Long> docenteId = obtenerDocenteActualIdDesdeSesion();
         if (docenteId.isPresent()) {
-            Optional<Docente> docente = docenteRepository.findById(docenteId.get());
+            Optional<Docente> docente = docenteRepository.findById(Objects.requireNonNull(docenteId.get()));
             if (docente.isPresent()) {
                 return docente;
             }

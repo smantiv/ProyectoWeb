@@ -6,6 +6,7 @@ import com.example.sistema_turnos.entities.Incidente;
 import com.example.sistema_turnos.repositories.AsignacionTurnoRepository;
 import com.example.sistema_turnos.repositories.IncidenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class IncidenteService {
     @Autowired
     private AsignacionTurnoRepository asignacionTurnoRepository;
 
-    public IncidenteDTO crearIncidente(IncidenteDTO incidenteDTO) {
+    public IncidenteDTO crearIncidente(@NonNull IncidenteDTO incidenteDTO) {
         Incidente incidente = new Incidente();
         incidente.setTipo(incidenteDTO.getTipo());
         incidente.setSeveridad(incidenteDTO.getSeveridad());
@@ -30,8 +31,9 @@ public class IncidenteService {
         incidente.setEstado(incidenteDTO.getEstado());
         incidente.setUbicacion(incidenteDTO.getUbicacion());
             
-        if (incidenteDTO.getAsignacionId() != null) {
-            Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());
+        Long asignacionId = incidenteDTO.getAsignacionId();
+        if (asignacionId != null) {
+            Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(asignacionId);
             asignacion.ifPresent(incidente::setAsignacionTurno);
         }
 
@@ -39,18 +41,18 @@ public class IncidenteService {
         return convertToDTO(incidenteGuardado);
     }
 
-    public IncidenteDTO obtenerIncidentePorId(Long id) {
+    public IncidenteDTO obtenerIncidentePorId(@NonNull Long id) {
         Optional<Incidente> incidente = incidenteRepository.findById(id);
         return incidente.map(this::convertToDTO).orElse(null);
     }
 
-    public List<IncidenteDTO> obtenerIncidentesPorAsignacion(Long asignacionId) {
+    public List<IncidenteDTO> obtenerIncidentesPorAsignacion(@NonNull Long asignacionId) {
         return incidenteRepository.findByAsignacionTurnoId(asignacionId).stream()
             .map(this::convertToDTO)
             .collect(Collectors.toList());
     }
 
-    public List<IncidenteDTO> obtenerIncidentesPorTipo(String tipo) {
+    public List<IncidenteDTO> obtenerIncidentesPorTipo(@NonNull String tipo) {
         return incidenteRepository.findByTipo(tipo).stream()
             .map(this::convertToDTO)
             .collect(Collectors.toList());
@@ -62,7 +64,7 @@ public class IncidenteService {
             .collect(Collectors.toList());
     }
 
-    public IncidenteDTO actualizarIncidente(Long id, IncidenteDTO incidenteDTO) {
+    public IncidenteDTO actualizarIncidente(@NonNull Long id, @NonNull IncidenteDTO incidenteDTO) {
         Optional<Incidente> incidenteExistente = incidenteRepository.findById(id);
         if (incidenteExistente.isPresent()) {
             Incidente incidente = incidenteExistente.get();
@@ -72,8 +74,9 @@ public class IncidenteService {
             incidente.setFechaHora(incidenteDTO.getFechaHora());
             incidente.setEstado(incidenteDTO.getEstado());
 
-        if (incidenteDTO.getAsignacionId() != null) {
-            Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(incidenteDTO.getAsignacionId());
+        Long asignacionId = incidenteDTO.getAsignacionId();
+        if (asignacionId != null) {
+            Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(asignacionId);
             asignacion.ifPresent(incidente::setAsignacionTurno);
         }
 
@@ -83,19 +86,19 @@ public class IncidenteService {
             return null;
         }
 
-        public List<IncidenteDTO> obtenerIncidentesPorSeveridad(String severidad) {
+        public List<IncidenteDTO> obtenerIncidentesPorSeveridad(@NonNull String severidad) {
         return incidenteRepository.findBySeveridad(severidad).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         }
 
-        public List<IncidenteDTO> obtenerIncidentesPorEstado(String estado) {
+        public List<IncidenteDTO> obtenerIncidentesPorEstado(@NonNull String estado) {
             return incidenteRepository.findByEstado(estado).stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
         }
 
-        public boolean eliminarIncidente(Long id) {
+        public boolean eliminarIncidente(@NonNull Long id) {
             if (incidenteRepository.existsById(id)) {
                 incidenteRepository.deleteById(id);
                 return true;
@@ -124,7 +127,7 @@ public class IncidenteService {
         dto.setFechaHora(incidente.getFechaHora());
         dto.setEstado(incidente.getEstado());
         dto.setAsignacionId(asignacionId);
-        dto.setUbicacion(incidente.getUbicacion());
+        dto.setUbicacion(incidente.getUbicacion() != null ? incidente.getUbicacion() : ubicacion);
 
         return dto;
     }

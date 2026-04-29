@@ -4,6 +4,7 @@ import com.example.sistema_turnos.dtos.CheckpointDTO;
 import com.example.sistema_turnos.entities.Checkpoint;
 import com.example.sistema_turnos.repositories.CheckpointRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class CheckpointService {
     @Autowired
     private CheckpointRepository checkpointRepository;
 
-    public CheckpointDTO crearCheckpoint(CheckpointDTO checkpointDTO) {
+    public CheckpointDTO crearCheckpoint(@NonNull CheckpointDTO checkpointDTO) {
         Checkpoint checkpoint = new Checkpoint();
         checkpoint.setNombre(checkpointDTO.getNombre());
 
@@ -24,12 +25,12 @@ public class CheckpointService {
         return convertToDTO(checkpointGuardado);
     }
 
-    public CheckpointDTO obtenerCheckpointPorId(Long id) {
+    public CheckpointDTO obtenerCheckpointPorId(@NonNull Long id) {
         Optional<Checkpoint> checkpoint = checkpointRepository.findById(id);
         return checkpoint.map(this::convertToDTO).orElse(null);
     }
 
-    public CheckpointDTO obtenerCheckpointPorNombre(String nombre) {
+    public CheckpointDTO obtenerCheckpointPorNombre(@NonNull String nombre) {
         Optional<Checkpoint> checkpoint = checkpointRepository.findByNombre(nombre);
         return checkpoint.map(this::convertToDTO).orElse(null);
     }
@@ -40,7 +41,7 @@ public class CheckpointService {
                 .collect(Collectors.toList());
     }
 
-    public CheckpointDTO actualizarCheckpoint(Long id, CheckpointDTO checkpointDTO) {
+    public CheckpointDTO actualizarCheckpoint(@NonNull Long id, @NonNull CheckpointDTO checkpointDTO) {
         Optional<Checkpoint> checkpointExistente = checkpointRepository.findById(id);
         if (checkpointExistente.isPresent()) {
             Checkpoint checkpoint = checkpointExistente.get();
@@ -52,7 +53,7 @@ public class CheckpointService {
         return null;
     }
 
-    public boolean eliminarCheckpoint(Long id) {
+    public boolean eliminarCheckpoint(@NonNull Long id) {
         if (checkpointRepository.existsById(id)) {
             checkpointRepository.deleteById(id);
             return true;

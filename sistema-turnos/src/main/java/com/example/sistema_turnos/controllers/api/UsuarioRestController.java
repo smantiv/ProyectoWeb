@@ -5,6 +5,7 @@ import com.example.sistema_turnos.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class UsuarioRestController {
      * GET /api/v1/usuarios/{id} - Obtener usuario por ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> obtenerPorId(@PathVariable @NonNull Long id) {
         UsuarioDTO usuario = usuarioService.obtenerUsuarioPorId(id);
         if (usuario == null) {
             return ResponseEntity.notFound().build();
@@ -42,7 +43,7 @@ public class UsuarioRestController {
      * GET /api/v1/usuarios/email/{email} - Obtener usuario por email
      */
     @GetMapping("/email/{email}")
-    public ResponseEntity<UsuarioDTO> obtenerPorEmail(@PathVariable String email) {
+    public ResponseEntity<UsuarioDTO> obtenerPorEmail(@PathVariable @NonNull String email) {
         UsuarioDTO usuario = usuarioService.obtenerUsuarioPorEmail(email);
         if (usuario == null) {
             return ResponseEntity.notFound().build();
@@ -54,7 +55,7 @@ public class UsuarioRestController {
      * GET /api/v1/usuarios/rol/{rol} - Obtener usuarios por rol
      */
     @GetMapping("/rol/{rol}")
-    public ResponseEntity<List<UsuarioDTO>> obtenerPorRol(@PathVariable String rol) {
+    public ResponseEntity<List<UsuarioDTO>> obtenerPorRol(@PathVariable @NonNull String rol) {
         List<UsuarioDTO> usuarios = usuarioService.obtenerUsuariosPorRol(rol);
         return ResponseEntity.ok(usuarios);
     }
@@ -63,7 +64,7 @@ public class UsuarioRestController {
      * POST /api/v1/usuarios - Crear nuevo usuario
      */
     @PostMapping
-    public ResponseEntity<UsuarioDTO> crear(@RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> crear(@RequestBody @NonNull UsuarioDTO usuarioDTO) {
         try {
             UsuarioDTO usuarioCreado = usuarioService.crearUsuario(usuarioDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCreado);
@@ -76,7 +77,7 @@ public class UsuarioRestController {
      * PUT /api/v1/usuarios/{id} - Actualizar usuario
      */
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> actualizar(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> actualizar(@PathVariable @NonNull Long id, @RequestBody @NonNull UsuarioDTO usuarioDTO) {
         try {
             UsuarioDTO usuarioActualizado = usuarioService.actualizarUsuario(id, usuarioDTO);
             if (usuarioActualizado == null) {
@@ -92,7 +93,7 @@ public class UsuarioRestController {
      * DELETE /api/v1/usuarios/{id} - Eliminar usuario
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable @NonNull Long id) {
         if (usuarioService.eliminarUsuario(id)) {
             return ResponseEntity.noContent().build();
         }

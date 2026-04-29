@@ -6,6 +6,7 @@ import com.example.sistema_turnos.entities.Zona;
 import com.example.sistema_turnos.repositories.TurnoRepository;
 import com.example.sistema_turnos.repositories.ZonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,15 +23,16 @@ public class TurnoService {
     @Autowired
     private ZonaRepository zonaRepository;
 
-    public TurnoDTO crearTurno(TurnoDTO turnoDTO) {
+    public TurnoDTO crearTurno(@NonNull TurnoDTO turnoDTO) {
         Turno turno = new Turno();
         turno.setFecha(turnoDTO.getFecha());
         turno.setHoraInicio(turnoDTO.getHoraInicio());
         turno.setHoraFin(turnoDTO.getHoraFin());
         turno.setEstado(turnoDTO.getEstado() != null ? turnoDTO.getEstado() : "disponible");
 
-        if (turnoDTO.getZonaId() != null) {
-            Optional<Zona> zona = zonaRepository.findById(turnoDTO.getZonaId());
+        Long zonaId = turnoDTO.getZonaId();
+        if (zonaId != null) {
+            Optional<Zona> zona = zonaRepository.findById(zonaId);
             zona.ifPresent(turno::setZona);
         }
 
@@ -38,30 +40,30 @@ public class TurnoService {
         return convertToDTO(turnoGuardado);
     }
 
-    public TurnoDTO obtenerTurnoPorId(Long id) {
+    public TurnoDTO obtenerTurnoPorId(@NonNull Long id) {
         Optional<Turno> turno = turnoRepository.findById(id);
         return turno.map(this::convertToDTO).orElse(null);
     }
 
-    public List<TurnoDTO> obtenerTodosTurnosPorFecha(LocalDate fecha) {
+    public List<TurnoDTO> obtenerTodosTurnosPorFecha(@NonNull LocalDate fecha) {
         return turnoRepository.findByFecha(fecha).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<TurnoDTO> obtenerTodosTurnosPorEstado(String estado) {
+    public List<TurnoDTO> obtenerTodosTurnosPorEstado(@NonNull String estado) {
         return turnoRepository.findByEstado(estado).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<TurnoDTO> obtenerTodosTurnosPorZona(Long zonaId) {
+    public List<TurnoDTO> obtenerTodosTurnosPorZona(@NonNull Long zonaId) {
         return turnoRepository.findByZonaId(zonaId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<TurnoDTO> obtenerTodosTurnosPorFechaYEstado(LocalDate fecha, String estado) {
+    public List<TurnoDTO> obtenerTodosTurnosPorFechaYEstado(@NonNull LocalDate fecha, @NonNull String estado) {
         return turnoRepository.findByFechaAndEstado(fecha, estado).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -73,7 +75,7 @@ public class TurnoService {
                 .collect(Collectors.toList());
     }
 
-    public TurnoDTO actualizarTurno(Long id, TurnoDTO turnoDTO) {
+    public TurnoDTO actualizarTurno(@NonNull Long id, @NonNull TurnoDTO turnoDTO) {
         Optional<Turno> turnoExistente = turnoRepository.findById(id);
         if (turnoExistente.isPresent()) {
             Turno turno = turnoExistente.get();
@@ -82,8 +84,9 @@ public class TurnoService {
             turno.setHoraFin(turnoDTO.getHoraFin());
             turno.setEstado(turnoDTO.getEstado());
 
-            if (turnoDTO.getZonaId() != null) {
-                Optional<Zona> zona = zonaRepository.findById(turnoDTO.getZonaId());
+            Long zonaId = turnoDTO.getZonaId();
+            if (zonaId != null) {
+                Optional<Zona> zona = zonaRepository.findById(zonaId);
                 zona.ifPresent(turno::setZona);
             }
 
@@ -93,7 +96,7 @@ public class TurnoService {
         return null;
     }
 
-    public boolean eliminarTurno(Long id) {
+    public boolean eliminarTurno(@NonNull Long id) {
         if (turnoRepository.existsById(id)) {
             turnoRepository.deleteById(id);
             return true;

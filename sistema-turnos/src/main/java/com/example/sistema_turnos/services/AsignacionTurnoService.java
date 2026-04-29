@@ -14,6 +14,7 @@ import com.example.sistema_turnos.repositories.AsignacionTurnoRepository;
 import com.example.sistema_turnos.repositories.DocenteRepository;
 import com.example.sistema_turnos.repositories.TurnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -40,7 +41,7 @@ public class AsignacionTurnoService {
     @Autowired
     private CurrentDocenteContextService currentDocenteContextService;
 
-    public AsignacionTurnoDTO crearAsignacionTurno(AsignacionTurnoDTO asignacionTurnoDTO) {
+    public AsignacionTurnoDTO crearAsignacionTurno(@NonNull AsignacionTurnoDTO asignacionTurnoDTO) {
         AsignacionTurno asignacion = new AsignacionTurno();
         asignacion.setHoraCheckin(asignacionTurnoDTO.getHoraCheckin());
         asignacion.setHoraCierre(asignacionTurnoDTO.getHoraCierre());
@@ -48,13 +49,15 @@ public class AsignacionTurnoService {
         asignacion.setEstadoCobertura(asignacionTurnoDTO.getEstadoCobertura());
         asignacion.setObservacionLimpieza(asignacionTurnoDTO.getObservacionLimpieza()); 
 
-        if (asignacionTurnoDTO.getDocenteId() != null) {
-            Optional<Docente> docente = docenteRepository.findById(asignacionTurnoDTO.getDocenteId());
+        Long docenteId = asignacionTurnoDTO.getDocenteId();
+        if (docenteId != null) {
+            Optional<Docente> docente = docenteRepository.findById(docenteId);
             docente.ifPresent(asignacion::setDocente);
         }
 
-        if (asignacionTurnoDTO.getTurnoId() != null) {
-            Optional<Turno> turno = turnoRepository.findById(asignacionTurnoDTO.getTurnoId());
+        Long turnoId = asignacionTurnoDTO.getTurnoId();
+        if (turnoId != null) {
+            Optional<Turno> turno = turnoRepository.findById(turnoId);
             turno.ifPresent(asignacion::setTurno);
         }
 
@@ -62,12 +65,12 @@ public class AsignacionTurnoService {
         return convertToDTO(asignacionGuardada);
     }
 
-    public AsignacionTurnoDTO obtenerAsignacionPorId(Long id) {
+    public AsignacionTurnoDTO obtenerAsignacionPorId(@NonNull Long id) {
         Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(id);
         return asignacion.map(this::convertToDTO).orElse(null);
     }
 
-    public List<AsignacionTurnoDTO> obtenerAsignacionesPorDocente(Long docenteId) {
+    public List<AsignacionTurnoDTO> obtenerAsignacionesPorDocente(@NonNull Long docenteId) {
         return asignacionTurnoRepository.findByDocenteId(docenteId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -79,7 +82,7 @@ public class AsignacionTurnoService {
                 .collect(Collectors.toList());
     }
 
-    public AsignacionTurnoDTO actualizarAsignacion(Long id, AsignacionTurnoDTO asignacionTurnoDTO) {
+    public AsignacionTurnoDTO actualizarAsignacion(@NonNull Long id, @NonNull AsignacionTurnoDTO asignacionTurnoDTO) {
         Optional<AsignacionTurno> asignacionExistente = asignacionTurnoRepository.findById(id);
         if (asignacionExistente.isEmpty()) {
             return null;
@@ -91,13 +94,15 @@ public class AsignacionTurnoService {
         asignacion.setCalificacionLimpieza(asignacionTurnoDTO.getCalificacionLimpieza());
         asignacion.setEstadoCobertura(asignacionTurnoDTO.getEstadoCobertura());
 
-        if (asignacionTurnoDTO.getDocenteId() != null) {
-            Optional<Docente> docente = docenteRepository.findById(asignacionTurnoDTO.getDocenteId());
+        Long docenteId = asignacionTurnoDTO.getDocenteId();
+        if (docenteId != null) {
+            Optional<Docente> docente = docenteRepository.findById(docenteId);
             docente.ifPresent(asignacion::setDocente);
         }
 
-        if (asignacionTurnoDTO.getTurnoId() != null) {
-            Optional<Turno> turno = turnoRepository.findById(asignacionTurnoDTO.getTurnoId());
+        Long turnoId = asignacionTurnoDTO.getTurnoId();
+        if (turnoId != null) {
+            Optional<Turno> turno = turnoRepository.findById(turnoId);
             turno.ifPresent(asignacion::setTurno);
         }
 
@@ -105,7 +110,7 @@ public class AsignacionTurnoService {
         return convertToDTO(asignacionActualizada);
     }
 
-    public AsignacionTurnoDTO registrarCheckin(Long id) {
+    public AsignacionTurnoDTO registrarCheckin(@NonNull Long id) {
         Optional<AsignacionTurno> asignacionExistente = asignacionTurnoRepository.findById(id);
         if (asignacionExistente.isEmpty()) {
             return null;
@@ -119,7 +124,7 @@ public class AsignacionTurnoService {
         return convertToDTO(asignacionActualizada);
     }
 
-    public AsignacionTurnoDTO cerrarTurno(Long id, CierreTurnoDTO cierreTurnoDTO) {
+    public AsignacionTurnoDTO cerrarTurno(@NonNull Long id, @NonNull CierreTurnoDTO cierreTurnoDTO) {
         Optional<AsignacionTurno> asignacionExistente = asignacionTurnoRepository.findById(id);
         if (asignacionExistente.isEmpty()) {
             return null;
@@ -160,7 +165,7 @@ public class AsignacionTurnoService {
                 .map(fecha -> {
                     MisTurnosDiaDTO dia = new MisTurnosDiaDTO();
                     dia.setFecha(fecha);
-                    dia.setEtiqueta(capitalize(fecha.getDayOfWeek().getDisplayName(TextStyle.SHORT, new Locale("es", "ES")))
+                    dia.setEtiqueta(capitalize(fecha.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.of("es", "ES")))
                             + " " + fecha.getDayOfMonth());
                     dia.setCantidadTurnos(asignaciones.stream()
                             .filter(asignacion -> asignacion.getTurno() != null && fecha.equals(asignacion.getTurno().getFecha()))
@@ -203,7 +208,7 @@ public class AsignacionTurnoService {
                 .collect(Collectors.toList());
     }
 
-    public boolean eliminarAsignacion(Long id) {
+    public boolean eliminarAsignacion(@NonNull Long id) {
         if (asignacionTurnoRepository.existsById(id)) {
             asignacionTurnoRepository.deleteById(id);
             return true;

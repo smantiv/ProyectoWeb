@@ -5,6 +5,7 @@ import com.example.sistema_turnos.services.IncidenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class IncidenteRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<IncidenteDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<IncidenteDTO> obtenerPorId(@PathVariable @NonNull Long id) {
         IncidenteDTO incidente = incidenteService.obtenerIncidentePorId(id);
         return incidente != null
                 ? ResponseEntity.ok(incidente)
@@ -31,27 +32,27 @@ public class IncidenteRestController {
     }
 
     @GetMapping("/asignacion/{asignacionId}")
-    public ResponseEntity<List<IncidenteDTO>> obtenerPorAsignacion(@PathVariable Long asignacionId) {
+    public ResponseEntity<List<IncidenteDTO>> obtenerPorAsignacion(@PathVariable @NonNull Long asignacionId) {
         return ResponseEntity.ok(incidenteService.obtenerIncidentesPorAsignacion(asignacionId));
     }
 
     @GetMapping("/tipo/{tipo}")
-    public ResponseEntity<List<IncidenteDTO>> obtenerPorTipo(@PathVariable String tipo) {
+    public ResponseEntity<List<IncidenteDTO>> obtenerPorTipo(@PathVariable @NonNull String tipo) {
         return ResponseEntity.ok(incidenteService.obtenerIncidentesPorTipo(tipo));
     }
 
     @GetMapping("/severidad/{severidad}")
-    public ResponseEntity<List<IncidenteDTO>> obtenerPorSeveridad(@PathVariable String severidad) {
+    public ResponseEntity<List<IncidenteDTO>> obtenerPorSeveridad(@PathVariable @NonNull String severidad) {
         return ResponseEntity.ok(incidenteService.obtenerIncidentesPorSeveridad(severidad));
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<IncidenteDTO>> obtenerPorEstado(@PathVariable String estado) {
+    public ResponseEntity<List<IncidenteDTO>> obtenerPorEstado(@PathVariable @NonNull String estado) {
         return ResponseEntity.ok(incidenteService.obtenerIncidentesPorEstado(estado));
     }
 
     @PostMapping
-    public ResponseEntity<IncidenteDTO> crear(@RequestBody IncidenteDTO incidenteDTO) {
+    public ResponseEntity<IncidenteDTO> crear(@RequestBody @NonNull IncidenteDTO incidenteDTO) {
         try {
             IncidenteDTO incidenteCreado = incidenteService.crearIncidente(incidenteDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(incidenteCreado);
@@ -61,7 +62,7 @@ public class IncidenteRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<IncidenteDTO> actualizar(@PathVariable Long id, @RequestBody IncidenteDTO incidenteDTO) {
+    public ResponseEntity<IncidenteDTO> actualizar(@PathVariable @NonNull Long id, @RequestBody @NonNull IncidenteDTO incidenteDTO) {
         try {
             IncidenteDTO incidenteActualizado = incidenteService.actualizarIncidente(id, incidenteDTO);
             return incidenteActualizado != null
@@ -73,7 +74,7 @@ public class IncidenteRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable @NonNull Long id) {
         return incidenteService.eliminarIncidente(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();

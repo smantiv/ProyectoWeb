@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,13 +36,13 @@ public class AsignacionTurnoRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AsignacionTurnoDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<AsignacionTurnoDTO> obtenerPorId(@PathVariable @NonNull Long id) {
         AsignacionTurnoDTO asignacion = asignacionTurnoService.obtenerAsignacionPorId(id);
         return asignacion != null ? ResponseEntity.ok(asignacion) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/docente/{docenteId}")
-    public ResponseEntity<List<AsignacionTurnoDTO>> obtenerPorDocente(@PathVariable Long docenteId) {
+    public ResponseEntity<List<AsignacionTurnoDTO>> obtenerPorDocente(@PathVariable @NonNull Long docenteId) {
         return ResponseEntity.ok(asignacionTurnoService.obtenerAsignacionesPorDocente(docenteId));
     }
 
@@ -56,7 +57,7 @@ public class AsignacionTurnoRestController {
     }
 
     @PostMapping
-    public ResponseEntity<AsignacionTurnoDTO> crear(@Valid @RequestBody AsignacionTurnoDTO asignacionDTO) {
+    public ResponseEntity<AsignacionTurnoDTO> crear(@Valid @RequestBody @NonNull AsignacionTurnoDTO asignacionDTO) {
         try {
             AsignacionTurnoDTO asignacionCreada = asignacionTurnoService.crearAsignacionTurno(asignacionDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(asignacionCreada);
@@ -67,8 +68,8 @@ public class AsignacionTurnoRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AsignacionTurnoDTO> actualizar(
-            @PathVariable Long id,
-            @Valid @RequestBody AsignacionTurnoDTO asignacionDTO) {
+            @PathVariable @NonNull Long id,
+            @Valid @RequestBody @NonNull AsignacionTurnoDTO asignacionDTO) {
         try {
             AsignacionTurnoDTO asignacionActualizada = asignacionTurnoService.actualizarAsignacion(id, asignacionDTO);
             return asignacionActualizada != null ? ResponseEntity.ok(asignacionActualizada) : ResponseEntity.notFound().build();
@@ -78,7 +79,7 @@ public class AsignacionTurnoRestController {
     }
 
     @PostMapping("/{id}/checkin")
-    public ResponseEntity<AsignacionTurnoDTO> registrarCheckin(@PathVariable Long id) {
+    public ResponseEntity<AsignacionTurnoDTO> registrarCheckin(@PathVariable @NonNull Long id) {
         try {
             AsignacionTurnoDTO asignacionActualizada = asignacionTurnoService.registrarCheckin(id);
             return asignacionActualizada != null
@@ -91,8 +92,8 @@ public class AsignacionTurnoRestController {
 
     @PostMapping("/{id}/cierre")
     public ResponseEntity<AsignacionTurnoDTO> cerrarTurno(
-            @PathVariable Long id,
-            @Valid @RequestBody CierreTurnoDTO cierreTurnoDTO) {
+            @PathVariable @NonNull Long id,
+            @Valid @RequestBody @NonNull CierreTurnoDTO cierreTurnoDTO) {
         try {
             AsignacionTurnoDTO asignacionActualizada = asignacionTurnoService.cerrarTurno(id, cierreTurnoDTO);
             return asignacionActualizada != null
@@ -104,7 +105,7 @@ public class AsignacionTurnoRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable @NonNull Long id) {
         return asignacionTurnoService.eliminarAsignacion(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();

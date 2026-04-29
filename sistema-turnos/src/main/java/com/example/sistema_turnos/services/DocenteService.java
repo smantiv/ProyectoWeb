@@ -8,6 +8,7 @@ import com.example.sistema_turnos.entities.Usuario;
 import com.example.sistema_turnos.repositories.DocenteRepository;
 import com.example.sistema_turnos.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,30 +27,34 @@ public class DocenteService {
     @Autowired
     private CurrentDocenteContextService currentDocenteContextService;
 
-    public DocenteDTO crearDocente(DocenteDTO docenteDTO) {
+    public DocenteDTO crearDocente(@NonNull DocenteDTO docenteDTO) {
         Docente docente = new Docente();
         docente.setCodigoInstitucional(docenteDTO.getCodigoInstitucional());
 
-        if (docenteDTO.getUsuario() != null && docenteDTO.getUsuario().getId() != null) {
-            Optional<Usuario> usuario = usuarioRepository.findById(docenteDTO.getUsuario().getId());
-            usuario.ifPresent(docente::setUsuario);
+        UsuarioDTO usuarioDTO = docenteDTO.getUsuario();
+        if (usuarioDTO != null) {
+            Long usuarioId = usuarioDTO.getId();
+            if (usuarioId != null) {
+                Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
+                usuario.ifPresent(docente::setUsuario);
+            }
         }
 
         Docente docenteGuardado = docenteRepository.save(docente);
         return convertToDTO(docenteGuardado);
     }
 
-    public DocenteDTO obtenerDocentePorId(Long id) {
+    public DocenteDTO obtenerDocentePorId(@NonNull Long id) {
         Optional<Docente> docente = docenteRepository.findById(id);
         return docente.map(this::convertToDTO).orElse(null);
     }
 
-    public DocenteDTO obtenerDocentePorCodigoInstitucional(String codigo) {
+    public DocenteDTO obtenerDocentePorCodigoInstitucional(@NonNull String codigo) {
         Optional<Docente> docente = docenteRepository.findByCodigoInstitucional(codigo);
         return docente.map(this::convertToDTO).orElse(null);
     }
 
-    public DocenteDTO obtenerDocentePorUsuarioId(Long usuarioId) {
+    public DocenteDTO obtenerDocentePorUsuarioId(@NonNull Long usuarioId) {
         Optional<Docente> docente = docenteRepository.findByUsuarioId(usuarioId);
         return docente.map(this::convertToDTO).orElse(null);
     }
@@ -66,15 +71,19 @@ public class DocenteService {
         return new DocenteActualDTO(docente.getId(), nombre, docente.getCodigoInstitucional());
     }
 
-    public DocenteDTO actualizarDocente(Long id, DocenteDTO docenteDTO) {
+    public DocenteDTO actualizarDocente(@NonNull Long id, @NonNull DocenteDTO docenteDTO) {
         Optional<Docente> docenteExistente = docenteRepository.findById(id);
         if (docenteExistente.isPresent()) {
             Docente docente = docenteExistente.get();
             docente.setCodigoInstitucional(docenteDTO.getCodigoInstitucional());
 
-            if (docenteDTO.getUsuario() != null && docenteDTO.getUsuario().getId() != null) {
-                Optional<Usuario> usuario = usuarioRepository.findById(docenteDTO.getUsuario().getId());
-                usuario.ifPresent(docente::setUsuario);
+            UsuarioDTO usuarioDTO = docenteDTO.getUsuario();
+            if (usuarioDTO != null) {
+                Long usuarioId = usuarioDTO.getId();
+                if (usuarioId != null) {
+                    Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
+                    usuario.ifPresent(docente::setUsuario);
+                }
             }
 
             Docente docenteActualizado = docenteRepository.save(docente);
@@ -83,7 +92,7 @@ public class DocenteService {
         return null;
     }
 
-    public boolean eliminarDocente(Long id) {
+    public boolean eliminarDocente(@NonNull Long id) {
         if (docenteRepository.existsById(id)) {
             docenteRepository.deleteById(id);
             return true;

@@ -5,6 +5,7 @@ import com.example.sistema_turnos.services.ZonaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,19 +24,19 @@ public class ZonaRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ZonaDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<ZonaDTO> obtenerPorId(@PathVariable @NonNull Long id) {
         ZonaDTO zona = zonaService.obtenerZonaPorId(id);
         return zona != null ? ResponseEntity.ok(zona) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<ZonaDTO> obtenerPorNombre(@PathVariable String nombre) {
+    public ResponseEntity<ZonaDTO> obtenerPorNombre(@PathVariable @NonNull String nombre) {
         ZonaDTO zona = zonaService.obtenerZonaPorNombre(nombre);
         return zona != null ? ResponseEntity.ok(zona) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<ZonaDTO> crear(@RequestBody ZonaDTO zonaDTO) {
+    public ResponseEntity<ZonaDTO> crear(@RequestBody @NonNull ZonaDTO zonaDTO) {
         try {
             ZonaDTO zonaCreada = zonaService.crearZona(zonaDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(zonaCreada);
@@ -45,7 +46,7 @@ public class ZonaRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ZonaDTO> actualizar(@PathVariable Long id, @RequestBody ZonaDTO zonaDTO) {
+    public ResponseEntity<ZonaDTO> actualizar(@PathVariable @NonNull Long id, @RequestBody @NonNull ZonaDTO zonaDTO) {
         try {
             ZonaDTO zonaActualizada = zonaService.actualizarZona(id, zonaDTO);
             return zonaActualizada != null ? ResponseEntity.ok(zonaActualizada) : ResponseEntity.notFound().build();
@@ -55,7 +56,7 @@ public class ZonaRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable @NonNull Long id) {
         return zonaService.eliminarZona(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
