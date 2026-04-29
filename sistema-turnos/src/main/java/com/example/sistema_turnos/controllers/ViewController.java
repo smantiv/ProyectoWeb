@@ -4,12 +4,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Controlador MVC para renderizar vistas HTML.
- * Solo maneja GET mappings para pantallas de inicio y dashboards.
+ * CONTROLADOR DESHABILITADO
+ * Se usa PantallaController en su lugar para servir la SPA de React.
+ * Este archivo se mantiene solo como referencia histórica.
  */
-@Controller
+/*@Controller
 public class ViewController {
 
+    // Rutas deshabilitadas - usar PantallaController en su lugar
+    
     @GetMapping("/")
     public String index() {
         return "index";
@@ -34,4 +37,4 @@ public class ViewController {
     public String dashboardAdmin() {
         return "dashboard-admin";
     }
-}
+}*/
