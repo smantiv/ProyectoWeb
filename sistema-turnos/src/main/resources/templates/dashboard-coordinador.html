@@ -177,6 +177,7 @@
                   <th>Estado</th>
                   <th>Docente reemplazo</th>
                   <th>Fecha respuesta</th>
+                  <th>Aprobado/Rechazado por</th>
                   <th>Acción</th>
                 </tr>
               </thead>
@@ -471,6 +472,7 @@
             <td>${badge}</td>
             <td>${r.docenteReemplazoNombre || 'Sin asignar'}</td>
             <td>${r.fechaRespuesta ? r.fechaRespuesta.substring(0, 10) : '—'}</td>
+            <td>${r.aprobador || '—'}</td>
             <td>${acciones}</td>
           </tr>`;
         }).join('');
