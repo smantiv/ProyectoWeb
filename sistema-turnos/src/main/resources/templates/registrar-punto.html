@@ -396,6 +396,25 @@
       checkpointSelect.value = String(checkpointIdFromUrl);
     }
 
+    async function preselectAssignmentFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const assignmentIdFromUrl = Number(params.get('asignacionId'));
+
+      if (!assignmentIdFromUrl) {
+        return;
+      }
+
+      const assignmentExists = assignments.some(a => a.id === assignmentIdFromUrl);
+
+      if (!assignmentExists) {
+        return;
+      }
+
+      assignmentSelect.value = String(assignmentIdFromUrl);
+      updateAssignmentSummary();
+      await loadRecorridosByAssignment();
+    }
+
     function updateAssignmentSummary() {
       const assignmentId = Number(assignmentSelect.value);
       const assignment = assignments.find(a => a.id === assignmentId);
@@ -531,8 +550,12 @@
         renderAssignments();
         renderCheckpoints();
         preselectCheckpointFromUrl();
-        updateAssignmentSummary();
-        renderRecorridos();
+        await preselectAssignmentFromUrl();
+
+        if (!assignmentSelect.value) {
+          updateAssignmentSummary();
+          renderRecorridos();
+        }
       } catch (error) {
         alert(`No se pudieron cargar los datos: ${error.message}`);
       }

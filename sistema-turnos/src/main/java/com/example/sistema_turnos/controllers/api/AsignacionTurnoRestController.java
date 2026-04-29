@@ -1,7 +1,9 @@
 package com.example.sistema_turnos.controllers.api;
 
+import com.example.sistema_turnos.dtos.ApiMessageDTO;
 import com.example.sistema_turnos.dtos.AsignacionTurnoDTO;
 import com.example.sistema_turnos.dtos.CierreTurnoDTO;
+import com.example.sistema_turnos.dtos.CheckinRequestDTO;
 import com.example.sistema_turnos.dtos.MisTurnosPanelDTO;
 import com.example.sistema_turnos.dtos.TurnoActivoDTO;
 import com.example.sistema_turnos.services.AsignacionTurnoService;
@@ -79,14 +81,19 @@ public class AsignacionTurnoRestController {
     }
 
     @PostMapping("/{id}/checkin")
-    public ResponseEntity<AsignacionTurnoDTO> registrarCheckin(@PathVariable @NonNull Long id) {
+    public ResponseEntity<?> registrarCheckin(
+            @PathVariable @NonNull Long id,
+            @RequestBody CheckinRequestDTO checkinRequestDTO) {
         try {
-            AsignacionTurnoDTO asignacionActualizada = asignacionTurnoService.registrarCheckin(id);
+            AsignacionTurnoDTO asignacionActualizada = asignacionTurnoService.registrarCheckin(id, checkinRequestDTO);
             return asignacionActualizada != null
                     ? ResponseEntity.ok(asignacionActualizada)
                     : ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageDTO(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiMessageDTO("No se pudo registrar el check-in."));
         }
     }
 

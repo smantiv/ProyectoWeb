@@ -3,6 +3,7 @@ package com.example.sistema_turnos.services;
 import com.example.sistema_turnos.dtos.AsignacionTurnoDTO;
 import com.example.sistema_turnos.dtos.AsignacionTurnoDetalleDTO;
 import com.example.sistema_turnos.dtos.CierreTurnoDTO;
+import com.example.sistema_turnos.dtos.CheckinRequestDTO;
 import com.example.sistema_turnos.dtos.MisTurnosDiaDTO;
 import com.example.sistema_turnos.dtos.MisTurnosPanelDTO;
 import com.example.sistema_turnos.dtos.MisTurnosResumenDTO;
@@ -110,18 +111,61 @@ public class AsignacionTurnoService {
         return convertToDTO(asignacionActualizada);
     }
 
-    public AsignacionTurnoDTO registrarCheckin(@NonNull Long id) {
-        Optional<AsignacionTurno> asignacionExistente = asignacionTurnoRepository.findById(id);
-        if (asignacionExistente.isEmpty()) {
-            return null;
+    public AsignacionTurnoDTO registrarCheckin(Long id, CheckinRequestDTO checkinRequestDTO) {
+        if (checkinRequestDTO == null) {
+            throw new IllegalArgumentException("Debes enviar los datos del check-in.");
         }
 
-        AsignacionTurno asignacion = asignacionExistente.get();
-        asignacion.setHoraCheckin(LocalDateTime.now());
-        asignacion.setEstadoCobertura("cubierta");
+        if (checkinRequestDTO.getCheckpointId() == null) {
+            throw new IllegalArgumentException("El checkpointId es obligatorio.");
+        }
 
-        AsignacionTurno asignacionActualizada = asignacionTurnoRepository.save(asignacion);
-        return convertToDTO(asignacionActualizada);
+        String pinIngresado = checkinRequestDTO.getPin() != null ? checkinRequestDTO.getPin().trim() : "";
+        if (pinIngresado.isEmpty()) {
+            throw new IllegalArgumentException("El PIN es obligatorio.");
+        }
+
+        Optional<AsignacionTurno> asignacionExistente = asignacionTurnoRepository.findById(id);
+        if (asignacionExistente.isPresent()) {
+            AsignacionTurno asignacion = asignacionExistente.get();
+            Turno turno = asignacion.getTurno();
+
+            if (turno == null) {
+                throw new IllegalStateException("La asignacion no tiene un turno asociado.");
+            }
+
+            if (asignacion.getHoraCheckin() != null) {
+                throw new IllegalStateException("La asignacion ya tiene un check-in registrado.");
+            }
+
+            if (turno.getFecha() == null || turno.getHoraInicio() == null || turno.getHoraFin() == null) {
+                throw new IllegalStateException("El turno no tiene una ventana horaria valida.");
+            }
+
+            LocalDateTime ahora = LocalDateTime.now();
+            LocalDateTime inicioTurno = LocalDateTime.of(turno.getFecha(), turno.getHoraInicio());
+            LocalDateTime finTurno = LocalDateTime.of(turno.getFecha(), turno.getHoraFin());
+
+            if (ahora.isBefore(inicioTurno)) {
+                throw new IllegalStateException("El turno aun no ha iniciado.");
+            }
+
+            if (!ahora.isBefore(finTurno)) {
+                throw new IllegalStateException("El turno ya finalizo. No se puede registrar check-in.");
+            }
+
+            String pinEsperado = generarPinDinamico(checkinRequestDTO.getCheckpointId(), obtenerVentanaActual());
+            if (!pinEsperado.equals(pinIngresado)) {
+                throw new IllegalArgumentException("PIN invalido para el checkpoint enviado.");
+            }
+
+            asignacion.setHoraCheckin(ahora);
+            asignacion.setEstadoCobertura("cubierta");
+
+            AsignacionTurno asignacionActualizada = asignacionTurnoRepository.save(asignacion);
+            return convertToDTO(asignacionActualizada);
+        }
+        return null;
     }
 
     public AsignacionTurnoDTO cerrarTurno(@NonNull Long id, @NonNull CierreTurnoDTO cierreTurnoDTO) {
@@ -225,8 +269,8 @@ public class AsignacionTurnoService {
                 asignacion.getHoraCierre(),
                 asignacion.getCalificacionLimpieza(),
                 asignacion.getEstadoCobertura(),
-                turnoId,
                 docenteId,
+                turnoId,
                 asignacion.getObservacionLimpieza()
         );
     }
@@ -267,5 +311,14 @@ public class AsignacionTurnoService {
             return value;
         }
         return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
+    }
+
+    private long obtenerVentanaActual() {
+        return System.currentTimeMillis() / 30000;
+    }
+
+    private String generarPinDinamico(Long checkpointId, long windowSlot) {
+        long seed = (checkpointId * 7919L) + (windowSlot * 104729L);
+        return String.valueOf(Math.abs(seed % 9000) + 1000).substring(0, 4);
     }
 }

@@ -107,12 +107,12 @@
         </section>
 
         <section id="turnoReminderSection" class="section hidden">
-          <div class="checkpoint-summary-card">
+          <div id="turnoReminderCard" class="checkpoint-summary-card">
             <div class="checkpoint-summary-grid checkpoint-summary-grid-4">
               <div class="checkpoint-summary-item">
                 <div class="checkpoint-summary-label">
-                  <span class="checkpoint-mini-icon">🔔</span>
-                  <span>Recordatorio</span>
+                  <span id="turnoReminderIcon" class="checkpoint-mini-icon">🔔</span>
+                  <span id="turnoReminderType">Recordatorio</span>
                 </div>
                 <p id="turnoReminderLabel">Sin recordatorios</p>
               </div>
@@ -194,9 +194,12 @@
   <script src="/js/api/ApiServices.js"></script>
   <script>
     const DEMO_INITIAL_CHECKPOINT_ID = 1;
+    const DOCENTE_DEMO_ID = 1;
 
     let panel = null;
+    let assignments = [];
     let turnos = [];
+    let zonas = [];
     let reminderInterval = null;
     let currentReminderAssignmentId = null;
 
@@ -206,6 +209,9 @@
     const misTurnosTableBody = document.getElementById('misTurnosTableBody');
     const weeklyGrid = document.getElementById('weeklyGrid');
     const turnoReminderSection = document.getElementById('turnoReminderSection');
+    const turnoReminderCard = document.getElementById('turnoReminderCard');
+    const turnoReminderIcon = document.getElementById('turnoReminderIcon');
+    const turnoReminderType = document.getElementById('turnoReminderType');
     const turnoReminderLabel = document.getElementById('turnoReminderLabel');
     const turnoReminderHora = document.getElementById('turnoReminderHora');
     const turnoReminderZona = document.getElementById('turnoReminderZona');
@@ -224,15 +230,99 @@
 
     function estadoBadgeClass(estado) {
       const value = String(estado || '').toLowerCase();
-      if (value.includes('cerr')) return 'request-accepted';
-      if (value.includes('cubierta') || value.includes('act')) return 'request-orange';
-      if (value.includes('pend') || value.includes('sin')) return 'request-pending';
+      if (value.includes('cubierta')) return 'request-accepted';
+      if (value.includes('iniciar')) return 'request-pending';
+      if (value.includes('sin cobertura')) return 'request-rejected';
       return 'request-programmed';
+    }
+
+    function checkinBadgeClass(horaCheckin) {
+      return horaCheckin ? 'request-accepted' : 'request-rejected';
+    }
+
+    function getTurnoById(turnoId) {
+      return turnos.find(turno => turno.id === turnoId) || null;
+    }
+
+    function getZonaById(zonaId) {
+      return zonas.find(zona => zona.id === zonaId) || null;
     }
 
     function buildTurnoStartDate(turno) {
       if (!turno?.fecha || !turno?.horaInicio) return null;
-      return new Date(`${turno.fecha}T${String(turno.horaInicio).slice(0, 8)}`);
+
+      const horaInicio = String(turno.horaInicio).length === 5
+        ? `${turno.horaInicio}:00`
+        : String(turno.horaInicio).slice(0, 8);
+
+      return new Date(`${turno.fecha}T${horaInicio}`);
+    }
+
+    function getAbsenceAlertRow() {
+      const now = Date.now();
+
+      const candidates = assignments
+        .map(asignacion => {
+          const turno = getTurnoById(asignacion.turnoId);
+          const zona = turno ? getZonaById(turno.zonaId) : null;
+          const inicio = buildTurnoStartDate(turno);
+
+          if (!turno || !inicio || asignacion.horaCheckin) return null;
+
+          const limite = inicio.getTime() + (2 * 60 * 1000);
+
+          if (now <= limite) return null;
+
+          return {
+            asignacionId: asignacion.id,
+            turno,
+            zona,
+            inicio,
+            retrasoMinutos: Math.floor((now - limite) / 60000)
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.inicio - b.inicio);
+
+      return candidates[0] || null;
+    }
+
+    function buildRows() {
+      const now = Date.now();
+
+      return assignments.map(asignacion => {
+        const turno = getTurnoById(asignacion.turnoId);
+        const zona = turno ? getZonaById(turno.zonaId) : null;
+        const inicio = buildTurnoStartDate(turno);
+        const estado = String(asignacion.estadoCobertura || '');
+        const estadoLower = estado.toLowerCase();
+        const isClosed = estadoLower.includes('cerrado');
+        const hasStarted = Boolean(inicio) && now >= inicio.getTime();
+        const minutesUntilStart = inicio
+          ? Math.floor((inicio.getTime() - now) / 60000)
+          : null;
+        const isStartingSoon = minutesUntilStart !== null && minutesUntilStart >= 0 && minutesUntilStart <= 10;
+        const hasAbsenceAlert = Boolean(
+          turno &&
+          inicio &&
+          !isClosed &&
+          !asignacion.horaCheckin &&
+          now > (inicio.getTime() + (2 * 60 * 1000))
+        );
+
+        return {
+          asignacionId: asignacion.id,
+          fecha: turno?.fecha || '',
+          horario: turno ? `${String(turno.horaInicio || '').slice(0, 5)} - ${String(turno.horaFin || '').slice(0, 5)}` : 'Sin horario',
+          zona: zona?.nombre || 'Sin zona',
+          estado: estado || 'Sin estado',
+          horaCheckin: asignacion.horaCheckin || null,
+          hasAbsenceAlert,
+          isClosed,
+          hasStarted,
+          isStartingSoon
+        };
+      });
     }
 
     function getCurrentPinWindow() {
@@ -249,14 +339,15 @@
     }
 
     function populateFilters() {
-      const zonas = [...new Set(turnos.map(turno => turno.zona).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-      const estados = [...new Set(turnos.map(turno => turno.estado).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      const rows = buildRows();
+      const zonasDisponibles = [...new Set(rows.map(row => row.zona).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      const estadosDisponibles = [...new Set(rows.map(row => row.estado).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 
       zonaFilter.innerHTML = '<option value="">Todas las zonas</option>' +
-        zonas.map(zona => `<option value="${zona}">${zona}</option>`).join('');
+        zonasDisponibles.map(zona => `<option value="${zona}">${zona}</option>`).join('');
 
       estadoFilter.innerHTML = '<option value="">Todos los estados</option>' +
-        estados.map(estado => `<option value="${estado}">${estado}</option>`).join('');
+        estadosDisponibles.map(estado => `<option value="${estado}">${estado}</option>`).join('');
     }
 
     function renderStats() {
@@ -287,11 +378,11 @@
       `).join('');
     }
 
-    function filteredTurnos() {
-      return turnos.filter(turno => {
-        const matchesFecha = !fechaFilter.value || turno.fecha === fechaFilter.value;
-        const matchesZona = !zonaFilter.value || turno.zona === zonaFilter.value;
-        const matchesEstado = !estadoFilter.value || turno.estado === estadoFilter.value;
+    function filteredRows() {
+      return buildRows().filter(row => {
+        const matchesFecha = !fechaFilter.value || row.fecha === fechaFilter.value;
+        const matchesZona = !zonaFilter.value || row.zona === zonaFilter.value;
+        const matchesEstado = !estadoFilter.value || row.estado === estadoFilter.value;
         return matchesFecha && matchesZona && matchesEstado;
       });
     }
@@ -324,15 +415,119 @@
       }
 
       try {
-        await ApiServices.asignacionTurnoService.registrarCheckin(asignacionId);
+        await ApiServices.asignacionTurnoService.registrarCheckin(asignacionId, {
+          checkpointId: DEMO_INITIAL_CHECKPOINT_ID,
+          pin: pinIngresado
+        });
+        alert('Turno iniciado correctamente.');
         await loadData();
       } catch (error) {
         alert(`No se pudo iniciar el turno: ${error.message}`);
       }
     }
 
-    function renderTable() {
-      const rows = filteredTurnos();
+    function getUpcomingReminderRow() {
+      const now = Date.now();
+
+      const candidates = assignments
+        .map(asignacion => {
+          const turno = getTurnoById(asignacion.turnoId);
+          const zona = turno ? getZonaById(turno.zonaId) : null;
+          const inicio = buildTurnoStartDate(turno);
+
+          if (!turno || !inicio || asignacion.horaCheckin) return null;
+
+          const diffMinutes = Math.floor((inicio.getTime() - now) / 60000);
+
+          return {
+            asignacionId: asignacion.id,
+            turno,
+            zona,
+            inicio,
+            diffMinutes
+          };
+        })
+        .filter(Boolean)
+        .filter(item => item.diffMinutes >= 0 && item.diffMinutes <= 10)
+        .sort((a, b) => a.inicio - b.inicio);
+
+      return candidates[0] || null;
+    }
+
+    function renderTurnoReminder() {
+      const absenceAlert = getAbsenceAlertRow();
+
+      if (absenceAlert) {
+        currentReminderAssignmentId = absenceAlert.asignacionId;
+        turnoReminderSection.classList.remove('hidden');
+
+        turnoReminderIcon.textContent = '⚠';
+        turnoReminderType.textContent = 'Alerta de ausencia';
+        turnoReminderLabel.textContent = 'Han pasado más de 2 minutos desde el inicio del turno y no se registró check-in.';
+        turnoReminderHora.textContent = absenceAlert.inicio.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        turnoReminderZona.textContent = absenceAlert.zona?.nombre || 'Sin zona';
+        turnoReminderAction.textContent = 'Iniciar turno ahora';
+        turnoReminderCard.classList.add('checkpoint-reminder');
+
+        return;
+      }
+
+      const reminder = getUpcomingReminderRow();
+
+      if (!reminder) {
+        turnoReminderSection.classList.add('hidden');
+        currentReminderAssignmentId = null;
+        turnoReminderCard.classList.remove('checkpoint-reminder');
+        return;
+      }
+
+      currentReminderAssignmentId = reminder.asignacionId;
+      turnoReminderSection.classList.remove('hidden');
+      turnoReminderIcon.textContent = '🔔';
+      turnoReminderType.textContent = 'Recordatorio';
+
+      turnoReminderLabel.textContent = reminder.diffMinutes <= 5
+        ? 'Faltan 5 minutos para tu turno'
+        : 'Faltan 10 minutos para tu turno';
+
+      turnoReminderHora.textContent = reminder.inicio.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      turnoReminderZona.textContent = reminder.zona?.nombre || 'Sin zona';
+      turnoReminderAction.textContent = 'Abrir turno';
+      turnoReminderCard.classList.remove('checkpoint-reminder');
+    }
+
+    function openReminderTurno() {
+      if (!currentReminderAssignmentId) return;
+
+      const pinBox = document.getElementById(`pinBox-${currentReminderAssignmentId}`);
+      if (pinBox) {
+        togglePinBox(currentReminderAssignmentId);
+        pinBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      window.location.href = '/mis-turnos';
+    }
+
+    function startReminderTimer() {
+      renderTurnoReminder();
+
+      if (reminderInterval) {
+        clearInterval(reminderInterval);
+      }
+
+      reminderInterval = setInterval(renderTurnoReminder, 30000);
+    }
+
+    function renderMisTurnos() {
+      const rows = filteredRows();
 
       if (!rows.length) {
         misTurnosTableBody.innerHTML = `
@@ -346,7 +541,7 @@
       misTurnosTableBody.innerHTML = rows.map(row => `
         <tr class="mis-row">
           <td>${formatDate(row.fecha)}</td>
-          <td>${String(row.horaInicio || '').slice(0, 5)} - ${String(row.horaFin || '').slice(0, 5)}</td>
+          <td>${row.horario}</td>
           <td>
             <div class="zone-cell">
               <span class="zone-icon">📍</span>
@@ -354,14 +549,32 @@
             </div>
           </td>
           <td>
-            <span class="request-badge ${estadoBadgeClass(row.estado)}">${row.estado || 'Sin estado'}</span>
+            ${row.isClosed
+              ? `<span class="request-badge request-programmed">Cerrado</span>`
+              : row.horaCheckin
+              ? `<span class="request-badge request-accepted">Cubierta</span>`
+              : row.hasAbsenceAlert
+              ? `<span class="request-badge request-rejected">Ausencia detectada</span>`
+              : row.isStartingSoon
+              ? `<span class="request-badge request-pending">Por iniciar</span>`
+              : `<span class="request-badge ${estadoBadgeClass(row.estado)}">${row.estado}</span>`
+            }
           </td>
           <td>${row.horaCheckin ? formatDateTime(row.horaCheckin) : 'No registrada'}</td>
           <td>
             <div class="teacher-actions">
-              ${row.horaCheckin ? `
+              ${row.isClosed ? `
+                <span class="request-badge request-programmed">Turno cerrado</span>
+              ` : row.hasAbsenceAlert ? `
+                <span class="request-badge request-rejected">Check-in pendiente</span>
+              ` : ''}
+              ${row.isClosed ? `` : row.horaCheckin ? `
                 <span class="request-badge request-accepted">Turno iniciado</span>
-                <a class="view-btn" href="/registrar-punto">📍 Registrar punto</a>
+                <a class="view-btn" href="/registrar-punto?asignacionId=${row.asignacionId}">📍 Registrar punto</a>
+              ` : !row.hasStarted ? `
+                <button class="view-btn" type="button" disabled>
+                  ${row.isStartingSoon ? 'Disponible pronto' : 'Aún no disponible'}
+                </button>
               ` : `
                 <button class="view-btn" type="button" onclick="togglePinBox(${row.asignacionId})">▶ Iniciar turno</button>
                 <div id="pinBox-${row.asignacionId}" class="hidden" style="margin-top: 8px;">
@@ -376,67 +589,29 @@
       `).join('');
     }
 
-    function getUpcomingReminderRow() {
-      const now = Date.now();
-      const candidates = turnos
-        .filter(turno => !turno.horaCheckin)
-        .map(turno => {
-          const inicio = buildTurnoStartDate(turno);
-          if (!inicio) return null;
-          return {
-            ...turno,
-            inicio,
-            diffMinutes: Math.floor((inicio.getTime() - now) / 60000)
-          };
-        })
-        .filter(Boolean)
-        .filter(turno => turno.diffMinutes >= 0 && turno.diffMinutes <= 10)
-        .sort((a, b) => a.inicio - b.inicio);
-
-      return candidates[0] || null;
-    }
-
-    function renderTurnoReminder() {
-      const reminder = getUpcomingReminderRow();
-      if (!reminder) {
-        turnoReminderSection.classList.add('hidden');
-        currentReminderAssignmentId = null;
-        return;
-      }
-
-      currentReminderAssignmentId = reminder.asignacionId;
-      turnoReminderSection.classList.remove('hidden');
-      turnoReminderLabel.textContent = reminder.diffMinutes <= 5 ? 'Faltan 5 minutos para tu turno' : 'Faltan 10 minutos para tu turno';
-      turnoReminderHora.textContent = reminder.inicio.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      turnoReminderZona.textContent = reminder.zona || 'Sin zona';
-    }
-
-    function openReminderTurno() {
-      if (!currentReminderAssignmentId) return;
-      const pinBox = document.getElementById(`pinBox-${currentReminderAssignmentId}`);
-      if (pinBox) {
-        togglePinBox(currentReminderAssignmentId);
-        pinBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-
-    function startReminderTimer() {
-      renderTurnoReminder();
-      if (reminderInterval) {
-        clearInterval(reminderInterval);
-      }
-      reminderInterval = setInterval(renderTurnoReminder, 30000);
-    }
-
     async function loadData() {
       try {
-        // El panel del docente trae resumen, vista semanal y tabla desde un solo endpoint.
-        panel = await ApiServices.asignacionTurnoService.obtenerPanelActual();
-        turnos = panel?.turnos || [];
+        const [loadedAssignments, loadedTurnos, loadedZonas] = await Promise.all([
+          ApiServices.asignacionTurnoService.obtenerPorDocente(DOCENTE_DEMO_ID),
+          ApiServices.turnoService.obtenerTodos(),
+          ApiServices.zonaService.obtenerTodas()
+        ]);
+
+        assignments = loadedAssignments || [];
+        turnos = loadedTurnos || [];
+        zonas = loadedZonas || [];
+
+        try {
+          panel = await ApiServices.asignacionTurnoService.obtenerPanelActual();
+        } catch (panelError) {
+          panel = null;
+        }
+
         renderStats();
         renderWeekly();
         populateFilters();
-        renderTable();
+        renderMisTurnos();
+        renderTurnoReminder();
         startReminderTimer();
       } catch (error) {
         misTurnosTableBody.innerHTML = `
@@ -447,9 +622,9 @@
       }
     }
 
-    fechaFilter.addEventListener('change', renderTable);
-    zonaFilter.addEventListener('change', renderTable);
-    estadoFilter.addEventListener('change', renderTable);
+    fechaFilter.addEventListener('change', renderMisTurnos);
+    zonaFilter.addEventListener('change', renderMisTurnos);
+    estadoFilter.addEventListener('change', renderMisTurnos);
     turnoReminderAction.addEventListener('click', openReminderTurno);
 
     window.togglePinBox = togglePinBox;
