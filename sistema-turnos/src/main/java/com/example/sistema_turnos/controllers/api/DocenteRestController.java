@@ -1,6 +1,7 @@
 package com.example.sistema_turnos.controllers.api;
 
 import com.example.sistema_turnos.dtos.DocenteDTO;
+import com.example.sistema_turnos.dtos.DocenteActualDTO;
 import com.example.sistema_turnos.services.DocenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,6 +61,11 @@ public class DocenteRestController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(docente);
+    }
+
+    @GetMapping("/actual")
+    public ResponseEntity<DocenteActualDTO> obtenerActual() {
+        return ResponseEntity.ok(docenteService.obtenerDocenteActual());
     }
 
     /**

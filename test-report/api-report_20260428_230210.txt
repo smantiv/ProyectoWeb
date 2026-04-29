@@ -1,0 +1,65 @@
+﻿REPORTE DE PRUEBAS API
+Base URL: http://localhost:8080
+Fecha: 2026-04-28 23:02:18
+
+Resumen:
+  Total  : 55
+  Exitos : 55
+  Fallos : 0
+
+Detalle:
+[OK] GET http://localhost:8080/api/v1/usuarios -> 200 :: GET usuarios :: OK
+[OK] GET http://localhost:8080/api/v1/docentes -> 200 :: GET docentes :: OK
+[OK] GET http://localhost:8080/api/v1/docentes/actual -> 200 :: GET docente actual :: OK
+[OK] GET http://localhost:8080/api/v1/zonas -> 200 :: GET zonas :: OK
+[OK] GET http://localhost:8080/api/v1/turnos -> 200 :: GET turnos :: OK
+[OK] GET http://localhost:8080/api/v1/asignaciones-turnos -> 200 :: GET asignaciones :: OK
+[OK] GET http://localhost:8080/api/v1/asignaciones-turnos/actual/panel -> 200 :: GET panel docente actual :: OK
+[OK] GET http://localhost:8080/api/v1/asignaciones-turnos/activas -> 200 :: GET turnos activos :: OK
+[OK] GET http://localhost:8080/api/v1/checkpoints -> 200 :: GET checkpoints :: OK
+[OK] GET http://localhost:8080/api/v1/recorridos -> 200 :: GET recorridos :: OK
+[OK] GET http://localhost:8080/api/v1/incidentes -> 200 :: GET incidentes :: OK
+[OK] GET http://localhost:8080/api/v1/reasignaciones -> 200 :: GET reasignaciones :: OK
+[OK] GET http://localhost:8080/api/v1/reasignaciones/actual -> 200 :: GET reasignaciones actual :: OK
+[OK] GET http://localhost:8080/api/v1/analiticas/mapa-calor?rango=7 -> 200 :: GET analiticas mapa calor 7 dias :: OK
+[OK] GET http://localhost:8080/api/v1/analiticas/mapa-calor?rango=30&tipo=ACCIDENTE -> 200 :: GET analiticas mapa calor 30 dias tipo ACCIDENTE :: OK
+[OK] POST http://localhost:8080/api/v1/zonas -> 201 :: POST zona :: OK
+[OK] GET http://localhost:8080/api/v1/zonas/9 -> 200 :: GET zona por id :: OK
+[OK] POST http://localhost:8080/api/v1/usuarios -> 201 :: POST usuario :: OK
+[OK] GET http://localhost:8080/api/v1/usuarios/7 -> 200 :: GET usuario por id :: OK
+[OK] POST http://localhost:8080/api/v1/docentes -> 201 :: POST docente :: OK
+[OK] GET http://localhost:8080/api/v1/docentes/5 -> 200 :: GET docente por id :: OK
+[OK] POST http://localhost:8080/api/v1/turnos -> 201 :: POST turno :: OK
+[OK] GET http://localhost:8080/api/v1/turnos/5 -> 200 :: GET turno por id :: OK
+[OK] GET http://localhost:8080/api/v1/turnos/zona/9 -> 200 :: GET turno por zona :: OK
+[OK] POST http://localhost:8080/api/v1/asignaciones-turnos -> 201 :: POST asignacion :: OK
+[OK] GET http://localhost:8080/api/v1/asignaciones-turnos/5 -> 200 :: GET asignacion por id :: OK
+[OK] GET http://localhost:8080/api/v1/asignaciones-turnos/docente/5 -> 200 :: GET asignaciones por docente :: OK
+[OK] POST http://localhost:8080/api/v1/asignaciones-turnos/5/checkin -> 200 :: POST checkin asignacion :: OK
+[OK] POST http://localhost:8080/api/v1/asignaciones-turnos/5/cierre -> 200 :: POST cierre asignacion valido :: OK
+[OK] POST http://localhost:8080/api/v1/asignaciones-turnos/5/cierre -> 400 :: POST cierre asignacion invalido :: OK (codigo esperado)
+[OK] POST http://localhost:8080/api/v1/checkpoints -> 201 :: POST checkpoint :: OK
+[OK] GET http://localhost:8080/api/v1/checkpoints/7 -> 200 :: GET checkpoint por id :: OK
+[OK] POST http://localhost:8080/api/v1/recorridos -> 201 :: POST recorrido :: OK
+[OK] GET http://localhost:8080/api/v1/recorridos/8 -> 200 :: GET recorrido por id :: OK
+[OK] GET http://localhost:8080/api/v1/recorridos/asignacion/5 -> 200 :: GET recorridos por asignacion :: OK
+[OK] GET http://localhost:8080/api/v1/recorridos/checkpoint/7 -> 200 :: GET recorridos por checkpoint :: OK
+[OK] POST http://localhost:8080/api/v1/incidentes -> 201 :: POST incidente :: OK
+[OK] GET http://localhost:8080/api/v1/incidentes/9 -> 200 :: GET incidente por id :: OK
+[OK] GET http://localhost:8080/api/v1/incidentes/asignacion/5 -> 200 :: GET incidentes por asignacion :: OK
+[OK] GET http://localhost:8080/api/v1/incidentes/tipo/ACCIDENTE -> 200 :: GET incidentes por tipo :: OK
+[OK] GET http://localhost:8080/api/v1/incidentes/severidad/media -> 200 :: GET incidentes por severidad :: OK
+[OK] GET http://localhost:8080/api/v1/incidentes/estado/reportado -> 200 :: GET incidentes por estado :: OK
+[OK] POST http://localhost:8080/api/v1/reasignaciones -> 201 :: POST reasignacion :: OK
+[OK] GET http://localhost:8080/api/v1/reasignaciones/2 -> 200 :: GET reasignacion por id :: OK
+[OK] GET http://localhost:8080/api/v1/reasignaciones/candidatos/5 -> 200 :: GET candidatos por turno :: OK
+[OK] GET http://localhost:8080/api/v1/reasignaciones/estado/pendiente -> 200 :: GET reasignaciones por estado pendiente :: OK
+[OK] DELETE http://localhost:8080/api/v1/reasignaciones/2 -> 204 :: DELETE reasignacion cleanup :: Eliminado
+[OK] DELETE http://localhost:8080/api/v1/incidentes/9 -> 204 :: DELETE incidente cleanup :: Eliminado
+[OK] DELETE http://localhost:8080/api/v1/recorridos/8 -> 204 :: DELETE recorrido cleanup :: Eliminado
+[OK] DELETE http://localhost:8080/api/v1/asignaciones-turnos/5 -> 204 :: DELETE asignacion cleanup :: Eliminado
+[OK] DELETE http://localhost:8080/api/v1/turnos/5 -> 204 :: DELETE turno cleanup :: Eliminado
+[OK] DELETE http://localhost:8080/api/v1/checkpoints/7 -> 204 :: DELETE checkpoint cleanup :: Eliminado
+[OK] DELETE http://localhost:8080/api/v1/docentes/5 -> 204 :: DELETE docente cleanup :: Eliminado
+[OK] DELETE http://localhost:8080/api/v1/usuarios/7 -> 204 :: DELETE usuario cleanup :: Eliminado
+[OK] DELETE http://localhost:8080/api/v1/zonas/9 -> 204 :: DELETE zona cleanup :: Eliminado

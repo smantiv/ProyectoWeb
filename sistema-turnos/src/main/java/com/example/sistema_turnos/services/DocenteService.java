@@ -1,6 +1,7 @@
 package com.example.sistema_turnos.services;
 
 import com.example.sistema_turnos.dtos.DocenteDTO;
+import com.example.sistema_turnos.dtos.DocenteActualDTO;
 import com.example.sistema_turnos.dtos.UsuarioDTO;
 import com.example.sistema_turnos.entities.Docente;
 import com.example.sistema_turnos.entities.Usuario;
@@ -21,6 +22,9 @@ public class DocenteService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private CurrentDocenteContextService currentDocenteContextService;
 
     public DocenteDTO crearDocente(DocenteDTO docenteDTO) {
         Docente docente = new Docente();
@@ -54,6 +58,12 @@ public class DocenteService {
         return docenteRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public DocenteActualDTO obtenerDocenteActual() {
+        Docente docente = currentDocenteContextService.obtenerDocenteActual();
+        String nombre = docente.getUsuario() != null ? docente.getUsuario().getNombre() : docente.getCodigoInstitucional();
+        return new DocenteActualDTO(docente.getId(), nombre, docente.getCodigoInstitucional());
     }
 
     public DocenteDTO actualizarDocente(Long id, DocenteDTO docenteDTO) {

@@ -18,7 +18,7 @@
       </div>
 
       <div class="profile-box">
-        <span>Coord. Alberto Ramírez</span>
+        <span>Coordinación</span>
         <a th:href="@{/mi-perfil-coordinador}" class="profile-avatar profile-avatar-coord">👤</a>
       </div>
     </nav>
@@ -56,7 +56,7 @@
               <div class="filter-field">
                 <label for="zoneFilterAnalytics">Zona</label>
                 <select id="zoneFilterAnalytics">
-                  <option value="Todas">Todas</option>
+                  <option value="">Todas</option>
                 </select>
               </div>
 
@@ -112,7 +112,7 @@
 
         <section class="section">
           <h2>Tabla de Incidentes por Zona</h2>
-          <p class="analytics-subtext">No hay incidentes registrados para los filtros seleccionados.</p>
+          <p class="analytics-subtext">El cálculo del mapa de calor ahora se agrega en backend para evitar joins repetidos en el navegador.</p>
 
           <div class="table-card analytics-heatmap-card">
             <div class="table-wrap">
@@ -120,62 +120,18 @@
                 <thead class="thead-admin">
                   <tr>
                     <th>Zona</th>
-                    <th>Tipo de incidentes</th>>
+                    <th>Tipo de incidentes</th>
                     <th>Cantidad de incidentes</th>
                     <th>Porcentaje sobre el total</th>
                   </tr>
                 </thead>
                 <tbody id="heatmapTableBody">
                   <tr class="table-row-hover">
-                    <td colspan="3">Cargando datos...</td>
+                    <td colspan="4">Cargando datos...</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <h2>Gestión de Desempeño Docente</h2>
-          <p class="analytics-subtext">Accede a herramientas avanzadas para evaluar y reconocer el desempeño docente.</p>
-
-          <div class="analytics-actions-grid">
-            <a th:href="@{/metricas-docentes}" class="analytics-action-card">
-              <div class="analytics-action-icon bg-orange">📊</div>
-              <div class="analytics-action-content">
-                <div class="analytics-action-head">
-                  <h3>Métricas Positivas Docentes</h3>
-                  <span>→</span>
-                </div>
-                <p>Analiza el desempeño de los docentes en vigilancia escolar.</p>
-                <span class="analytics-pill bg-orange">Ver análisis completo</span>
-              </div>
-            </a>
-
-            <a th:href="@{/reconocimientos}" class="analytics-action-card">
-              <div class="analytics-action-icon bg-navy">🏆</div>
-              <div class="analytics-action-content">
-                <div class="analytics-action-head">
-                  <h3>Reconocimientos Institucionales</h3>
-                  <span>→</span>
-                </div>
-                <p>Gestiona los reconocimientos otorgados a docentes con mejor desempeño.</p>
-                <span class="analytics-pill bg-navy">Gestionar reconocimientos</span>
-              </div>
-            </a>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="analytics-export-card">
-            <div>
-              <h3>Exportar datos</h3>
-              <p>Descarga un reporte completo con todas las estadísticas y gráficos</p>
-            </div>
-
-            <button id="exportAnalyticsBtn" class="btn btn-primary analytics-export-btn">
-              ⬇ Exportar reporte
-            </button>
           </div>
         </section>
       </div>
@@ -204,161 +160,51 @@
   <script src="/js/api/RecorridoService.js"></script>
   <script src="/js/api/ReasignacionService.js"></script>
   <script src="/js/api/ApiServices.js"></script>
-
   <script>
-    let incidentes = [];
-    let asignaciones = [];
-    let turnos = [];
-    let zonas = [];
-
     const dateRange = document.getElementById('dateRange');
     const zoneFilterAnalytics = document.getElementById('zoneFilterAnalytics');
     const incidentTypeFilter = document.getElementById('incidentTypeFilter');
     const heatmapTableBody = document.getElementById('heatmapTableBody');
 
-    const statTotalIncidentes = document.getElementById('statTotalIncidentes');
-    const statZonasConIncidentes = document.getElementById('statZonasConIncidentes');
-    const statZonaTop = document.getElementById('statZonaTop');
-    const statTiposVisibles = document.getElementById('statTiposVisibles');
-
-    function getAsignacionById(id) {
-      return asignaciones.find(a => a.id === id) || null;
-    }
-
-    function getTurnoById(id) {
-      return turnos.find(t => t.id === id) || null;
-    }
-
-    function getZonaById(id) {
-      return zonas.find(z => z.id === id) || null;
-    }
-
-    function resolveZonaNombre(incidente) {
-      const asignacion = getAsignacionById(incidente.asignacionId);
-      if (!asignacion) return 'Sin zona';
-
-      const turno = getTurnoById(asignacion.turnoId);
-      if (!turno) return 'Sin zona';
-
-      const zona = getZonaById(turno.zonaId);
-      return zona ? zona.nombre : 'Sin zona';
-    }
-
-    function normalizeDate(value) {
-      if (!value) return null;
-      return new Date(value);
-    }
-
-    function inSelectedRange(fechaHora) {
-      const fecha = normalizeDate(fechaHora);
-      if (!fecha) return false;
-
-      const today = new Date();
-      const selected = dateRange.value;
-
-      if (selected === 'all') return true;
-
-      if (selected === '7' || selected === '30') {
-        const days = Number(selected);
-        const limit = new Date();
-        limit.setDate(today.getDate() - days);
-        return fecha >= limit;
+    function buildQuery() {
+      const params = new URLSearchParams();
+      params.set('rango', dateRange.value);
+      if (zoneFilterAnalytics.value) {
+        params.set('zonaId', zoneFilterAnalytics.value);
       }
-
-      if (selected === 'currentMonth') {
-        return fecha.getMonth() === today.getMonth() && fecha.getFullYear() === today.getFullYear();
+      if (incidentTypeFilter.value) {
+        params.set('tipo', incidentTypeFilter.value);
       }
-
-      if (selected === 'previousMonth') {
-        const previous = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        return fecha.getMonth() === previous.getMonth() && fecha.getFullYear() === previous.getFullYear();
-      }
-
-      return true;
+      return params.toString();
     }
 
-    function filteredIncidentes() {
-      const zona = zoneFilterAnalytics.value;
-      const tipo = incidentTypeFilter.value;
+    function renderFilters(data) {
+      const zonaActual = zoneFilterAnalytics.value;
+      const tipoActual = incidentTypeFilter.value;
 
-      return incidentes.filter(incidente => {
-        const zonaNombre = resolveZonaNombre(incidente);
-        const matchesZona = zona === 'Todas' || zonaNombre === zona;
-        const matchesTipo = tipo === 'Todos' || incidente.tipo === tipo;
-        const matchesFecha = inSelectedRange(incidente.fechaHora);
+      zoneFilterAnalytics.innerHTML = '<option value="">Todas</option>' +
+        (data.zonas || []).map(zona => `<option value="${zona.id}">${zona.nombre}</option>`).join('');
 
-        return matchesZona && matchesTipo && matchesFecha;
-      });
-    }
+      incidentTypeFilter.innerHTML = '<option value="Todos">Todos</option>' +
+        (data.tiposIncidente || []).map(tipo => `<option value="${tipo}">${tipo}</option>`).join('');
 
-    function buildAnalyticsRows(data) {
-      const counts = new Map();
-
-      data.forEach(incidente => {
-        const zonaNombre = resolveZonaNombre(incidente);
-        const tipo = incidente.tipo || 'Sin tipo';
-        const key = zonaNombre + '|||' + tipo;
-        counts.set(key, (counts.get(key) || 0) + 1);
-      });
-
-      const total = data.length;
-
-      return Array.from(counts.entries())
-        .map(([key, cantidad]) => {
-          const [zona, tipo] = key.split('|||');
-          return {
-            zona,
-            tipo,
-            cantidad,
-            porcentaje: total ? ((cantidad / total) * 100) : 0
-          };
-        })
-        .sort((a, b) => b.cantidad - a.cantidad || a.zona.localeCompare(b.zona));
-    }
-
-    function renderFilters() {
-      const zonasDisponibles = [...new Set(
-        incidentes.map(resolveZonaNombre).filter(Boolean)
-      )].sort((a, b) => a.localeCompare(b));
-
-      const tiposDisponibles = [...new Set(
-        incidentes.map(i => i.tipo).filter(Boolean)
-      )].sort((a, b) => a.localeCompare(b));
-
-      const currentZona = zoneFilterAnalytics.value || 'Todas';
-      const currentTipo = incidentTypeFilter.value || 'Todos';
-
-      zoneFilterAnalytics.innerHTML =
-        '<option value="Todas">Todas</option>' +
-        zonasDisponibles.map(z => `<option value="${z}">${z}</option>`).join('');
-
-      incidentTypeFilter.innerHTML =
-        '<option value="Todos">Todos</option>' +
-        tiposDisponibles.map(t => `<option value="${t}">${t}</option>`).join('');
-
-      if ([...zoneFilterAnalytics.options].some(o => o.value === currentZona)) {
-        zoneFilterAnalytics.value = currentZona;
+      if ([...zoneFilterAnalytics.options].some(option => option.value === zonaActual)) {
+        zoneFilterAnalytics.value = zonaActual;
       }
-
-      if ([...incidentTypeFilter.options].some(o => o.value === currentTipo)) {
-        incidentTypeFilter.value = currentTipo;
+      if ([...incidentTypeFilter.options].some(option => option.value === tipoActual)) {
+        incidentTypeFilter.value = tipoActual;
       }
     }
 
-    function renderStats(rows, data) {
-      const total = data.length;
-      const zonasConIncidentes = rows.length;
-      const tipos = new Set(data.map(i => i.tipo).filter(Boolean)).size;
-      const top = rows.length ? rows[0].zona : '-';
-
-      statTotalIncidentes.textContent = total;
-      statZonasConIncidentes.textContent = zonasConIncidentes;
-      statZonaTop.textContent = top;
-      statTiposVisibles.textContent = tipos;
+    function renderStats(resumen) {
+      document.getElementById('statTotalIncidentes').textContent = resumen?.totalIncidentes ?? 0;
+      document.getElementById('statZonasConIncidentes').textContent = resumen?.zonasConIncidentes ?? 0;
+      document.getElementById('statZonaTop').textContent = resumen?.zonaTop || '-';
+      document.getElementById('statTiposVisibles').textContent = resumen?.tiposVisibles ?? 0;
     }
 
-    function renderTable(rows, data) {
-      if (!data.length) {
+    function renderTable(rows) {
+      if (!rows.length) {
         heatmapTableBody.innerHTML = `
           <tr class="table-row-hover">
             <td colspan="4">No hay incidentes para los filtros seleccionados.</td>
@@ -368,9 +214,9 @@
       }
 
       heatmapTableBody.innerHTML = rows.map(row => {
-        const intensidad = row.porcentaje >= 30 ? '#ff4d4d'
-          : row.porcentaje >= 15 ? '#ffa500'
-          : row.porcentaje >= 5  ? '#ffd700'
+        const intensidad = row.porcentajeTotal >= 30 ? '#ff4d4d'
+          : row.porcentajeTotal >= 15 ? '#ffa500'
+          : row.porcentajeTotal >= 5 ? '#ffd700'
           : '#90ee90';
 
         return `
@@ -382,58 +228,36 @@
               </div>
             </td>
             <td>${row.tipo}</td>
-            <td>${row.cantidad}</td>
+            <td>${row.cantidadIncidentes}</td>
             <td style="background-color:${intensidad};font-weight:bold;text-align:center">
-              ${row.porcentaje.toFixed(2)}%
+              ${Number(row.porcentajeTotal || 0).toFixed(2)}%
             </td>
           </tr>
         `;
       }).join('');
     }
 
-    function renderAnalytics() {
-      const data = filteredIncidentes();
-      const rows = buildAnalyticsRows(data);
-
-      renderStats(rows, data);
-      renderTable(rows, data);
-    }
-
-    async function loadData() {
+    async function loadAnalytics() {
       try {
-        const [loadedIncidentes, loadedAsignaciones, loadedTurnos, loadedZonas] = await Promise.all([
-          ApiServices.incidenteService.obtenerTodos(),
-          ApiServices.asignacionTurnoService.obtenerTodas(),
-          ApiServices.turnoService.obtenerTodos(),
-          ApiServices.zonaService.obtenerTodas()
-        ]);
-
-        incidentes = loadedIncidentes || [];
-        asignaciones = loadedAsignaciones || [];
-        turnos = loadedTurnos || [];
-        zonas = loadedZonas || [];
-
-        renderFilters();
-        renderAnalytics();
+        const response = await ApiServices.apiClient.get(`/analiticas/mapa-calor?${buildQuery()}`);
+        const data = response.data;
+        renderFilters(data);
+        renderStats(data.resumen);
+        renderTable(data.filas || []);
       } catch (error) {
         heatmapTableBody.innerHTML = `
           <tr class="table-row-hover">
-            <td colspan="3">No se pudieron cargar los datos analíticos.</td>
+            <td colspan="4">No se pudieron cargar los datos analíticos.</td>
           </tr>
         `;
-        alert(`No se pudieron cargar las analíticas: ${error.message}`);
       }
     }
 
-    dateRange.addEventListener('change', renderAnalytics);
-    zoneFilterAnalytics.addEventListener('change', renderAnalytics);
-    incidentTypeFilter.addEventListener('change', renderAnalytics);
+    dateRange.addEventListener('change', loadAnalytics);
+    zoneFilterAnalytics.addEventListener('change', loadAnalytics);
+    incidentTypeFilter.addEventListener('change', loadAnalytics);
 
-    document.getElementById('exportAnalyticsBtn').addEventListener('click', function () {
-      alert('Exportando reporte... Esta funcionalidad permanece visual en esta versión mínima.');
-    });
-
-    loadData();
+    loadAnalytics();
   </script>
 </body>
 </html>

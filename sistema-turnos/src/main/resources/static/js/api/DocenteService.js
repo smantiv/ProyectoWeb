@@ -28,6 +28,11 @@ class DocenteService {
         return response.data;
     }
 
+    async obtenerActual() {
+        const response = await this.apiClient.get(`${this.endpoint}/actual`);
+        return response.data;
+    }
+
     async crear(docente) {
         const response = await this.apiClient.post(this.endpoint, docente);
         return response.data;

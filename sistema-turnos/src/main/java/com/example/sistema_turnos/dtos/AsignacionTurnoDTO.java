@@ -1,5 +1,9 @@
 package com.example.sistema_turnos.dtos;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
 public class AsignacionTurnoDTO {
@@ -7,7 +11,10 @@ public class AsignacionTurnoDTO {
     private Long id;
     private LocalDateTime horaCheckin;
     private LocalDateTime horaCierre;
+    @Min(value = 1, message = "La calificacion de limpieza debe estar entre 1 y 5")
+    @Max(value = 5, message = "La calificacion de limpieza debe estar entre 1 y 5")
     private Integer calificacionLimpieza;
+    @Size(max = 50, message = "El estado de cobertura no puede superar 50 caracteres")
     private String estadoCobertura;
     private String observacionLimpieza;
     private Long docenteId;

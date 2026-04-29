@@ -23,6 +23,16 @@ class AsignacionTurnoService {
         return response.data || [];
     }
 
+    async obtenerPanelActual() {
+        const response = await this.apiClient.get(`${this.endpoint}/actual/panel`);
+        return response.data;
+    }
+
+    async obtenerActivas() {
+        const response = await this.apiClient.get(`${this.endpoint}/activas`);
+        return response.data || [];
+    }
+
     async crear(asignacion) {
         const response = await this.apiClient.post(this.endpoint, asignacion);
         return response.data;
@@ -49,7 +59,8 @@ class AsignacionTurnoService {
      * Registrar cierre
      */
     async registrarCierre(id, horaCierre) {
-        return this.actualizar(id, { horaCierre });
+        const response = await this.apiClient.post(`${this.endpoint}/${id}/cierre`, horaCierre);
+        return response.data;
     }
 }
 
