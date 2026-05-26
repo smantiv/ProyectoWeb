@@ -7,6 +7,8 @@ const links = [
   { to: '/dashboard-admin', label: 'Admin', icon: Home },
   { to: '/dashboard-profesor', label: 'Profesor', icon: ShieldCheck },
   { to: '/dashboard-coordinador', label: 'Coordinador', icon: ClipboardList },
+  { to: '/tablero-coordinacion', label: 'Tablero', icon: ClipboardList },
+  { to: '/cobertura', label: 'Cobertura', icon: ShieldCheck },
   { to: '/profesores', label: 'Profesores', icon: Users },
   { to: '/turnos', label: 'Turnos', icon: CalendarDays },
   { to: '/zonas', label: 'Zonas', icon: MapPinned },

@@ -59,6 +59,119 @@ function getFormValue(form, name) {
   const value = new FormData(form).get(name);
   return value === '' ? null : value;
 }
+// funciones agregadas para persona 3 
+function formatDateTime(value) {
+  return value ? String(value).replace('T', ' ').slice(0, 16) : 'Sin fecha';
+}
+
+function formatHourFromDateTime(value) {
+  return value ? String(value).slice(11, 16) : '--:--';
+}
+
+function docenteNombre(docente) {
+  return docente?.usuario?.nombre || docente?.nombre || `Docente ${docente?.id || ''}`;
+}
+
+function getFranja(horaInicio) {
+  const hour = Number(String(horaInicio || '').slice(0, 2));
+  if (Number.isNaN(hour)) return 'sin-franja';
+  if (hour >= 6 && hour < 12) return 'manana';
+  if (hour >= 12 && hour < 18) return 'tarde';
+  return 'noche';
+}
+
+function buildStartDate(turno) {
+  if (!turno?.fecha || !turno?.horaInicio) return null;
+  const hora = String(turno.horaInicio).length === 5 ? `${turno.horaInicio}:00` : String(turno.horaInicio);
+  const date = new Date(`${turno.fecha}T${hora}`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function minutesSinceStart(turno) {
+  const start = buildStartDate(turno);
+  if (!start) return null;
+  return Math.floor((Date.now() - start.getTime()) / 60000);
+}
+
+function getCoverageStatus(asignacion, turno) {
+  if (!asignacion) {
+    return {
+      label: 'Sin cobertura',
+      className: 'sin-cobertura',
+      alerta: 'Turno sin docente asignado',
+    };
+  }
+
+  if (asignacion.horaCierre) {
+    return {
+      label: 'Cerrado',
+      className: 'cerrado',
+      alerta: 'Turno finalizado',
+    };
+  }
+
+  if (asignacion.horaCheckin) {
+    return {
+      label: 'Cubierta',
+      className: 'cubierta',
+      alerta: 'Check-in registrado',
+    };
+  }
+
+  const minutes = minutesSinceStart(turno);
+
+  if (minutes !== null && minutes >= 2) {
+    return {
+      label: 'Sin cobertura',
+      className: 'sin-cobertura',
+      alerta: `Ausencia detectada hace ${minutes} min`,
+    };
+  }
+
+  return {
+    label: 'Por iniciar',
+    className: 'por-iniciar',
+    alerta: 'Dentro del margen operativo',
+  };
+}
+
+function getRecorridoStatus(asignacion, recorridos) {
+  if (!asignacion) return 'Sin asignación';
+
+  const total = recorridos.filter((recorrido) => String(recorrido.asignacionId) === String(asignacion.id)).length;
+
+  return total > 0 ? `${total} recorrido(s)` : 'Sin evidencia';
+}
+
+function buildCoverageRows({ turnos, asignaciones, docentes, zonas, recorridos }) {
+  const docentesById = new Map(docentes.map((docente) => [String(docente.id), docente]));
+  const zonasById = new Map(zonas.map((zona) => [String(zona.id), zona]));
+
+  return turnos.map((turno) => {
+    const asignacion = asignaciones.find((item) => String(item.turnoId) === String(turno.id));
+    const docente = asignacion ? docentesById.get(String(asignacion.docenteId)) : null;
+    const zona = zonasById.get(String(turno.zonaId));
+    const status = getCoverageStatus(asignacion, turno);
+
+    return {
+      id: turno.id,
+      turnoId: turno.id,
+      asignacionId: asignacion?.id,
+      docenteNombre: docente ? docenteNombre(docente) : 'Sin docente',
+      zonaId: turno.zonaId,
+      zona: zona?.nombre || 'Sin zona',
+      fecha: turno.fecha,
+      horaInicio: turno.horaInicio,
+      horaCheckin: asignacion?.horaCheckin,
+      estadoCobertura: status.label,
+      estadoClass: status.className,
+      alerta: status.alerta,
+      estadoRecorrido: getRecorridoStatus(asignacion, recorridos),
+      franja: getFranja(turno.horaInicio),
+    };
+  });
+} 
+// fin de persona 3
 
 function PageHeader({ title, description, action }) {
   return (
@@ -174,7 +287,7 @@ export function ProfesorDashboard() {
     </>
   );
 }
-
+// modificaciones para persona 3, se agregan funciones de formato y logica de negocio para el dashboard del coordinador, ademas de la funcion buildCoverageRows que prepara los datos para mostrar el estado de cobertura en el tablero de coordinacion.
 export function CoordinadorDashboard() {
   const { data, loading, error } = useAsync(async () => {
     const [activas, reasignaciones, heatmap] = await Promise.all([
@@ -190,17 +303,29 @@ export function CoordinadorDashboard() {
 
   return (
     <>
-      <PageHeader title="Dashboard Coordinador" description="Seguimiento de cobertura, incidentes y reemplazos." />
+      <PageHeader title="Dashboard Coordinador" description="Seguimiento operativo de cobertura, incidentes y reemplazos." />
       <section className="stats-grid">
         <StatCard icon={<ShieldCheck />} label="Turnos activos" value={data.activas.length} tone="green" />
         <StatCard icon={<RefreshCw />} label="Reemplazos pendientes" value={data.reasignaciones.length} tone="orange" />
         <StatCard icon={<AlertTriangle />} label="Incidentes visibles" value={data.heatmap?.resumen?.totalIncidentes || 0} tone="red" />
       </section>
       <section className="action-grid">
-        <Link to="/tablero-coordinacion" className="action-card"><ShieldCheck />Tablero de coordinacion</Link>
-        <Link to="/incidentes" className="action-card"><AlertTriangle />Gestionar incidentes</Link>
-        <Link to="/analiticas" className="action-card"><BarChart3 />Analiticas</Link>
-        <Link to="/reconocimientos" className="action-card"><Medal />Reconocimientos</Link>
+        <Link to="/tablero-coordinacion" className="action-card">
+          <ShieldCheck />
+          Tablero de coordinación
+        </Link>
+        <Link to="/cobertura" className="action-card">
+          <MapPinned />
+          Cobertura en tiempo real
+        </Link>
+        <Link to="/incidentes" className="action-card">
+          <AlertTriangle />
+          Gestionar incidentes
+        </Link>
+        <Link to="/turnos" className="action-card">
+          <CalendarCheck />
+          Ver turnos
+        </Link>
       </section>
     </>
   );
@@ -433,6 +558,7 @@ export function TurnosPage() {
 
 export function IncidentesPage() {
   const [selected, setSelected] = useState(null);
+  const [estadoFilter, setEstadoFilter] = useState('pendientes');
   const { data, loading, error, reload } = useAsync(() => incidentesService.list(), []);
   const incidentes = asArray(data);
 
@@ -445,27 +571,59 @@ export function IncidentesPage() {
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} />;
 
+  const pendientes = incidentes.filter((incidente) => ['reportado', 'en_revision', 'escalado'].includes(incidente.estado));
+  const resueltos = incidentes.filter((incidente) => incidente.estado === 'resuelto');
+
+  const filteredIncidentes = incidentes.filter((incidente) => {
+    if (estadoFilter === 'todos') return true;
+    if (estadoFilter === 'pendientes') return ['reportado', 'en_revision', 'escalado'].includes(incidente.estado);
+    return incidente.estado === estadoFilter;
+  });
+
   return (
     <>
-      <PageHeader title="Gestion de Incidentes" description="Consulta y actualizacion del estado de incidentes reportados." />
+      <PageHeader title="Gestión de Incidentes" description="Vista operativa del coordinador para revisar, escalar o resolver situaciones pendientes." />
+
+      <section className="stats-grid">
+        <StatCard icon={<AlertTriangle />} label="Pendientes" value={pendientes.length} tone="red" />
+        <StatCard icon={<CheckCircle2 />} label="Resueltos" value={resueltos.length} tone="green" />
+        <StatCard icon={<ClipboardCheck />} label="Total" value={incidentes.length} />
+      </section>
+
+      <section className="filter-row">
+        <select value={estadoFilter} onChange={(event) => setEstadoFilter(event.target.value)}>
+          <option value="pendientes">Pendientes operativos</option>
+          <option value="todos">Todos</option>
+          <option value="reportado">Reportados</option>
+          <option value="en_revision">En revisión</option>
+          <option value="escalado">Escalados</option>
+          <option value="resuelto">Resueltos</option>
+        </select>
+      </section>
+
       <DataTable
-        rows={incidentes}
+        rows={filteredIncidentes}
         columns={[
           { key: 'tipo', header: 'Tipo' },
           { key: 'severidad', header: 'Severidad', render: (row) => <span className={`badge ${row.severidad}`}>{row.severidad}</span> },
-          { key: 'ubicacion', header: 'Ubicacion' },
-          { key: 'estado', header: 'Estado' },
-          { key: 'fechaHora', header: 'Fecha', render: (row) => formatDate(row.fechaHora) },
+          { key: 'ubicacion', header: 'Ubicación' },
+          { key: 'estado', header: 'Estado', render: (row) => <span className={`badge ${row.estado}`}>{row.estado}</span> },
+          { key: 'fechaHora', header: 'Fecha', render: (row) => formatDateTime(row.fechaHora) },
           { key: 'acciones', header: 'Acciones', render: (row) => <Button variant="ghost" onClick={() => setSelected(row)}>Ver detalle</Button> },
         ]}
       />
+
       {selected ? (
         <Modal title={`Incidente #${selected.id}`} onClose={() => setSelected(null)}>
           <div className="detail-stack">
-            <p><strong>Descripcion:</strong> {selected.descripcion}</p>
-            <p><strong>Asignacion:</strong> {selected.asignacionId || 'Sin asignacion'}</p>
+            <p><strong>Tipo:</strong> {selected.tipo}</p>
+            <p><strong>Severidad:</strong> {selected.severidad}</p>
+            <p><strong>Ubicación:</strong> {selected.ubicacion || 'Sin ubicación'}</p>
+            <p><strong>Estado:</strong> {selected.estado}</p>
+            <p><strong>Descripción:</strong> {selected.descripcion}</p>
+            <p><strong>Asignación:</strong> {selected.asignacionId || 'Sin asignación'}</p>
             <div className="row-actions">
-              <Button onClick={() => setEstado(selected, 'en_revision')}>En revision</Button>
+              <Button onClick={() => setEstado(selected, 'en_revision')}>En revisión</Button>
               <Button variant="success" onClick={() => setEstado(selected, 'resuelto')}>Resolver</Button>
               <Button variant="danger" onClick={() => setEstado(selected, 'escalado')}>Escalar</Button>
             </div>
@@ -690,37 +848,183 @@ export function SolicitarReemplazoPage() {
     </>
   );
 }
-
+// modificaciones para persona 3, se agrega el Tablero de Coordinacion que muestra informacion relevante para el coordinador sobre turnos activos, solicitudes pendientes e historial de reasignaciones, ademas de filtros y acciones para gestionar las solicitudes de reemplazo.
 export function TableroCoordinacionPage() {
+  const [filters, setFilters] = useState({ zona: '', franja: '' });
+  const [selectedCandidates, setSelectedCandidates] = useState({});
+
   const { data, loading, error, reload } = useAsync(async () => {
-    const [activas, pendientes] = await Promise.all([asignacionesService.activas(), reasignacionesService.byEstado('pendiente')]);
-    return { activas: asArray(activas), pendientes: asArray(pendientes) };
+    const [activas, pendientes, historial, zonas] = await Promise.all([
+      asignacionesService.activas(),
+      reasignacionesService.byEstado('pendiente'),
+      reasignacionesService.list(),
+      zonasService.list(),
+    ]);
+
+    const candidatosEntries = await Promise.all(
+      asArray(pendientes).map(async (row) => {
+        if (!row.turnoId) return [row.id, []];
+        const candidatos = await reasignacionesService.candidatos(row.turnoId);
+        return [row.id, asArray(candidatos)];
+      })
+    );
+
+    return {
+      activas: asArray(activas),
+      pendientes: asArray(pendientes),
+      historial: asArray(historial),
+      zonas: asArray(zonas),
+      candidatosPorSolicitud: Object.fromEntries(candidatosEntries),
+    };
   }, []);
 
+  function updateFilter(event) {
+    setFilters((current) => ({ ...current, [event.target.name]: event.target.value }));
+  }
+
+  function updateCandidate(rowId, docenteId) {
+    setSelectedCandidates((current) => ({ ...current, [rowId]: docenteId }));
+  }
+
   async function responder(row, decision) {
-    await reasignacionesService.responder(row.id, { decision, docenteReemplazoId: row.docenteReemplazoId });
+    const docenteReemplazoId = selectedCandidates[row.id] || row.docenteReemplazoId || null;
+
+    if (decision === 'aceptada' && !docenteReemplazoId) {
+      alert('Selecciona un docente reemplazo antes de aceptar la solicitud.');
+      return;
+    }
+
+    await reasignacionesService.responder(row.id, {
+      decision,
+      docenteReemplazoId: decision === 'aceptada' ? docenteReemplazoId : null,
+    });
+
     reload();
   }
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} />;
 
+  const turnosFiltrados = asArray(data?.activas).filter((row) => {
+    const matchesZona = !filters.zona || row.zona === filters.zona;
+    const matchesFranja = !filters.franja || getFranja(row.horaInicio) === filters.franja;
+    return matchesZona && matchesFranja;
+  });
+
+  const historialOrdenado = [...asArray(data?.historial)]
+    .sort((a, b) => String(b.fechaSolicitud || '').localeCompare(String(a.fechaSolicitud || '')))
+    .slice(0, 10);
+
   return (
     <>
-      <PageHeader title="Tablero de Coordinacion" description="Turnos activos y solicitudes de reemplazo pendientes." />
-      <DataTable rows={data.activas} columns={[
-        { key: 'docenteNombre', header: 'Docente' },
-        { key: 'zona', header: 'Zona' },
-        { key: 'horaInicio', header: 'Inicio' },
-        { key: 'estado', header: 'Estado' },
-      ]} />
+      <PageHeader
+        title="Tablero de Coordinación"
+        description="Turnos activos, reemplazos pendientes y trazabilidad de reasignaciones."
+        action={<Button variant="ghost" onClick={reload}><RefreshCw size={16} />Actualizar</Button>}
+      />
+
+      <section className="stats-grid">
+        <StatCard icon={<ShieldCheck />} label="Turnos activos" value={asArray(data?.activas).length} tone="green" />
+        <StatCard icon={<RefreshCw />} label="Solicitudes pendientes" value={asArray(data?.pendientes).length} tone="orange" />
+        <StatCard icon={<ClipboardCheck />} label="Historial" value={asArray(data?.historial).length} />
+      </section>
+
+      <section className="filter-row">
+        <select name="zona" value={filters.zona} onChange={updateFilter}>
+          <option value="">Todas las zonas</option>
+          {asArray(data?.zonas).map((zona) => (
+            <option key={zona.id} value={zona.nombre}>{zona.nombre}</option>
+          ))}
+        </select>
+
+        <select name="franja" value={filters.franja} onChange={updateFilter}>
+          <option value="">Todas las franjas</option>
+          <option value="manana">Mañana</option>
+          <option value="tarde">Tarde</option>
+          <option value="noche">Noche</option>
+        </select>
+
+        <Button variant="ghost" onClick={() => setFilters({ zona: '', franja: '' })}>
+          Limpiar filtros
+        </Button>
+      </section>
+
+      <h2 className="section-title">Cobertura operativa</h2>
+      <DataTable
+        rows={turnosFiltrados.map((row) => ({ ...row, id: row.asignacionId }))}
+        columns={[
+          { key: 'docenteNombre', header: 'Docente' },
+          { key: 'zona', header: 'Zona' },
+          { key: 'horaInicio', header: 'Inicio' },
+          { key: 'estado', header: 'Estado', render: (row) => <span className="badge cubierta">{row.estado}</span> },
+          {
+            key: 'acciones',
+            header: 'Accesos rápidos',
+            render: () => (
+              <div className="row-actions">
+                <Link className="btn btn-ghost" to="/cobertura">Ver cobertura</Link>
+                <Link className="btn btn-ghost" to="/incidentes">Incidentes</Link>
+              </div>
+            ),
+          },
+        ]}
+      />
+
       <h2 className="section-title">Solicitudes pendientes</h2>
-      <DataTable rows={data.pendientes} columns={[
-        { key: 'docenteNombre', header: 'Solicitante' },
-        { key: 'turnoDescripcion', header: 'Turno' },
-        { key: 'motivo', header: 'Motivo' },
-        { key: 'acciones', header: 'Acciones', render: (row) => <div className="row-actions"><Button variant="success" onClick={() => responder(row, 'aceptada')}>Aceptar</Button><Button variant="danger" onClick={() => responder(row, 'rechazada')}>Rechazar</Button></div> },
-      ]} />
+      <DataTable
+        rows={asArray(data?.pendientes)}
+        columns={[
+          { key: 'docenteNombre', header: 'Solicitante' },
+          { key: 'turnoDescripcion', header: 'Turno' },
+          { key: 'motivo', header: 'Motivo' },
+          {
+            key: 'docenteReemplazo',
+            header: 'Docente reemplazo',
+            render: (row) => (
+              <select
+                className="mini-select"
+                value={selectedCandidates[row.id] || row.docenteReemplazoId || ''}
+                onChange={(event) => updateCandidate(row.id, event.target.value)}
+              >
+                <option value="">Seleccionar candidato</option>
+                {asArray(data?.candidatosPorSolicitud?.[row.id]).map((docente) => (
+                  <option key={docente.id} value={docente.id}>
+                    {docenteNombre(docente)}
+                  </option>
+                ))}
+              </select>
+            ),
+          },
+          {
+            key: 'acciones',
+            header: 'Acciones',
+            render: (row) => (
+              <div className="row-actions">
+                <Button variant="success" onClick={() => responder(row, 'aceptada')}>Aceptar</Button>
+                <Button variant="danger" onClick={() => responder(row, 'rechazada')}>Rechazar</Button>
+              </div>
+            ),
+          },
+        ]}
+      />
+
+      <h2 className="section-title">Trazabilidad de reasignaciones</h2>
+      <DataTable
+        rows={historialOrdenado}
+        columns={[
+          { key: 'fechaSolicitud', header: 'Solicitud', render: (row) => formatDateTime(row.fechaSolicitud) },
+          { key: 'docenteNombre', header: 'Docente original' },
+          { key: 'turnoDescripcion', header: 'Turno' },
+          { key: 'docenteReemplazoNombre', header: 'Reemplazo' },
+          {
+            key: 'estado',
+            header: 'Estado',
+            render: (row) => <span className={`badge ${row.estado}`}>{row.estado}</span>,
+          },
+          { key: 'fechaRespuesta', header: 'Respuesta', render: (row) => formatDateTime(row.fechaRespuesta) },
+          { key: 'aprobador', header: 'Aprobador' },
+        ]}
+      />
     </>
   );
 }
@@ -764,19 +1068,107 @@ export function AnalyticsPage() {
   );
 }
 
+//modificar para mostrar turnos en tiempo real con su estado de cobertura, usando colores o iconos para diferenciar entre cubiertos, por iniciar y sin cobertura. Agregar filtros por zona y franja horaria para facilitar la detección de posibles problemas operativos.
 export function CoberturaPage() {
-  const { data, loading, error } = useAsync(() => asignacionesService.activas(), []);
+  const [filters, setFilters] = useState({ zonaId: '', franja: '' });
+
+  const { data, loading, error, reload } = useAsync(async () => {
+    const [turnos, asignaciones, docentes, zonas, recorridos] = await Promise.all([
+      turnosService.list(),
+      asignacionesService.list(),
+      docentesService.list(),
+      zonasService.list(),
+      recorridosService.list(),
+    ]);
+
+    const rows = buildCoverageRows({
+      turnos: asArray(turnos),
+      asignaciones: asArray(asignaciones),
+      docentes: asArray(docentes),
+      zonas: asArray(zonas),
+      recorridos: asArray(recorridos),
+    });
+
+    return { rows, zonas: asArray(zonas) };
+  }, []);
+
+  function updateFilter(event) {
+    setFilters((current) => ({ ...current, [event.target.name]: event.target.value }));
+  }
+
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} />;
+
+  const rows = asArray(data?.rows).filter((row) => {
+    const matchesZona = !filters.zonaId || String(row.zonaId) === String(filters.zonaId);
+    const matchesFranja = !filters.franja || row.franja === filters.franja;
+    return matchesZona && matchesFranja;
+  });
+
+  const cubiertas = rows.filter((row) => row.estadoClass === 'cubierta').length;
+  const porIniciar = rows.filter((row) => row.estadoClass === 'por-iniciar').length;
+  const sinCobertura = rows.filter((row) => row.estadoClass === 'sin-cobertura').length;
+
   return (
     <>
-      <PageHeader title="Cobertura en Tiempo Real" description="Turnos activos con check-in registrado y sin cierre." />
-      <DataTable rows={asArray(data)} columns={[
-        { key: 'docenteNombre', header: 'Docente' },
-        { key: 'zona', header: 'Zona' },
-        { key: 'horaInicio', header: 'Inicio' },
-        { key: 'estado', header: 'Estado' },
-      ]} />
+      <PageHeader
+        title="Cobertura en Tiempo Real"
+        description="Vista operativa para detectar turnos cubiertos, por iniciar o sin cobertura."
+        action={<Button variant="ghost" onClick={reload}><RefreshCw size={16} />Actualizar</Button>}
+      />
+
+      <section className="stats-grid">
+        <StatCard icon={<ShieldCheck />} label="Cubierta" value={cubiertas} tone="green" />
+        <StatCard icon={<CalendarCheck />} label="Por iniciar" value={porIniciar} tone="orange" />
+        <StatCard icon={<AlertTriangle />} label="Sin cobertura" value={sinCobertura} tone="red" />
+      </section>
+
+      <section className="filter-row">
+        <select name="zonaId" value={filters.zonaId} onChange={updateFilter}>
+          <option value="">Todas las zonas</option>
+          {asArray(data?.zonas).map((zona) => (
+            <option key={zona.id} value={zona.id}>{zona.nombre}</option>
+          ))}
+        </select>
+
+        <select name="franja" value={filters.franja} onChange={updateFilter}>
+          <option value="">Todas las franjas</option>
+          <option value="manana">Mañana</option>
+          <option value="tarde">Tarde</option>
+          <option value="noche">Noche</option>
+        </select>
+
+        <Button variant="ghost" onClick={() => setFilters({ zonaId: '', franja: '' })}>
+          Limpiar filtros
+        </Button>
+      </section>
+
+      <DataTable
+        rows={rows}
+        columns={[
+          { key: 'docenteNombre', header: 'Docente' },
+          { key: 'zona', header: 'Zona' },
+          { key: 'fecha', header: 'Fecha', render: (row) => formatDate(row.fecha) },
+          { key: 'horaInicio', header: 'Inicio', render: (row) => formatTime(row.horaInicio) },
+          {
+            key: 'estadoCobertura',
+            header: 'Cobertura',
+            render: (row) => <span className={`badge ${row.estadoClass}`}>{row.estadoCobertura}</span>,
+          },
+          { key: 'horaCheckin', header: 'Check-in', render: (row) => formatHourFromDateTime(row.horaCheckin) },
+          { key: 'estadoRecorrido', header: 'Recorrido' },
+          { key: 'alerta', header: 'Alerta' },
+          {
+            key: 'acciones',
+            header: 'Acción',
+            render: (row) => (
+              <Link className="btn btn-ghost" to="/tablero-coordinacion">
+                Reasignar
+              </Link>
+            ),
+          },
+        ]}
+      />
     </>
   );
 }

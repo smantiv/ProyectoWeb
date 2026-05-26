@@ -648,3 +648,39 @@ dd {
   }
 }
 
+
+.badge.cubierta,
+.badge.aceptada,
+.badge.resuelto {
+  color: white;
+  background: var(--green);
+}
+
+.badge.por-iniciar,
+.badge.pendiente,
+.badge.en_revision {
+  color: #713f12;
+  background: #facc15;
+}
+
+.badge.sin-cobertura,
+.badge.rechazada,
+.badge.reportado,
+.badge.escalado {
+  color: white;
+  background: var(--red);
+}
+
+.badge.cerrado {
+  color: var(--navy);
+  background: var(--soft);
+}
+
+.mini-select {
+  min-width: 220px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: white;
+}
+
