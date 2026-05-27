@@ -17,7 +17,7 @@ public class AsignacionTurno {
     private LocalDateTime horaCierre;
 
     @Min(1)
-    @Max(5)
+    @Max(4)
     private Integer calificacionLimpieza;
 
     private String estadoCobertura;

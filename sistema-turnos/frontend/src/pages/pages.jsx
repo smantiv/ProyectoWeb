@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -635,13 +635,53 @@ export function IncidentesPage() {
 }
 
 export function MisTurnosPage() {
-  const { data, loading, error } = useAsync(() => asignacionesService.panelActual(), []);
+  const [closingTurno, setClosingTurno] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [closeError, setCloseError] = useState(null);
+  const { data, loading, error, reload } = useAsync(() => asignacionesService.panelActual(), []);
+
+  function openCloseTurno(turno) {
+    setCloseError(null);
+    setClosingTurno(turno);
+  }
+
+  function cancelCloseTurno() {
+    setCloseError(null);
+    setClosingTurno(null);
+  }
+
+  async function closeTurno(event) {
+    event.preventDefault();
+    setCloseError(null);
+    const form = event.currentTarget;
+    const calificacionLimpieza = getFormValue(form, 'calificacionLimpieza');
+
+    if (!calificacionLimpieza) {
+      setCloseError('Selecciona una calificacion de limpieza.');
+      return;
+    }
+
+    try {
+      await asignacionesService.cierre(closingTurno.asignacionId, {
+        horaCierre: nowLocalDateTime(),
+        calificacionLimpieza: Number(calificacionLimpieza),
+        estadoCobertura: 'cerrado',
+      });
+      setClosingTurno(null);
+      setMessage('Turno cerrado correctamente.');
+      reload();
+    } catch {
+      setCloseError('No se pudo cerrar el turno. Revisa que la asignacion exista y vuelve a intentar.');
+    }
+  }
+
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} />;
 
   return (
     <>
       <PageHeader title="Mis Turnos" description="Panel semanal del docente actual resuelto por el backend." />
+      {message ? <Message>{message}</Message> : null}
       <section className="stats-grid">
         <StatCard icon={<CalendarCheck />} label="Turnos de la semana" value={data?.resumen?.totalTurnosSemana || 0} />
         <StatCard icon={<CheckCircle2 />} label="Completados" value={data?.resumen?.turnosCompletados || 0} tone="green" />
@@ -662,14 +702,51 @@ export function MisTurnosPage() {
           { key: 'horario', header: 'Horario', render: (row) => `${formatTime(row.horaInicio)} - ${formatTime(row.horaFin)}` },
           { key: 'zona', header: 'Zona' },
           { key: 'estado', header: 'Estado' },
-          { key: 'acciones', header: 'Acciones', render: (row) => <Link className="table-link" to={`/check-in-punto?asignacionId=${row.asignacionId}`}>Check-in</Link> },
+          { key: 'acciones', header: 'Acciones', render: (row) => <MisTurnosActions turno={row} onCloseTurno={() => openCloseTurno(row)} /> },
         ]}
       />
+      {closingTurno ? (
+        <Modal title="Cerrar turno" onClose={cancelCloseTurno}>
+          <form className="grid-form" onSubmit={closeTurno}>
+            <p className="form-note">
+              {closingTurno.zona} - {formatDate(closingTurno.fecha)} {formatTime(closingTurno.horaInicio)}
+            </p>
+            <FormField label="Calificacion de limpieza" name="calificacionLimpieza">
+              <select name="calificacionLimpieza" defaultValue="" required>
+                <option value="">Seleccionar</option>
+                <option value="1">1 - limpio</option>
+                <option value="2">2 - algo de basura</option>
+                <option value="3">3 - mucha basura</option>
+                <option value="4">4 - critico</option>
+              </select>
+            </FormField>
+            {closeError ? <Message type="error">{closeError}</Message> : null}
+            <Button type="submit"><CheckCircle2 size={16} />Cerrar turno</Button>
+          </form>
+        </Modal>
+      ) : null}
     </>
   );
 }
 
+function MisTurnosActions({ turno, onCloseTurno }) {
+  const asignacionParam = `asignacionId=${turno.asignacionId}`;
+  const turnoParam = `turnoId=${turno.turnoId}`;
+  const closed = String(turno.estado || '').toLowerCase().includes('cerrad');
+
+  return (
+    <div className="row-actions">
+      <Link className="table-link" to={`/check-in-punto?${asignacionParam}`}>Iniciar vigilancia</Link>
+      <Link className="table-link" to={`/registrar-punto?${asignacionParam}`}>Registrar recorrido</Link>
+      <Link className="table-link" to={`/reportar-incidente?${asignacionParam}`}>Reportar situacion</Link>
+      <Link className="table-link" to={`/solicitar-reemplazo?${turnoParam}`}>Solicitar reemplazo</Link>
+      <Button variant="ghost" onClick={onCloseTurno} disabled={closed}>Cerrar turno</Button>
+    </div>
+  );
+}
+
 export function RegistrarPuntoPage() {
+  const [searchParams] = useSearchParams();
   const [message, setMessage] = useState(null);
   const { data, loading, error, reload } = useAsync(async () => {
     const [panel, checkpoints] = await Promise.all([asignacionesService.panelActual(), checkpointsService.list()]);
@@ -695,7 +772,8 @@ export function RegistrarPuntoPage() {
       {message ? <Message>{message}</Message> : null}
       <form className="form-card wide" onSubmit={submit}>
         <FormField label="Turno asignado" name="asignacionId">
-          <select name="asignacionId" required>
+          <select name="asignacionId" defaultValue={searchParams.get('asignacionId') || ''} required>
+            <option value="">Seleccionar</option>
             {asArray(data.panel?.turnos).map((turno) => (
               <option key={turno.asignacionId} value={turno.asignacionId}>{turno.zona} - {formatDate(turno.fecha)} {formatTime(turno.horaInicio)}</option>
             ))}
@@ -756,6 +834,7 @@ export function CheckInPuntoPage() {
 }
 
 export function ReportarIncidentePage() {
+  const [searchParams] = useSearchParams();
   const [message, setMessage] = useState(null);
   const { data, loading, error } = useAsync(() => asignacionesService.panelActual(), []);
 
@@ -784,7 +863,8 @@ export function ReportarIncidentePage() {
       {message ? <Message>{message}</Message> : null}
       <form className="form-card wide" onSubmit={submit}>
         <FormField label="Asignacion" name="asignacionId">
-          <select name="asignacionId" required>
+          <select name="asignacionId" defaultValue={searchParams.get('asignacionId') || ''} required>
+            <option value="">Seleccionar</option>
             {asArray(data?.turnos).map((turno) => <option key={turno.asignacionId} value={turno.asignacionId}>{turno.zona} - {formatDate(turno.fecha)}</option>)}
           </select>
         </FormField>
@@ -801,15 +881,23 @@ export function ReportarIncidentePage() {
 }
 
 export function SolicitarReemplazoPage() {
-  const [turnoId, setTurnoId] = useState('');
+  const [searchParams] = useSearchParams();
+  const [turnoId, setTurnoId] = useState(searchParams.get('turnoId') || '');
   const [candidatos, setCandidatos] = useState([]);
   const [message, setMessage] = useState(null);
   const { data, loading, error } = useAsync(() => asignacionesService.panelActual(), []);
 
-  async function loadCandidates(value) {
-    setTurnoId(value);
-    setCandidatos(value ? asArray(await reasignacionesService.candidatos(value)) : []);
-  }
+  useEffect(() => {
+    let active = true;
+    async function loadCandidates() {
+      const result = turnoId ? asArray(await reasignacionesService.candidatos(turnoId)) : [];
+      if (active) setCandidatos(result);
+    }
+    loadCandidates();
+    return () => {
+      active = false;
+    };
+  }, [turnoId]);
 
   async function submit(event) {
     event.preventDefault();
@@ -831,7 +919,7 @@ export function SolicitarReemplazoPage() {
       {message ? <Message>{message}</Message> : null}
       <form className="form-card wide" onSubmit={submit}>
         <FormField label="Turno" name="turnoId">
-          <select name="turnoId" value={turnoId} onChange={(event) => loadCandidates(event.target.value)} required>
+          <select name="turnoId" value={turnoId} onChange={(event) => setTurnoId(event.target.value)} required>
             <option value="">Seleccionar turno</option>
             {asArray(data?.turnos).map((turno) => <option key={turno.turnoId} value={turno.turnoId}>{turno.zona} - {formatDate(turno.fecha)} {formatTime(turno.horaInicio)}</option>)}
           </select>
@@ -1246,7 +1334,7 @@ export function ReglasOperativasPage() {
       <PageHeader title="Reglas Operativas" description="Lineamientos migrados de la vista informativa anterior." />
       <section className="info-grid">
         <article><h2>Check-in</h2><p>Debe realizarse dentro de la ventana horaria del turno con el PIN del punto de control.</p></article>
-        <article><h2>Cierre</h2><p>El cierre requiere estado de cobertura y calificacion de limpieza entre 1 y 5.</p></article>
+        <article><h2>Cierre</h2><p>El cierre requiere estado de cobertura y calificacion de limpieza entre 1 y 4.</p></article>
         <article><h2>Reemplazos</h2><p>Las solicitudes quedan pendientes hasta respuesta de coordinacion.</p></article>
       </section>
     </>

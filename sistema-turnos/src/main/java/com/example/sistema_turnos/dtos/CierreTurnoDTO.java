@@ -12,8 +12,8 @@ public class CierreTurnoDTO {
     private LocalDateTime horaCierre;
 
     @NotNull(message = "La calificacion de limpieza es obligatoria")
-    @Min(value = 1, message = "La calificacion de limpieza debe estar entre 1 y 5")
-    @Max(value = 5, message = "La calificacion de limpieza debe estar entre 1 y 5")
+    @Min(value = 1, message = "La calificacion de limpieza debe estar entre 1 y 4")
+    @Max(value = 4, message = "La calificacion de limpieza debe estar entre 1 y 4")
     private Integer calificacionLimpieza;
 
     @NotNull(message = "El estado de cobertura es obligatorio")
