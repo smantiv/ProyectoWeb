@@ -1,4 +1,5 @@
 import { http } from './apiClient';
+import { API_BASE_URL } from '../config/env';
 
 const crud = (path) => ({
   list: () => http.get(path),
@@ -59,13 +60,26 @@ export const reasignacionesService = {
   responder: (id, payload) => http.put(`/reasignaciones/${id}/responder`, payload),
 };
 
-export const analyticsService = {
-  heatmap: (params = {}) => {
-    const search = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') search.set(key, value);
-    });
-    return http.get(`/analiticas/mapa-calor?${search.toString()}`);
-  },
-};
+function buildSearch(params = {}) {
+  const search = new URLSearchParams();
 
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      search.set(key, value);
+    }
+  });
+
+  return search.toString();
+}
+
+export const analyticsService = {
+  heatmap: (params = {}) => http.get(`/analiticas/mapa-calor?${buildSearch(params)}`),
+
+  indicadores: (params = {}) => http.get(`/analiticas/indicadores?${buildSearch(params)}`),
+
+  reporteSemanal: () => http.get('/analiticas/reporte-semanal'),
+
+  gamificacion: (params = {}) => http.get(`/analiticas/gamificacion?${buildSearch(params)}`),
+
+  exportCsvUrl: (params = {}) => `${API_BASE_URL}/analiticas/export/csv?${buildSearch(params)}`,
+};

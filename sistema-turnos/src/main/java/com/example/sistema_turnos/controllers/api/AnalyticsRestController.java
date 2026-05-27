@@ -3,12 +3,18 @@ package com.example.sistema_turnos.controllers.api;
 import com.example.sistema_turnos.dtos.AnalyticsHeatmapResponseDTO;
 import com.example.sistema_turnos.services.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/analiticas")
@@ -24,5 +30,36 @@ public class AnalyticsRestController {
             @RequestParam(required = false) Long zonaId,
             @RequestParam(required = false, defaultValue = "Todos") String tipo) {
         return ResponseEntity.ok(analyticsService.obtenerMapaCalor(rango, zonaId, tipo));
+    }
+
+    @GetMapping("/indicadores")
+    public ResponseEntity<Map<String, Object>> obtenerIndicadores(
+            @RequestParam(required = false, defaultValue = "30") String rango,
+            @RequestParam(required = false) Long zonaId) {
+        return ResponseEntity.ok(analyticsService.obtenerIndicadores(rango, zonaId));
+    }
+
+    @GetMapping("/reporte-semanal")
+    public ResponseEntity<Map<String, Object>> obtenerReporteSemanal() {
+        return ResponseEntity.ok(analyticsService.obtenerReporteSemanal());
+    }
+
+    @GetMapping("/gamificacion")
+    public ResponseEntity<List<Map<String, Object>>> obtenerGamificacion(
+            @RequestParam(required = false, defaultValue = "30") String rango) {
+        return ResponseEntity.ok(analyticsService.obtenerGamificacion(rango));
+    }
+
+    @GetMapping(value = "/export/csv", produces = "text/csv")
+    public ResponseEntity<byte[]> exportarCsv(
+            @RequestParam(required = false, defaultValue = "30") String rango,
+            @RequestParam(required = false) Long zonaId,
+            @RequestParam(required = false, defaultValue = "Todos") String tipo) {
+        String csv = analyticsService.exportarCsv(rango, zonaId, tipo);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=analiticas.csv")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csv.getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -1292,38 +1292,223 @@ export function TableroCoordinacionPage() {
 }
 
 export function AnalyticsPage() {
-  const [filters, setFilters] = useState({ rango: '7', tipo: 'Todos' });
-  const { data, loading, error, reload } = useAsync(() => analyticsService.heatmap(filters), [filters.rango, filters.zonaId, filters.tipo]);
+  const [filters, setFilters] = useState({ rango: '30', tipo: 'Todos' });
+
+  const { data, loading, error, reload } = useAsync(async () => {
+    const [heatmap, indicadores, reporteSemanal, gamificacion] = await Promise.all([
+      analyticsService.heatmap(filters),
+      analyticsService.indicadores({ rango: filters.rango, zonaId: filters.zonaId }),
+      analyticsService.reporteSemanal(),
+      analyticsService.gamificacion({ rango: filters.rango }),
+    ]);
+
+    return {
+      heatmap,
+      indicadores,
+      reporteSemanal,
+      gamificacion,
+    };
+  }, [filters.rango, filters.zonaId, filters.tipo]);
 
   function updateFilter(event) {
     setFilters((current) => ({ ...current, [event.target.name]: event.target.value }));
   }
 
+  function handleExportCsv() {
+    window.open(analyticsService.exportCsvUrl(filters), '_blank');
+  }
+
+  const heatmap = data?.heatmap;
+  const indicadores = data?.indicadores;
+  const reporteSemanal = data?.reporteSemanal;
+  const gamificacion = asArray(data?.gamificacion);
+
   return (
     <>
-      <PageHeader title="Analiticas" description="Mapa de calor de incidentes consumido desde /api/v1/analiticas/mapa-calor." action={<Button variant="ghost" onClick={reload}><RefreshCw size={16} />Actualizar</Button>} />
+      <PageHeader
+        title="Analíticas y reportes"
+        description="Indicadores operativos, mapas de calor, reporte semanal, gamificación institucional y exportación CSV."
+        action={
+          <div className="row-actions">
+            <Button variant="ghost" onClick={reload}>
+              <RefreshCw size={16} />
+              Actualizar
+            </Button>
+            <Button variant="primary" onClick={handleExportCsv}>
+              <Save size={16} />
+              Exportar CSV
+            </Button>
+          </div>
+        }
+      />
+
       <section className="filter-row">
-        <select name="rango" value={filters.rango} onChange={updateFilter}><option value="7">7 dias</option><option value="30">30 dias</option><option value="90">90 dias</option></select>
-        <select name="zonaId" value={filters.zonaId || ''} onChange={updateFilter}><option value="">Todas las zonas</option>{asArray(data?.zonas).map((zona) => <option key={zona.id} value={zona.id}>{zona.nombre}</option>)}</select>
-        <select name="tipo" value={filters.tipo} onChange={updateFilter}><option>Todos</option>{asArray(data?.tiposIncidente).map((tipo) => <option key={tipo}>{tipo}</option>)}</select>
+        <select name="rango" value={filters.rango} onChange={updateFilter}>
+          <option value="7">7 días</option>
+          <option value="30">30 días</option>
+          <option value="90">90 días</option>
+          <option value="currentMonth">Mes actual</option>
+          <option value="previousMonth">Mes anterior</option>
+        </select>
+
+        <select name="zonaId" value={filters.zonaId || ''} onChange={updateFilter}>
+          <option value="">Todas las zonas</option>
+          {asArray(heatmap?.zonas).map((zona) => (
+            <option key={zona.id} value={zona.id}>
+              {zona.nombre}
+            </option>
+          ))}
+        </select>
+
+        <select name="tipo" value={filters.tipo} onChange={updateFilter}>
+          <option>Todos</option>
+          {asArray(heatmap?.tiposIncidente).map((tipo) => (
+            <option key={tipo}>{tipo}</option>
+          ))}
+        </select>
       </section>
-      {loading ? <LoadingState /> : error ? <ErrorState error={error} /> : (
+
+      {loading ? (
+        <LoadingState />
+      ) : error ? (
+        <ErrorState error={error} />
+      ) : (
         <>
+          <h2 className="section-title">Indicadores generales</h2>
+
           <section className="stats-grid">
-            <StatCard icon={<AlertTriangle />} label="Incidentes" value={data?.resumen?.totalIncidentes || 0} tone="red" />
-            <StatCard icon={<MapPinned />} label="Zonas con incidentes" value={data?.resumen?.zonasConIncidentes || 0} tone="orange" />
-            <StatCard icon={<BarChart3 />} label="Zona top" value={data?.resumen?.zonaTop || 'Sin datos'} />
+            <StatCard
+              icon={<CheckCircle2 />}
+              label="Puntualidad"
+              value={`${Math.round(indicadores?.porcentajePuntualidad || 0)}%`}
+              tone="green"
+            />
+
+            <StatCard
+              icon={<ShieldCheck />}
+              label="Cobertura"
+              value={`${Math.round(indicadores?.porcentajeCobertura || 0)}%`}
+              tone="navy"
+            />
+
+            <StatCard
+              icon={<AlertTriangle />}
+              label="Retrasos"
+              value={indicadores?.asignacionesConRetraso || 0}
+              tone="orange"
+            />
+
+            <StatCard
+              icon={<ClipboardCheck />}
+              label="Recorridos"
+              value={indicadores?.totalRecorridos || 0}
+              tone="navy"
+            />
+
+            <StatCard
+              icon={<CalendarCheck />}
+              label="Tiempo respuesta prom."
+              value={`${Math.round(indicadores?.tiempoRespuestaPromedioMinutos || 0)} min`}
+              tone="red"
+            />
           </section>
+
+          <h2 className="section-title">Mapa de calor por zona, tipo y franja</h2>
+
+          <section className="stats-grid">
+            <StatCard
+              icon={<AlertTriangle />}
+              label="Incidentes"
+              value={heatmap?.resumen?.totalIncidentes || 0}
+              tone="red"
+            />
+
+            <StatCard
+              icon={<MapPinned />}
+              label="Zonas con incidentes"
+              value={heatmap?.resumen?.zonasConIncidentes || 0}
+              tone="orange"
+            />
+
+            <StatCard
+              icon={<BarChart3 />}
+              label="Zona top"
+              value={heatmap?.resumen?.zonaTop || 'Sin datos'}
+            />
+          </section>
+
           <section className="heat-grid">
-            {asArray(data?.filas).map((row) => (
+            {asArray(heatmap?.filas).map((row) => (
               <article key={`${row.zona}-${row.tipo}`} className="heat-card">
                 <strong>{row.zona}</strong>
                 <span>{row.tipo}</span>
                 <b>{row.cantidadIncidentes}</b>
                 <small>{Math.round(row.porcentajeTotal)}% del total</small>
+                <small>Mañana: {row.incidentesManana} | Tarde: {row.incidentesTarde}</small>
+                <small>Cobertura: {Math.round(row.porcentajeCobertura)}%</small>
               </article>
             ))}
           </section>
+
+          <h2 className="section-title">Reporte semanal</h2>
+
+          <section className="stats-grid">
+            <StatCard
+              icon={<CalendarCheck />}
+              label={`Semana ${reporteSemanal?.semanaInicio || ''} a ${reporteSemanal?.semanaFin || ''}`}
+              value={reporteSemanal?.totalTurnos || 0}
+            />
+
+            <StatCard
+              icon={<ShieldCheck />}
+              label="Turnos cubiertos"
+              value={reporteSemanal?.turnosCubiertos || 0}
+              tone="green"
+            />
+
+            <StatCard
+              icon={<AlertTriangle />}
+              label="Incidentes semana"
+              value={reporteSemanal?.totalIncidentes || 0}
+              tone="red"
+            />
+
+            <StatCard
+              icon={<MapPinned />}
+              label="Zona más crítica"
+              value={reporteSemanal?.zonaMasCritica || 'Sin datos'}
+              tone="orange"
+            />
+          </section>
+
+          <h2 className="section-title">Gamificación institucional</h2>
+
+          <DataTable
+            rows={gamificacion}
+            empty="Todavía no hay datos de gamificación para el rango seleccionado."
+            columns={[
+              { key: 'docente', header: 'Docente' },
+              { key: 'puntualidad', header: 'Puntualidad' },
+              { key: 'recorridos', header: 'Recorridos' },
+              { key: 'calidadRegistro', header: 'Calidad registro' },
+              { key: 'contribucionPreventiva', header: 'Contribución preventiva' },
+              {
+                key: 'puntajeTotal',
+                header: 'Puntaje total',
+                render: (row) => <strong>{row.puntajeTotal}</strong>,
+              },
+              {
+                key: 'reconocimiento',
+                header: 'Reconocimiento',
+                render: (row) => (
+                  <span className="badge cubierta">
+                    <Medal size={14} />
+                    {row.reconocimiento}
+                  </span>
+                ),
+              },
+            ]}
+          />
         </>
       )}
     </>
