@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -67,6 +68,7 @@ public class DataInitializerBatch implements CommandLineRunner {
         Checkpoint checkpoint = crearCheckpointSiNoExiste("Checkpoint Batch");
         crearRecorridoSiNoExistenRecorridos(checkpoint, asignacion);
         crearIncidenteSiNoExistenIncidentes(asignacion);
+        crearDatosDemoPersona2();
     }
 
     private Usuario crearUsuarioSiNoExiste(String nombre, String email, String password, String rol, Boolean activo) {
@@ -173,5 +175,93 @@ public class DataInitializerBatch implements CommandLineRunner {
         incidente.setFechaHora(LocalDateTime.of(2026, 4, 16, 7, 30));
         incidente.setAsignacionTurno(asignacion);
         incidenteRepository.save(incidente);
+    }
+
+    private void crearDatosDemoPersona2() {
+        Docente docente = obtenerDocenteDemoPersona2();
+        List<Zona> zonas = zonaRepository.findAll();
+        if (zonas.isEmpty()) {
+            zonas = List.of(crearZonaSiNoExiste("Zona Demo Persona 2", "Zona para demo del flujo docente"));
+        }
+
+        LocalDate hoy = LocalDate.now();
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalTime base = ahora.toLocalTime().withSecond(0).withNano(0);
+
+        Turno pendiente = asegurarTurnoDemo("DEMO_PERSONA2_PENDIENTE", zonas.get(0 % zonas.size()), hoy, base.plusMinutes(20), base.plusMinutes(50));
+        asegurarAsignacionDemo(docente, pendiente, "pendiente", null, null, null);
+
+        Turno porIniciar = asegurarTurnoDemo("DEMO_PERSONA2_POR_INICIAR", zonas.get(1 % zonas.size()), hoy, base.plusMinutes(7), base.plusMinutes(37));
+        asegurarAsignacionDemo(docente, porIniciar, "pendiente", null, null, null);
+
+        Turno checkinDemo = asegurarTurnoDemo("DEMO_PERSONA2_CHECKIN", zonas.get(2 % zonas.size()), hoy, base.minusMinutes(1), base.plusMinutes(40));
+        asegurarAsignacionDemo(docente, checkinDemo, "pendiente", null, null, null);
+
+        Turno cerrable = asegurarTurnoDemo("DEMO_PERSONA2_CERRABLE", zonas.get(3 % zonas.size()), hoy, base.minusMinutes(12), base.plusMinutes(35));
+        asegurarAsignacionDemo(docente, cerrable, "cubierta", ahora.minusMinutes(11), null, null);
+
+        Turno confirmarRecorrido = asegurarTurnoDemo("DEMO_PERSONA2_CONFIRMAR_RECORRIDO", zonas.get(4 % zonas.size()), hoy, base.minusMinutes(20), base.plusMinutes(30));
+        AsignacionTurno asignacionConfirmar = asegurarAsignacionDemo(docente, confirmarRecorrido, "cubierta", ahora.minusMinutes(20), null, null);
+        asegurarRecorridoAntiguoDemo(asignacionConfirmar, ahora.minusMinutes(15));
+
+        Turno reemplazo = asegurarTurnoDemo("DEMO_PERSONA2_REEMPLAZO", zonas.get(5 % zonas.size()), hoy, base.plusMinutes(60), base.plusMinutes(90));
+        asegurarAsignacionDemo(docente, reemplazo, "pendiente", null, null, null);
+    }
+
+    private Docente obtenerDocenteDemoPersona2() {
+        Optional<Usuario> juan = usuarioRepository.findByEmail("juan@test.com");
+        if (juan.isPresent()) {
+            Optional<Docente> docente = docenteRepository.findByUsuarioId(juan.get().getId());
+            if (docente.isPresent()) {
+                return docente.get();
+            }
+        }
+
+        List<Docente> docentes = docenteRepository.findAll();
+        if (!docentes.isEmpty()) {
+            return docentes.get(0);
+        }
+
+        Usuario usuario = crearUsuarioSiNoExiste("Juan Perez", "juan@test.com", "1234", "DOCENTE", true);
+        return crearDocenteSiNoExiste("DOC001", usuario);
+    }
+
+    private Turno asegurarTurnoDemo(String marcadorEstado, Zona zona, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
+        Turno turno = turnoRepository.findByEstado(marcadorEstado).stream().findFirst().orElseGet(Turno::new);
+        turno.setFecha(fecha);
+        turno.setHoraInicio(horaInicio);
+        turno.setHoraFin(horaFin);
+        turno.setEstado(marcadorEstado);
+        turno.setZona(zona);
+        return turnoRepository.save(turno);
+    }
+
+    private AsignacionTurno asegurarAsignacionDemo(
+            Docente docente,
+            Turno turno,
+            String estadoCobertura,
+            LocalDateTime horaCheckin,
+            LocalDateTime horaCierre,
+            Integer calificacionLimpieza) {
+        AsignacionTurno asignacion = asignacionTurnoRepository
+                .findByDocenteIdAndTurnoId(docente.getId(), turno.getId())
+                .orElseGet(AsignacionTurno::new);
+        asignacion.setDocente(docente);
+        asignacion.setTurno(turno);
+        asignacion.setEstadoCobertura(estadoCobertura);
+        asignacion.setHoraCheckin(horaCheckin);
+        asignacion.setHoraCierre(horaCierre);
+        asignacion.setCalificacionLimpieza(calificacionLimpieza);
+        return asignacionTurnoRepository.save(asignacion);
+    }
+
+    private void asegurarRecorridoAntiguoDemo(AsignacionTurno asignacion, LocalDateTime fechaHora) {
+        Checkpoint checkpoint = crearCheckpointSiNoExiste("Checkpoint Demo Persona 2");
+        List<Recorrido> recorridos = recorridoRepository.findByAsignacionTurnoId(asignacion.getId());
+        Recorrido recorrido = recorridos.isEmpty() ? new Recorrido() : recorridos.get(0);
+        recorrido.setAsignacionTurno(asignacion);
+        recorrido.setCheckpoint(checkpoint);
+        recorrido.setFechaHora(fechaHora);
+        recorridoRepository.save(recorrido);
     }
 }

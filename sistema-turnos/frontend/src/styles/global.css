@@ -314,6 +314,44 @@ textarea {
 .stat-icon.green { background: var(--green); }
 .stat-icon.red { background: var(--red); }
 
+.reminder-stack {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.turno-reminder {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  background: #fff7ed;
+  color: var(--navy);
+}
+
+.turno-reminder.urgent {
+  border-color: #fecdd3;
+  background: #fff1f2;
+}
+
+.turno-reminder.evidence {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.turno-reminder strong,
+.turno-reminder span {
+  display: block;
+}
+
+.turno-reminder span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .action-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -588,6 +626,11 @@ dd {
   font-weight: 700;
 }
 
+.muted-action {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .not-found {
   display: grid;
   place-items: start;
@@ -640,6 +683,15 @@ dd {
     padding: 20px;
   }
 
+  .turno-reminder {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .turno-reminder .btn {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
   .page-header,
   .topbar,
   .profile-card {
@@ -650,6 +702,7 @@ dd {
 
 
 .badge.cubierta,
+.badge.en-curso,
 .badge.aceptada,
 .badge.resuelto {
   color: white;
@@ -657,10 +710,15 @@ dd {
 }
 
 .badge.por-iniciar,
-.badge.pendiente,
 .badge.en_revision {
   color: #713f12;
   background: #facc15;
+}
+
+.badge.pendiente,
+.badge.reasignado {
+  color: var(--navy);
+  background: var(--soft);
 }
 
 .badge.sin-cobertura,
@@ -683,4 +741,3 @@ dd {
   padding: 9px 10px;
   background: white;
 }
-

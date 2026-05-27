@@ -39,6 +39,10 @@ const roleRoutes = {
   COORDINADOR: '/dashboard-coordinador',
 };
 
+const RECORRIDO_EVIDENCE_MINUTES = 10;
+const CHECKIN_REMINDER_MINUTES = 10;
+const CHECKIN_GRACE_MINUTES = 2;
+
 function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
@@ -53,6 +57,12 @@ function formatTime(value) {
 
 function nowLocalDateTime() {
   return new Date().toISOString().slice(0, 19);
+}
+
+function parseLocalDateTime(value) {
+  if (!value) return null;
+  const date = new Date(String(value).replace(' ', 'T'));
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function getFormValue(form, name) {
@@ -91,6 +101,74 @@ function minutesSinceStart(turno) {
   const start = buildStartDate(turno);
   if (!start) return null;
   return Math.floor((Date.now() - start.getTime()) / 60000);
+}
+
+function getTurnoReminder(turno, now = new Date()) {
+  const start = buildStartDate(turno);
+  const visualState = getDocenteTurnoState(turno, now);
+  if (!start || !['pendiente', 'por-iniciar'].includes(visualState.key)) return null;
+
+  const minutesUntil = Math.ceil((start.getTime() - now.getTime()) / 60000);
+  if (minutesUntil < 0 || minutesUntil > CHECKIN_REMINDER_MINUTES) return null;
+
+  return {
+    key: `${turno.asignacionId}-${minutesUntil <= 5 ? '5' : '10'}`,
+    minutes: minutesUntil <= 5 ? 5 : 10,
+    turno,
+  };
+}
+
+function generateDemoCheckinPin(checkpointId, now = Date.now()) {
+  const windowSlot = Math.floor(now / 30000);
+  const seed = (Number(checkpointId) * 7919) + (windowSlot * 104729);
+  return String(Math.abs(seed % 9000) + 1000).slice(0, 4);
+}
+
+function getRecorridoConfirmation(turno, recorridosByAsignacion = {}, now = new Date()) {
+  if (getDocenteTurnoState(turno, now).key !== 'en-curso') return null;
+
+  const start = buildStartDate(turno);
+  const end = turno.fecha && turno.horaFin ? new Date(`${turno.fecha}T${String(turno.horaFin).slice(0, 8)}`) : null;
+  if (!start || now < start || (end && now >= end)) return null;
+
+  const recorridos = asArray(recorridosByAsignacion[String(turno.asignacionId)]);
+  const lastRecorridoAt = recorridos
+    .map((recorrido) => parseLocalDateTime(recorrido.fechaHora))
+    .filter(Boolean)
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+  const lastEvidenceAt = lastRecorridoAt || parseLocalDateTime(turno.horaCheckin);
+  if (!lastEvidenceAt) return null;
+
+  const minutesWithoutEvidence = Math.floor((now.getTime() - lastEvidenceAt.getTime()) / 60000);
+  if (minutesWithoutEvidence < RECORRIDO_EVIDENCE_MINUTES) return null;
+
+  return {
+    key: `recorrido-${turno.asignacionId}`,
+    minutesWithoutEvidence,
+    lastEvidenceAt,
+    turno,
+  };
+}
+
+function getDocenteTurnoState(turno, now = new Date()) {
+  const estado = String(turno.estado || '').toLowerCase();
+  const start = buildStartDate(turno);
+  const end = turno?.fecha && turno?.horaFin ? new Date(`${turno.fecha}T${String(turno.horaFin).slice(0, 8)}`) : null;
+
+  if (estado.includes('cerrad')) return { key: 'cerrado', label: 'Cerrado' };
+  if (estado.includes('reasign')) return { key: 'reasignado', label: 'Reasignado' };
+  if (turno?.horaCheckin) return { key: 'en-curso', label: 'En curso / cubierta', canWorkTurno: true };
+  if (!start) return { key: 'pendiente', label: 'Pendiente', canRequestReplacement: true };
+
+  const minutesUntil = Math.ceil((start.getTime() - now.getTime()) / 60000);
+  const minutesAfterStart = Math.floor((now.getTime() - start.getTime()) / 60000);
+
+  if (end && now >= end) return { key: 'sin-cobertura', label: 'Sin cobertura' };
+  if (minutesUntil > CHECKIN_REMINDER_MINUTES) return { key: 'pendiente', label: 'Pendiente', canRequestReplacement: true };
+  if (minutesUntil >= 0 || minutesAfterStart < CHECKIN_GRACE_MINUTES) {
+    return { key: 'por-iniciar', label: 'Por iniciar', canCheckin: true, canRequestReplacement: true };
+  }
+  return { key: 'sin-cobertura', label: 'Sin cobertura', canCheckin: true, canRequestReplacement: true };
 }
 
 function getCoverageStatus(asignacion, turno) {
@@ -638,7 +716,25 @@ export function MisTurnosPage() {
   const [closingTurno, setClosingTurno] = useState(null);
   const [message, setMessage] = useState(null);
   const [closeError, setCloseError] = useState(null);
-  const { data, loading, error, reload } = useAsync(() => asignacionesService.panelActual(), []);
+  const [now, setNow] = useState(() => new Date());
+  const { data, loading, error, reload } = useAsync(async () => {
+    const panel = await asignacionesService.panelActual();
+    const recorridosEntries = await Promise.all(asArray(panel?.turnos).map(async (turno) => {
+      const recorridos = await recorridosService.byAsignacion(turno.asignacionId).catch(() => []);
+      return [String(turno.asignacionId), asArray(recorridos)];
+    }));
+    return { ...panel, recorridosByAsignacion: Object.fromEntries(recorridosEntries) };
+  }, []);
+  const turnos = asArray(data?.turnos);
+  const reminders = turnos.map((turno) => getTurnoReminder(turno, now)).filter(Boolean);
+  const recorridoConfirmations = turnos
+    .map((turno) => getRecorridoConfirmation(turno, data?.recorridosByAsignacion, now))
+    .filter(Boolean);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 30000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   function openCloseTurno(turno) {
     setCloseError(null);
@@ -682,6 +778,40 @@ export function MisTurnosPage() {
     <>
       <PageHeader title="Mis Turnos" description="Panel semanal del docente actual resuelto por el backend." />
       {message ? <Message>{message}</Message> : null}
+      {reminders.length ? (
+        <section className="reminder-stack" aria-label="Recordatorios de turno">
+          {reminders.map((reminder) => (
+            <article key={reminder.key} className={reminder.minutes === 5 ? 'turno-reminder urgent' : 'turno-reminder'}>
+              <AlertTriangle size={20} />
+              <div>
+                <strong>Recordatorio de {reminder.minutes} minutos</strong>
+                <span>Inicia a las {formatTime(reminder.turno.horaInicio)} - {reminder.turno.zona}</span>
+              </div>
+              <Link className="btn btn-primary" to={`/check-in-punto?asignacionId=${reminder.turno.asignacionId}`}>
+                Abrir turno
+              </Link>
+            </article>
+          ))}
+        </section>
+      ) : null}
+      {recorridoConfirmations.length ? (
+        <section className="reminder-stack" aria-label="Confirmaciones de recorrido">
+          {recorridoConfirmations.map((confirmation) => (
+            <article key={confirmation.key} className="turno-reminder evidence">
+              <ClipboardCheck size={20} />
+              <div>
+                <strong>Confirma recorrido</strong>
+                <span>
+                  {confirmation.turno.zona} lleva {confirmation.minutesWithoutEvidence} min sin evidencia reciente
+                </span>
+              </div>
+              <Link className="btn btn-primary" to={`/registrar-punto?asignacionId=${confirmation.turno.asignacionId}`}>
+                Registrar checkpoint
+              </Link>
+            </article>
+          ))}
+        </section>
+      ) : null}
       <section className="stats-grid">
         <StatCard icon={<CalendarCheck />} label="Turnos de la semana" value={data?.resumen?.totalTurnosSemana || 0} />
         <StatCard icon={<CheckCircle2 />} label="Completados" value={data?.resumen?.turnosCompletados || 0} tone="green" />
@@ -696,13 +826,18 @@ export function MisTurnosPage() {
         ))}
       </div>
       <DataTable
-        rows={asArray(data?.turnos)}
+        rows={turnos}
         columns={[
           { key: 'fecha', header: 'Fecha', render: (row) => formatDate(row.fecha) },
           { key: 'horario', header: 'Horario', render: (row) => `${formatTime(row.horaInicio)} - ${formatTime(row.horaFin)}` },
           { key: 'zona', header: 'Zona' },
-          { key: 'estado', header: 'Estado' },
-          { key: 'acciones', header: 'Acciones', render: (row) => <MisTurnosActions turno={row} onCloseTurno={() => openCloseTurno(row)} /> },
+          { key: 'estado', header: 'Estado', render: (row) => {
+            const state = getDocenteTurnoState(row, now);
+            return <span className={`badge ${state.key}`}>{state.label}</span>;
+          } },
+          { key: 'acciones', header: 'Acciones', render: (row) => (
+            <MisTurnosActions turno={row} state={getDocenteTurnoState(row, now)} onCloseTurno={() => openCloseTurno(row)} />
+          ) },
         ]}
       />
       {closingTurno ? (
@@ -729,18 +864,21 @@ export function MisTurnosPage() {
   );
 }
 
-function MisTurnosActions({ turno, onCloseTurno }) {
+function MisTurnosActions({ turno, state, onCloseTurno }) {
   const asignacionParam = `asignacionId=${turno.asignacionId}`;
   const turnoParam = `turnoId=${turno.turnoId}`;
-  const closed = String(turno.estado || '').toLowerCase().includes('cerrad');
+  const canCheckin = Boolean(state.canCheckin);
+  const canWorkTurno = Boolean(state.canWorkTurno);
+  const canRequestReplacement = Boolean(state.canRequestReplacement);
 
   return (
     <div className="row-actions">
-      <Link className="table-link" to={`/check-in-punto?${asignacionParam}`}>Iniciar vigilancia</Link>
-      <Link className="table-link" to={`/registrar-punto?${asignacionParam}`}>Registrar recorrido</Link>
-      <Link className="table-link" to={`/reportar-incidente?${asignacionParam}`}>Reportar situacion</Link>
-      <Link className="table-link" to={`/solicitar-reemplazo?${turnoParam}`}>Solicitar reemplazo</Link>
-      <Button variant="ghost" onClick={onCloseTurno} disabled={closed}>Cerrar turno</Button>
+      {canCheckin ? <Link className="table-link" to={`/check-in-punto?${asignacionParam}`}>Iniciar vigilancia</Link> : null}
+      {canWorkTurno ? <Link className="table-link" to={`/registrar-punto?${asignacionParam}`}>Registrar recorrido</Link> : null}
+      {canWorkTurno ? <Link className="table-link" to={`/reportar-incidente?${asignacionParam}`}>Reportar situacion</Link> : null}
+      {canRequestReplacement ? <Link className="table-link" to={`/solicitar-reemplazo?${turnoParam}`}>No puedo llegar al turno</Link> : null}
+      {canWorkTurno ? <Button variant="ghost" onClick={onCloseTurno}>Cerrar turno</Button> : null}
+      {!canCheckin && !canWorkTurno && !canRequestReplacement ? <span className="muted-action">Sin acciones</span> : null}
     </div>
   );
 }
@@ -793,18 +931,46 @@ export function RegistrarPuntoPage() {
 export function CheckInPuntoPage() {
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState(null);
+  const [selectedAsignacionId, setSelectedAsignacionId] = useState(searchParams.get('asignacionId') || '');
+  const [selectedCheckpointId, setSelectedCheckpointId] = useState('');
+  const [pin, setPin] = useState('');
   const { data, loading, error } = useAsync(async () => {
     const [panel, checkpoints] = await Promise.all([asignacionesService.panelActual(), checkpointsService.list()]);
     return { panel, checkpoints: asArray(checkpoints) };
   }, []);
 
+  useEffect(() => {
+    if (!selectedCheckpointId && data?.checkpoints?.length) {
+      setSelectedCheckpointId(String(data.checkpoints[0].id));
+    }
+  }, [data, selectedCheckpointId]);
+
   async function submit(event) {
     event.preventDefault();
-    const form = event.currentTarget;
-    const asignacionId = Number(getFormValue(form, 'asignacionId'));
-    const payload = { checkpointId: Number(getFormValue(form, 'checkpointId')), pin: getFormValue(form, 'pin') };
-    await asignacionesService.checkin(asignacionId, payload);
-    setMessage('Check-in registrado.');
+    await submitCheckin(pin, 'Check-in registrado.');
+  }
+
+  async function submitCheckin(pinValue, successMessage) {
+    if (!selectedAsignacionId || !selectedCheckpointId || !pinValue) {
+      setMessage({ type: 'error', text: 'Selecciona asignacion, checkpoint y PIN.' });
+      return;
+    }
+
+    try {
+      await asignacionesService.checkin(Number(selectedAsignacionId), {
+        checkpointId: Number(selectedCheckpointId),
+        pin: pinValue,
+      });
+      setMessage({ type: 'success', text: successMessage });
+    } catch {
+      setMessage({ type: 'error', text: 'No se pudo registrar el check-in. Revisa la ventana horaria y vuelve a intentar.' });
+    }
+  }
+
+  async function simulateQrScan() {
+    const demoPin = generateDemoCheckinPin(selectedCheckpointId);
+    setPin(demoPin);
+    await submitCheckin(demoPin, 'QR simulado validado. Check-in registrado.');
   }
 
   if (loading) return <LoadingState />;
@@ -813,10 +979,11 @@ export function CheckInPuntoPage() {
   return (
     <>
       <PageHeader title="Check-in de Punto" description="Valida PIN dinamico en el backend y marca cobertura de asignacion." />
-      {message ? <Message>{message}</Message> : null}
+      {message ? <Message type={message.type}>{message.text}</Message> : null}
       <form className="form-card wide" onSubmit={submit}>
+        <p className="form-note">Modo demo: puedes escribir el PIN manualmente o usar el escaneo QR simulado.</p>
         <FormField label="Asignacion" name="asignacionId">
-          <select name="asignacionId" defaultValue={searchParams.get('asignacionId') || ''} required>
+          <select name="asignacionId" value={selectedAsignacionId} onChange={(event) => setSelectedAsignacionId(event.target.value)} required>
             <option value="">Seleccionar</option>
             {asArray(data.panel?.turnos).map((turno) => (
               <option key={turno.asignacionId} value={turno.asignacionId}>{turno.zona} - {formatDate(turno.fecha)}</option>
@@ -824,10 +991,17 @@ export function CheckInPuntoPage() {
           </select>
         </FormField>
         <FormField label="Checkpoint" name="checkpointId">
-          <select name="checkpointId" required>{data.checkpoints.map((item) => <option key={item.id} value={item.id}>{item.nombre}</option>)}</select>
+          <select name="checkpointId" value={selectedCheckpointId} onChange={(event) => setSelectedCheckpointId(event.target.value)} required>
+            {data.checkpoints.map((item) => <option key={item.id} value={item.id}>{item.nombre}</option>)}
+          </select>
         </FormField>
-        <FormField label="PIN" name="pin" required />
-        <Button type="submit"><ShieldCheck size={16} />Confirmar check-in</Button>
+        <FormField label="PIN" name="pin">
+          <input name="pin" value={pin} onChange={(event) => setPin(event.target.value)} required />
+        </FormField>
+        <div className="row-actions">
+          <Button type="submit"><ShieldCheck size={16} />Confirmar check-in</Button>
+          <Button type="button" variant="success" onClick={simulateQrScan}><ClipboardCheck size={16} />Simular escaneo QR</Button>
+        </div>
       </form>
     </>
   );
