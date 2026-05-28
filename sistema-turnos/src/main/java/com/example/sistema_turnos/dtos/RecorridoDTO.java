@@ -1,5 +1,7 @@
 package com.example.sistema_turnos.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 public class RecorridoDTO {
@@ -8,6 +10,8 @@ public class RecorridoDTO {
     private LocalDateTime fechaHora;
     private Long checkpointId;
     private Long asignacionId;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String pin;
 
     public RecorridoDTO() {
     }
@@ -50,5 +54,13 @@ public class RecorridoDTO {
 
     public void setAsignacionId(Long asignacionId) {
         this.asignacionId = asignacionId;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 }

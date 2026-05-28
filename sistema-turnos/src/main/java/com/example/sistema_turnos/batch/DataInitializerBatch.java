@@ -206,6 +206,9 @@ public class DataInitializerBatch implements CommandLineRunner {
 
         Turno reemplazo = asegurarTurnoDemo("DEMO_PERSONA2_REEMPLAZO", zonas.get(5 % zonas.size()), hoy, base.plusMinutes(60), base.plusMinutes(90));
         asegurarAsignacionDemo(docente, reemplazo, "pendiente", null, null, null);
+
+        Turno reasignado = asegurarTurnoDemo("DEMO_PERSONA2_REASIGNADO", zonas.get(6 % zonas.size()), hoy, base.plusMinutes(100), base.plusMinutes(130));
+        asegurarAsignacionDemo(docente, reasignado, "reasignado", null, null, null);
     }
 
     private Docente obtenerDocenteDemoPersona2() {

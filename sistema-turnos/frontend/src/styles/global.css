@@ -626,6 +626,58 @@ dd {
   font-weight: 700;
 }
 
+.pin-display {
+  max-width: 900px;
+  display: grid;
+  gap: 18px;
+}
+
+.pin-controls,
+.pin-link-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+
+.pin-controls .field {
+  min-width: min(420px, 100%);
+}
+
+.pin-board {
+  min-height: 300px;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  box-shadow: 0 14px 34px rgba(21, 35, 50, 0.08);
+}
+
+.pin-board span,
+.pin-board small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.pin-board strong {
+  font-size: clamp(4rem, 14vw, 9rem);
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--orange);
+}
+
+.pin-link-list a {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  color: var(--navy);
+  font-weight: 700;
+}
+
 .muted-action {
   color: var(--muted);
   font-size: 0.9rem;

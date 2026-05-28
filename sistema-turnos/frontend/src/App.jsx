@@ -12,6 +12,7 @@ import {
   MetricasDocentesPage,
   MisTurnosPage,
   NotFoundPage,
+  PinDinamicoPage,
   ProfilePage,
   ProfesoresPage,
   ProfesorDashboard,
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="/mis-turnos" element={<MisTurnosPage />} />
         <Route path="/registrar-punto" element={<RegistrarPuntoPage />} />
         <Route path="/check-in-punto" element={<CheckInPuntoPage />} />
+        <Route path="/pin-dinamico" element={<PinDinamicoPage />} />
         <Route path="/reportar-incidente" element={<ReportarIncidentePage />} />
         <Route path="/solicitar-reemplazo" element={<SolicitarReemplazoPage />} />
         <Route path="/analiticas" element={<AnalyticsPage />} />
@@ -60,4 +62,3 @@ export default function App() {
     </Routes>
   );
 }
-

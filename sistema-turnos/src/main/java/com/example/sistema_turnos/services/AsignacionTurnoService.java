@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 @Service
 public class AsignacionTurnoService {
 
+    private static final long CHECKIN_ANTICIPADO_MINUTOS = 10;
+
     @Autowired
     private AsignacionTurnoRepository asignacionTurnoRepository;
 
@@ -146,16 +148,20 @@ public class AsignacionTurnoService {
             LocalDateTime inicioTurno = LocalDateTime.of(turno.getFecha(), turno.getHoraInicio());
             LocalDateTime finTurno = LocalDateTime.of(turno.getFecha(), turno.getHoraFin());
 
-            if (ahora.isBefore(inicioTurno)) {
-                throw new IllegalStateException("El turno aun no ha iniciado.");
+            LocalDateTime inicioCheckinPermitido = inicioTurno.minusMinutes(CHECKIN_ANTICIPADO_MINUTOS);
+
+            if (ahora.isBefore(inicioCheckinPermitido)) {
+                throw new IllegalStateException("El check-in abre 10 minutos antes del turno.");
             }
 
             if (!ahora.isBefore(finTurno)) {
                 throw new IllegalStateException("El turno ya finalizo. No se puede registrar check-in.");
             }
 
-            String pinEsperado = generarPinDinamico(checkinRequestDTO.getCheckpointId(), obtenerVentanaActual());
-            if (!pinEsperado.equals(pinIngresado)) {
+            long ventanaActual = obtenerVentanaActual();
+            String pinEsperado = generarPinDinamico(checkinRequestDTO.getCheckpointId(), ventanaActual);
+            String pinVentanaAnterior = generarPinDinamico(checkinRequestDTO.getCheckpointId(), ventanaActual - 1);
+            if (!pinEsperado.equals(pinIngresado) && !pinVentanaAnterior.equals(pinIngresado)) {
                 throw new IllegalArgumentException("PIN invalido para el checkpoint enviado.");
             }
 

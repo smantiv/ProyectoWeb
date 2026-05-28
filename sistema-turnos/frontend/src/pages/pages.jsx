@@ -42,6 +42,7 @@ const roleRoutes = {
 const RECORRIDO_EVIDENCE_MINUTES = 10;
 const CHECKIN_REMINDER_MINUTES = 10;
 const CHECKIN_GRACE_MINUTES = 2;
+const PIN_WINDOW_MS = 30000;
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -56,7 +57,9 @@ function formatTime(value) {
 }
 
 function nowLocalDateTime() {
-  return new Date().toISOString().slice(0, 19);
+  const now = new Date();
+  const pad = (value) => String(value).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 }
 
 function parseLocalDateTime(value) {
@@ -119,9 +122,23 @@ function getTurnoReminder(turno, now = new Date()) {
 }
 
 function generateDemoCheckinPin(checkpointId, now = Date.now()) {
-  const windowSlot = Math.floor(now / 30000);
+  const windowSlot = Math.floor(now / PIN_WINDOW_MS);
   const seed = (Number(checkpointId) * 7919) + (windowSlot * 104729);
   return String(Math.abs(seed % 9000) + 1000).slice(0, 4);
+}
+
+function getPinWindowInfo(checkpointId, now = Date.now()) {
+  const windowSlot = Math.floor(now / PIN_WINDOW_MS);
+  const windowEnd = (windowSlot + 1) * PIN_WINDOW_MS;
+  const remainingSeconds = Math.max(0, Math.ceil((windowEnd - now) / 1000));
+  return {
+    pin: generateDemoCheckinPin(checkpointId, now),
+    remainingSeconds,
+  };
+}
+
+function formatPinCountdown(seconds) {
+  return `00:${String(seconds).padStart(2, '0')}`;
 }
 
 function getRecorridoConfirmation(turno, recorridosByAsignacion = {}, now = new Date()) {
@@ -886,19 +903,34 @@ function MisTurnosActions({ turno, state, onCloseTurno }) {
 export function RegistrarPuntoPage() {
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState(null);
+  const [selectedCheckpointId, setSelectedCheckpointId] = useState('');
   const { data, loading, error, reload } = useAsync(async () => {
     const [panel, checkpoints] = await Promise.all([asignacionesService.panelActual(), checkpointsService.list()]);
     return { panel, checkpoints: asArray(checkpoints) };
   }, []);
+  const effectiveCheckpointId = selectedCheckpointId || String(data?.checkpoints?.[0]?.id || '');
 
   async function submit(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const asignacionId = Number(getFormValue(form, 'asignacionId'));
-    const checkpointId = Number(getFormValue(form, 'checkpointId'));
-    await recorridosService.create({ asignacionId, checkpointId, fechaHora: nowLocalDateTime() });
-    setMessage('Punto de recorrido registrado.');
-    reload();
+    const checkpointId = Number(effectiveCheckpointId);
+    const pin = getFormValue(form, 'pin');
+
+    if (!checkpointId || !pin) {
+      setMessage({ type: 'error', text: 'Selecciona checkpoint e ingresa el PIN.' });
+      return;
+    }
+
+    try {
+      await recorridosService.create({ asignacionId, checkpointId, pin, fechaHora: nowLocalDateTime() });
+      form.reset();
+      setSelectedCheckpointId('');
+      setMessage({ type: 'success', text: 'Punto de recorrido registrado.' });
+      reload();
+    } catch (requestError) {
+      setMessage({ type: 'error', text: requestError?.message || 'No se pudo registrar el recorrido.' });
+    }
   }
 
   if (loading) return <LoadingState />;
@@ -907,7 +939,7 @@ export function RegistrarPuntoPage() {
   return (
     <>
       <PageHeader title="Registrar Punto" description="Registra recorridos contra asignaciones y checkpoints reales." />
-      {message ? <Message>{message}</Message> : null}
+      {message ? <Message type={message.type}>{message.text}</Message> : null}
       <form className="form-card wide" onSubmit={submit}>
         <FormField label="Turno asignado" name="asignacionId">
           <select name="asignacionId" defaultValue={searchParams.get('asignacionId') || ''} required>
@@ -918,9 +950,17 @@ export function RegistrarPuntoPage() {
           </select>
         </FormField>
         <FormField label="Checkpoint" name="checkpointId">
-          <select name="checkpointId" required>
+          <select name="checkpointId" value={effectiveCheckpointId} onChange={(event) => setSelectedCheckpointId(event.target.value)} required>
             {data.checkpoints.map((checkpoint) => <option key={checkpoint.id} value={checkpoint.id}>{checkpoint.nombre}</option>)}
           </select>
+        </FormField>
+        {effectiveCheckpointId ? (
+          <Link className="table-link" to={`/pin-dinamico?checkpointId=${effectiveCheckpointId}`} target="_blank" rel="noreferrer">
+            Ver PIN dinamico de este checkpoint
+          </Link>
+        ) : null}
+        <FormField label="PIN del checkpoint" name="pin">
+          <input name="pin" maxLength="4" required />
         </FormField>
         <Button type="submit"><ClipboardCheck size={16} />Registrar recorrido</Button>
       </form>
@@ -938,12 +978,7 @@ export function CheckInPuntoPage() {
     const [panel, checkpoints] = await Promise.all([asignacionesService.panelActual(), checkpointsService.list()]);
     return { panel, checkpoints: asArray(checkpoints) };
   }, []);
-
-  useEffect(() => {
-    if (!selectedCheckpointId && data?.checkpoints?.length) {
-      setSelectedCheckpointId(String(data.checkpoints[0].id));
-    }
-  }, [data, selectedCheckpointId]);
+  const effectiveCheckpointId = selectedCheckpointId || String(data?.checkpoints?.[0]?.id || '');
 
   async function submit(event) {
     event.preventDefault();
@@ -951,24 +986,24 @@ export function CheckInPuntoPage() {
   }
 
   async function submitCheckin(pinValue, successMessage) {
-    if (!selectedAsignacionId || !selectedCheckpointId || !pinValue) {
+    if (!selectedAsignacionId || !effectiveCheckpointId || !pinValue) {
       setMessage({ type: 'error', text: 'Selecciona asignacion, checkpoint y PIN.' });
       return;
     }
 
     try {
       await asignacionesService.checkin(Number(selectedAsignacionId), {
-        checkpointId: Number(selectedCheckpointId),
+        checkpointId: Number(effectiveCheckpointId),
         pin: pinValue,
       });
       setMessage({ type: 'success', text: successMessage });
-    } catch {
-      setMessage({ type: 'error', text: 'No se pudo registrar el check-in. Revisa la ventana horaria y vuelve a intentar.' });
+    } catch (requestError) {
+      setMessage({ type: 'error', text: requestError?.message || 'No se pudo registrar el check-in. Revisa la ventana horaria y vuelve a intentar.' });
     }
   }
 
   async function simulateQrScan() {
-    const demoPin = generateDemoCheckinPin(selectedCheckpointId);
+    const demoPin = generateDemoCheckinPin(effectiveCheckpointId);
     setPin(demoPin);
     await submitCheckin(demoPin, 'QR simulado validado. Check-in registrado.');
   }
@@ -991,10 +1026,15 @@ export function CheckInPuntoPage() {
           </select>
         </FormField>
         <FormField label="Checkpoint" name="checkpointId">
-          <select name="checkpointId" value={selectedCheckpointId} onChange={(event) => setSelectedCheckpointId(event.target.value)} required>
+          <select name="checkpointId" value={effectiveCheckpointId} onChange={(event) => setSelectedCheckpointId(event.target.value)} required>
             {data.checkpoints.map((item) => <option key={item.id} value={item.id}>{item.nombre}</option>)}
           </select>
         </FormField>
+        {effectiveCheckpointId ? (
+          <Link className="table-link" to={`/pin-dinamico?checkpointId=${effectiveCheckpointId}`} target="_blank" rel="noreferrer">
+            Ver PIN dinamico de este checkpoint
+          </Link>
+        ) : null}
         <FormField label="PIN" name="pin">
           <input name="pin" value={pin} onChange={(event) => setPin(event.target.value)} required />
         </FormField>
@@ -1003,6 +1043,70 @@ export function CheckInPuntoPage() {
           <Button type="button" variant="success" onClick={simulateQrScan}><ClipboardCheck size={16} />Simular escaneo QR</Button>
         </div>
       </form>
+    </>
+  );
+}
+
+export function PinDinamicoPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedCheckpointId = searchParams.get('checkpointId') || '';
+  const [pinInfo, setPinInfo] = useState(() => getPinWindowInfo(requestedCheckpointId || 1));
+  const { data, loading, error } = useAsync(() => checkpointsService.list(), []);
+  const checkpoints = asArray(data);
+  const selectedCheckpointId = requestedCheckpointId || String(checkpoints[0]?.id || '');
+  const selectedCheckpoint = checkpoints.find((item) => String(item.id) === String(selectedCheckpointId));
+
+  useEffect(() => {
+    if (!selectedCheckpointId) return undefined;
+
+    function updatePin() {
+      setPinInfo(getPinWindowInfo(selectedCheckpointId));
+    }
+
+    updatePin();
+    const interval = setInterval(updatePin, 1000);
+    return () => clearInterval(interval);
+  }, [selectedCheckpointId]);
+
+  function selectCheckpoint(event) {
+    const nextCheckpointId = event.target.value;
+    setSearchParams(nextCheckpointId ? { checkpointId: nextCheckpointId } : {});
+  }
+
+  if (loading) return <LoadingState />;
+  if (error) return <ErrorState error={error} />;
+
+  return (
+    <>
+      <PageHeader title="PIN Dinamico" description="Pantalla publica para mostrar el PIN vigente del checkpoint." />
+      <section className="pin-display">
+        <div className="pin-controls">
+          <FormField label="Checkpoint" name="checkpointId">
+            <select name="checkpointId" value={selectedCheckpointId} onChange={selectCheckpoint} required>
+              {checkpoints.map((checkpoint) => (
+                <option key={checkpoint.id} value={checkpoint.id}>{checkpoint.nombre}</option>
+              ))}
+            </select>
+          </FormField>
+          <Link className="btn btn-ghost" to="/check-in-punto">
+            <ShieldCheck size={16} />Ir a check-in
+          </Link>
+        </div>
+
+        <div className="pin-board" aria-live="polite">
+          <span>{selectedCheckpoint?.nombre || 'Checkpoint'}</span>
+          <strong>{selectedCheckpointId ? pinInfo.pin : '----'}</strong>
+          <small>Renueva en {formatPinCountdown(pinInfo.remainingSeconds)}</small>
+        </div>
+
+        <div className="pin-link-list">
+          {checkpoints.map((checkpoint) => (
+            <Link key={checkpoint.id} to={`/pin-dinamico?checkpointId=${checkpoint.id}`}>
+              {checkpoint.nombre}
+            </Link>
+          ))}
+        </div>
+      </section>
     </>
   );
 }
@@ -1608,7 +1712,7 @@ export function CoberturaPage() {
           {
             key: 'acciones',
             header: 'Acción',
-            render: (row) => (
+            render: () => (
               <Link className="btn btn-ghost" to="/tablero-coordinacion">
                 Reasignar
               </Link>

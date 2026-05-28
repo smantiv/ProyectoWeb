@@ -4,6 +4,7 @@ import com.example.sistema_turnos.dtos.RecorridoDTO;
 import com.example.sistema_turnos.entities.AsignacionTurno;
 import com.example.sistema_turnos.entities.Checkpoint;
 import com.example.sistema_turnos.entities.Recorrido;
+import com.example.sistema_turnos.entities.Turno;
 import com.example.sistema_turnos.repositories.AsignacionTurnoRepository;
 import com.example.sistema_turnos.repositories.CheckpointRepository;
 import com.example.sistema_turnos.repositories.RecorridoRepository;
@@ -29,24 +30,33 @@ public class RecorridoService {
     private AsignacionTurnoRepository asignacionTurnoRepository;
 
     public RecorridoDTO crearRecorrido(@NonNull RecorridoDTO recorridoDTO) {
+        Long checkpointId = recorridoDTO.getCheckpointId();
+        if (checkpointId == null) {
+            throw new IllegalArgumentException("El checkpointId es obligatorio.");
+        }
+
+        Checkpoint checkpoint = checkpointRepository.findById(checkpointId)
+                .orElseThrow(() -> new IllegalArgumentException("Checkpoint no encontrado."));
+
+        Long asignacionId = recorridoDTO.getAsignacionId();
+        if (asignacionId == null) {
+            throw new IllegalArgumentException("El asignacionId es obligatorio.");
+        }
+
+        AsignacionTurno asignacion = asignacionTurnoRepository.findById(asignacionId)
+                .orElseThrow(() -> new IllegalArgumentException("Asignacion no encontrada."));
+
+        validarAsignacionEnCurso(asignacion);
+        validarPin(checkpointId, recorridoDTO.getPin());
+
         Recorrido recorrido = new Recorrido();
         recorrido.setFechaHora(
                 recorridoDTO.getFechaHora() != null
                         ? recorridoDTO.getFechaHora()
                         : LocalDateTime.now()
         );
-
-        Long checkpointId = recorridoDTO.getCheckpointId();
-        if (checkpointId != null) {
-            Optional<Checkpoint> checkpoint = checkpointRepository.findById(checkpointId);
-            checkpoint.ifPresent(recorrido::setCheckpoint);
-        }
-
-        Long asignacionId = recorridoDTO.getAsignacionId();
-        if (asignacionId != null) {
-            Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(asignacionId);
-            asignacion.ifPresent(recorrido::setAsignacionTurno);
-        }
+        recorrido.setCheckpoint(checkpoint);
+        recorrido.setAsignacionTurno(asignacion);
 
         Recorrido recorridoGuardado = recorridoRepository.save(recorrido);
         return convertToDTO(recorridoGuardado);
@@ -116,5 +126,43 @@ public class RecorridoService {
                 checkpointId,
                 asignacionId
         );
+    }
+
+    private void validarAsignacionEnCurso(AsignacionTurno asignacion) {
+        if (asignacion.getHoraCheckin() == null) {
+            throw new IllegalStateException("La asignacion debe tener check-in antes de registrar recorrido.");
+        }
+
+        if (asignacion.getHoraCierre() != null) {
+            throw new IllegalStateException("La asignacion ya esta cerrada.");
+        }
+
+        Turno turno = asignacion.getTurno();
+        if (turno == null || turno.getFecha() == null || turno.getHoraFin() == null) {
+            throw new IllegalStateException("La asignacion no tiene un turno valido.");
+        }
+
+        if (!LocalDateTime.now().isBefore(LocalDateTime.of(turno.getFecha(), turno.getHoraFin()))) {
+            throw new IllegalStateException("El turno ya finalizo. No se puede registrar recorrido.");
+        }
+    }
+
+    private void validarPin(Long checkpointId, String pin) {
+        String pinIngresado = pin != null ? pin.trim() : "";
+        if (pinIngresado.isEmpty()) {
+            throw new IllegalArgumentException("El PIN del checkpoint es obligatorio.");
+        }
+
+        long ventanaActual = System.currentTimeMillis() / 30000;
+        String pinEsperado = generarPinDinamico(checkpointId, ventanaActual);
+        String pinVentanaAnterior = generarPinDinamico(checkpointId, ventanaActual - 1);
+        if (!pinEsperado.equals(pinIngresado) && !pinVentanaAnterior.equals(pinIngresado)) {
+            throw new IllegalArgumentException("PIN invalido para el checkpoint enviado.");
+        }
+    }
+
+    private String generarPinDinamico(Long checkpointId, long windowSlot) {
+        long seed = (checkpointId * 7919L) + (windowSlot * 104729L);
+        return String.valueOf(Math.abs(seed % 9000) + 1000).substring(0, 4);
     }
 }

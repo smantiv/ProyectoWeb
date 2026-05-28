@@ -1,5 +1,6 @@
 package com.example.sistema_turnos.controllers.api;
 
+import com.example.sistema_turnos.dtos.ApiMessageDTO;
 import com.example.sistema_turnos.dtos.RecorridoDTO;
 import com.example.sistema_turnos.services.RecorridoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +41,14 @@ public class RecorridoRestController {
     }
 
     @PostMapping
-    public ResponseEntity<RecorridoDTO> crear(@RequestBody @NonNull RecorridoDTO recorridoDTO) {
+    public ResponseEntity<?> crear(@RequestBody @NonNull RecorridoDTO recorridoDTO) {
         try {
             RecorridoDTO recorridoCreado = recorridoService.crearRecorrido(recorridoDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(recorridoCreado);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new ApiMessageDTO(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new ApiMessageDTO("No se pudo registrar el recorrido."));
         }
     }
 
