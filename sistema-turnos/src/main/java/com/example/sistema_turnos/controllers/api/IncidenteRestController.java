@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,6 +57,8 @@ public class IncidenteRestController {
         try {
             IncidenteDTO incidenteCreado = incidenteService.crearIncidente(incidenteDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(incidenteCreado);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

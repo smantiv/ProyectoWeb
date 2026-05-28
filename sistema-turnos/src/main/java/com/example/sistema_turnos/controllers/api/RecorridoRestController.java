@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,6 +48,8 @@ public class RecorridoRestController {
             return ResponseEntity.status(HttpStatus.CREATED).body(recorridoCreado);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(new ApiMessageDTO(e.getMessage()));
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiMessageDTO(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiMessageDTO("No se pudo registrar el recorrido."));
         }

@@ -1,12 +1,13 @@
 
 INSERT INTO usuario (nombre, email, password, rol, activo) VALUES
 ('Admin Sistema', 'admin@test.com', '1234', 'ADMIN', true),
+('Coordinador Operativo', 'coordinador@test.com', '1234', 'COORDINADOR', true),
 ('Juan Perez', 'juan@test.com', '1234', 'DOCENTE', true),
 ('Maria Gomez', 'maria@test.com', '1234', 'DOCENTE', true);
 
 INSERT INTO docente (codigo_institucional, usuario_id) VALUES
-('DOC001', 2),
-('DOC002', 3);
+('DOC001', 3),
+('DOC002', 4);
 
 INSERT INTO zona (nombre, descripcion) VALUES
 ('Patio principal', 'Zona central de recreo'),

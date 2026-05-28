@@ -5,6 +5,7 @@ import com.example.sistema_turnos.entities.Usuario;
 import com.example.sistema_turnos.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +18,14 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UsuarioDTO crearUsuario(@NonNull UsuarioDTO usuarioDTO) {
         Usuario usuario = new Usuario();
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setPassword(usuarioDTO.getPassword());
+        usuario.setPassword(passwordEncoder.encode(usuarioDTO.getPassword()));
         usuario.setRol(usuarioDTO.getRol());
         usuario.setActivo(usuarioDTO.getActivo() != null ? usuarioDTO.getActivo() : true);
 
@@ -58,7 +62,7 @@ public class UsuarioService {
             usuario.setNombre(usuarioDTO.getNombre());
             usuario.setEmail(usuarioDTO.getEmail());
             if (usuarioDTO.getPassword() != null && !usuarioDTO.getPassword().isEmpty()) {
-                usuario.setPassword(usuarioDTO.getPassword());
+                usuario.setPassword(passwordEncoder.encode(usuarioDTO.getPassword()));
             }
             usuario.setRol(usuarioDTO.getRol());
             usuario.setActivo(usuarioDTO.getActivo());

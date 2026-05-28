@@ -29,6 +29,9 @@ public class RecorridoService {
     @Autowired
     private AsignacionTurnoRepository asignacionTurnoRepository;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     public RecorridoDTO crearRecorrido(@NonNull RecorridoDTO recorridoDTO) {
         Long checkpointId = recorridoDTO.getCheckpointId();
         if (checkpointId == null) {
@@ -46,6 +49,7 @@ public class RecorridoService {
         AsignacionTurno asignacion = asignacionTurnoRepository.findById(asignacionId)
                 .orElseThrow(() -> new IllegalArgumentException("Asignacion no encontrada."));
 
+        authorizationService.validarAccesoDocenteAAsignacion(asignacion);
         validarAsignacionEnCurso(asignacion);
         validarPin(checkpointId, recorridoDTO.getPin());
 

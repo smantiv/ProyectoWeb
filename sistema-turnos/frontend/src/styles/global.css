@@ -55,25 +55,31 @@ textarea {
 }
 
 .login-panel {
-  width: min(980px, 100%);
+  width: min(520px, 100%);
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 24px;
-  align-items: center;
+  gap: 22px;
+  justify-items: stretch;
 }
 
 .login-panel h1 {
-  margin: 0 0 12px;
+  margin: 0;
   font-family: "Montserrat", system-ui, sans-serif;
-  font-size: clamp(2rem, 5vw, 4rem);
-  line-height: 1;
+  font-size: clamp(2.2rem, 6vw, 4.4rem);
+  line-height: 0.98;
   color: var(--navy);
+  text-align: center;
 }
 
-.login-panel p {
-  max-width: 560px;
-  color: var(--muted);
-  font-size: 1.1rem;
+.login-heading {
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+}
+
+.login-logo {
+  width: min(180px, 44vw);
+  height: auto;
+  object-fit: contain;
 }
 
 .form-card,
@@ -93,23 +99,6 @@ textarea {
 
 .form-card.wide {
   max-width: 840px;
-}
-
-.quick-role-grid {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.quick-role-grid button {
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--panel-soft);
-  cursor: pointer;
-  font-weight: 700;
-  box-shadow: var(--shadow);
 }
 
 .app-shell {
@@ -811,8 +800,7 @@ dd {
   .heat-grid,
   .info-grid,
   .filter-row,
-  .grid-form,
-  .quick-role-grid {
+  .grid-form {
     grid-template-columns: 1fr;
   }
 

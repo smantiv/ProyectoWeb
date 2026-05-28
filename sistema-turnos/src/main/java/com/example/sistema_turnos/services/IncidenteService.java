@@ -22,6 +22,9 @@ public class IncidenteService {
     @Autowired
     private AsignacionTurnoRepository asignacionTurnoRepository;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     public IncidenteDTO crearIncidente(@NonNull IncidenteDTO incidenteDTO) {
         Incidente incidente = new Incidente();
         incidente.setTipo(incidenteDTO.getTipo());
@@ -34,7 +37,10 @@ public class IncidenteService {
         Long asignacionId = incidenteDTO.getAsignacionId();
         if (asignacionId != null) {
             Optional<AsignacionTurno> asignacion = asignacionTurnoRepository.findById(asignacionId);
-            asignacion.ifPresent(incidente::setAsignacionTurno);
+            asignacion.ifPresent(item -> {
+                authorizationService.validarAccesoDocenteAAsignacion(item);
+                incidente.setAsignacionTurno(item);
+            });
         }
 
         Incidente incidenteGuardado = incidenteRepository.save(incidente);
