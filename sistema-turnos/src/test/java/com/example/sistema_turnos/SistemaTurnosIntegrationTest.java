@@ -15,16 +15,19 @@ import com.example.sistema_turnos.repositories.RecorridoRepository;
 import com.example.sistema_turnos.repositories.TurnoRepository;
 import com.example.sistema_turnos.repositories.UsuarioRepository;
 import com.example.sistema_turnos.repositories.ZonaRepository;
+import com.example.sistema_turnos.security.AuthUserPrincipal;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,13 +36,23 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc(addFilters = false)
 class SistemaTurnosIntegrationTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private ZonaRepository zonaRepository;
@@ -70,6 +83,7 @@ class SistemaTurnosIntegrationTest {
 
     @BeforeEach
     void limpiarBase() {
+        SecurityContextHolder.clearContext();
         incidenteRepository.deleteAll();
         recorridoRepository.deleteAll();
         reasignacionRepository.deleteAll();
@@ -81,40 +95,38 @@ class SistemaTurnosIntegrationTest {
         zonaRepository.deleteAll();
     }
 
-    @Test
-    void debeConsultarMapaCalorConGet() {
-        crearDatosFlujo();
-
-        ResponseEntity<Map> response = restTemplate.getForEntity(
-                "/api/v1/analiticas/mapa-calor?rango=90",
-                Map.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).containsKey("resumen");
-        assertThat(response.getBody()).containsKey("filas");
+    @AfterEach
+    void limpiarContextoSeguridad() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
-    void debeCrearZonaConPost() {
+    void debeConsultarMapaCalorConGet() throws Exception {
+        crearDatosFlujo();
+
+        mockMvc.perform(get("/api/v1/analiticas/mapa-calor")
+                        .param("rango", "90"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resumen").exists())
+                .andExpect(jsonPath("$.filas").exists());
+    }
+
+    @Test
+    void debeCrearZonaConPost() throws Exception {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("nombre", "Zona Test POST");
         payload.put("descripcion", "Zona creada desde prueba automatizada");
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(
-                "/api/v1/zonas",
-                payload,
-                Map.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().get("nombre")).isEqualTo("Zona Test POST");
+        mockMvc.perform(post("/api/v1/zonas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.nombre").value("Zona Test POST"));
     }
 
     @Test
-    void debeActualizarZonaConPut() {
+    void debeActualizarZonaConPut() throws Exception {
         Zona zona = new Zona();
         zona.setNombre("Zona antes PUT");
         zona.setDescripcion("Descripcion inicial");
@@ -124,64 +136,62 @@ class SistemaTurnosIntegrationTest {
         payload.put("nombre", "Zona despues PUT");
         payload.put("descripcion", "Descripcion actualizada");
 
-        ResponseEntity<Map> response = restTemplate.exchange(
-                "/api/v1/zonas/" + zona.getId(),
-                HttpMethod.PUT,
-                new HttpEntity<>(payload),
-                Map.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().get("nombre")).isEqualTo("Zona despues PUT");
+        mockMvc.perform(put("/api/v1/zonas/{id}", zona.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(payload)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(zona.getId()))
+                .andExpect(jsonPath("$.nombre").value("Zona despues PUT"));
     }
 
     @Test
-    void debeEliminarZonaConDelete() {
+    void debeEliminarZonaConDelete() throws Exception {
         Zona zona = new Zona();
         zona.setNombre("Zona DELETE");
         zona.setDescripcion("Zona para eliminar");
         zona = zonaRepository.save(zona);
 
-        ResponseEntity<Void> response = restTemplate.exchange(
-                "/api/v1/zonas/" + zona.getId(),
-                HttpMethod.DELETE,
-                null,
-                Void.class
-        );
+        mockMvc.perform(delete("/api/v1/zonas/{id}", zona.getId()))
+                .andExpect(status().isNoContent());
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(zonaRepository.existsById(zona.getId())).isFalse();
     }
 
     @Test
-    void debeEjecutarFlujoCompletoDocente() {
+    void debeEjecutarFlujoCompletoDocente() throws Exception {
         DatosFlujo datos = crearDatosFlujo();
+        autenticarComo(datos.usuario());
+
+        mockMvc.perform(get("/api/v1/asignaciones-turnos/actual/panel"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.turnos").isArray())
+                .andExpect(jsonPath("$.turnos[0].asignacionId").value(datos.asignacion().getId()));
+
+        String pinValido = generarPin(datos.checkpoint().getId());
 
         Map<String, Object> checkinPayload = new LinkedHashMap<>();
         checkinPayload.put("checkpointId", datos.checkpoint().getId());
-        checkinPayload.put("pin", generarPin(datos.checkpoint().getId()));
+        checkinPayload.put("pin", pinValido);
 
-        ResponseEntity<Map> checkinResponse = restTemplate.postForEntity(
-                "/api/v1/asignaciones-turnos/" + datos.asignacion().getId() + "/checkin",
-                checkinPayload,
-                Map.class
-        );
-
-        assertThat(checkinResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        mockMvc.perform(post("/api/v1/asignaciones-turnos/{id}/checkin", datos.asignacion().getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(checkinPayload)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.horaCheckin").exists())
+                .andExpect(jsonPath("$.estadoCobertura").value("cubierta"));
 
         Map<String, Object> recorridoPayload = new LinkedHashMap<>();
         recorridoPayload.put("checkpointId", datos.checkpoint().getId());
         recorridoPayload.put("asignacionId", datos.asignacion().getId());
+        recorridoPayload.put("pin", pinValido);
         recorridoPayload.put("fechaHora", LocalDateTime.now().toString());
 
-        ResponseEntity<Map> recorridoResponse = restTemplate.postForEntity(
-                "/api/v1/recorridos",
-                recorridoPayload,
-                Map.class
-        );
-
-        assertThat(recorridoResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        mockMvc.perform(post("/api/v1/recorridos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(recorridoPayload)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.checkpointId").value(datos.checkpoint().getId()))
+                .andExpect(jsonPath("$.asignacionId").value(datos.asignacion().getId()));
 
         Map<String, Object> incidentePayload = new LinkedHashMap<>();
         incidentePayload.put("tipo", "SEGURIDAD");
@@ -192,26 +202,25 @@ class SistemaTurnosIntegrationTest {
         incidentePayload.put("asignacionId", datos.asignacion().getId());
         incidentePayload.put("ubicacion", "Zona de prueba");
 
-        ResponseEntity<Map> incidenteResponse = restTemplate.postForEntity(
-                "/api/v1/incidentes",
-                incidentePayload,
-                Map.class
-        );
-
-        assertThat(incidenteResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        mockMvc.perform(post("/api/v1/incidentes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(incidentePayload)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.asignacionId").value(datos.asignacion().getId()));
 
         Map<String, Object> cierrePayload = new LinkedHashMap<>();
         cierrePayload.put("horaCierre", LocalDateTime.now().plusMinutes(15).toString());
-        cierrePayload.put("calificacionLimpieza", 5);
+        cierrePayload.put("calificacionLimpieza", 4);
         cierrePayload.put("estadoCobertura", "cerrada");
 
-        ResponseEntity<Map> cierreResponse = restTemplate.postForEntity(
-                "/api/v1/asignaciones-turnos/" + datos.asignacion().getId() + "/cierre",
-                cierrePayload,
-                Map.class
-        );
-
-        assertThat(cierreResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        mockMvc.perform(post("/api/v1/asignaciones-turnos/{id}/cierre", datos.asignacion().getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(cierrePayload)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.horaCierre").exists())
+                .andExpect(jsonPath("$.calificacionLimpieza").value(4))
+                .andExpect(jsonPath("$.estadoCobertura").value("cerrada"));
     }
 
     private DatosFlujo crearDatosFlujo() {
@@ -236,7 +245,7 @@ class SistemaTurnosIntegrationTest {
         Turno turno = new Turno();
         turno.setFecha(LocalDate.now());
         turno.setHoraInicio(LocalTime.MIN);
-        turno.setHoraFin(LocalTime.MAX);
+        turno.setHoraFin(LocalTime.of(23, 59, 59));
         turno.setEstado("PENDIENTE");
         turno.setZona(zona);
         turno = turnoRepository.save(turno);
@@ -251,7 +260,17 @@ class SistemaTurnosIntegrationTest {
         checkpoint.setNombre("Checkpoint Flujo");
         checkpoint = checkpointRepository.save(checkpoint);
 
-        return new DatosFlujo(asignacion, checkpoint);
+        return new DatosFlujo(usuario, asignacion, checkpoint);
+    }
+
+    private void autenticarComo(Usuario usuario) {
+        AuthUserPrincipal principal = new AuthUserPrincipal(usuario);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                principal,
+                null,
+                principal.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private String generarPin(Long checkpointId) {
@@ -274,6 +293,6 @@ class SistemaTurnosIntegrationTest {
         }
     }
 
-    private record DatosFlujo(AsignacionTurno asignacion, Checkpoint checkpoint) {
+    private record DatosFlujo(Usuario usuario, AsignacionTurno asignacion, Checkpoint checkpoint) {
     }
 }
