@@ -16,18 +16,30 @@ async function parseResponse(response) {
   return response.json();
 }
 
+function getAuthToken() {
+  return localStorage.getItem('sfr_token');
+}
+
 export async function apiRequest(endpoint, options = {}) {
+  const { skipAuth, headers, ...fetchOptions } = options;
+  const token = !skipAuth ? getAuthToken() : null;
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...fetchOptions,
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      ...(options.headers || {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(headers || {}),
     },
-    ...options,
   });
 
   const data = await parseResponse(response);
   if (!response.ok) {
+    if (response.status === 401) {
+      localStorage.removeItem('sfr_token');
+      localStorage.removeItem('sfr_user');
+      window.dispatchEvent(new Event('sfr:logout'));
+    }
     const message = data?.message || data?.error || `Error HTTP ${response.status}`;
     throw new ApiError(message, response.status, data);
   }
@@ -35,9 +47,9 @@ export async function apiRequest(endpoint, options = {}) {
 }
 
 export const http = {
-  get: (endpoint) => apiRequest(endpoint),
-  post: (endpoint, body) => apiRequest(endpoint, { method: 'POST', body: JSON.stringify(body) }),
-  put: (endpoint, body) => apiRequest(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
-  delete: (endpoint) => apiRequest(endpoint, { method: 'DELETE' }),
+  get: (endpoint, options) => apiRequest(endpoint, options),
+  post: (endpoint, body, options) => apiRequest(endpoint, { method: 'POST', body: JSON.stringify(body), ...(options || {}) }),
+  put: (endpoint, body, options) => apiRequest(endpoint, { method: 'PUT', body: JSON.stringify(body), ...(options || {}) }),
+  delete: (endpoint, options) => apiRequest(endpoint, { method: 'DELETE', ...(options || {}) }),
 };
 

@@ -30,6 +30,7 @@ public class ReasignacionService {
     @Autowired private TurnoRepository turnoRepository;
     @Autowired private AsignacionTurnoRepository asignacionTurnoRepository;
     @Autowired private CurrentDocenteContextService currentDocenteContextService;
+    @Autowired private AuthorizationService authorizationService;
 
     // Crear solicitud de reasignación
     public ReasignacionDTO crearReasignacion(@NonNull ReasignacionDTO dto) {
@@ -47,6 +48,7 @@ public class ReasignacionService {
         }
         Long turnoId = dto.getTurnoId();
         if (turnoId != null) {
+            validarTurnoPerteneceAlDocente(turnoId, docenteId);
             turnoRepository.findById(turnoId).ifPresent(r::setTurno);
         }
         Long docenteReemplazoId = dto.getDocenteReemplazoId();
@@ -100,7 +102,7 @@ public class ReasignacionService {
         Reasignacion r = opt.get();
         r.setEstado(decision);
         r.setFechaRespuesta(LocalDateTime.now());
-        r.setAprobador("Coord. Ana Torres"); // temporal hasta que haya sesión real
+        r.setAprobador(authorizationService.obtenerNombreUsuarioActual());
 
         if ("aceptada".equals(decision) && docenteReemplazoId != null) {
             Docente reemplazo = docenteRepository.findById(docenteReemplazoId)
@@ -234,5 +236,14 @@ public class ReasignacionService {
                     d.getUsuario().getActivo());
         }
         return new DocenteDTO(d.getId(), d.getCodigoInstitucional(), uDTO);
+    }
+
+    private void validarTurnoPerteneceAlDocente(Long turnoId, Long docenteId) {
+        boolean tieneAsignacion = asignacionTurnoRepository.findByTurnoId(turnoId).stream()
+                .anyMatch(asignacion -> asignacion.getDocente() != null
+                        && asignacion.getDocente().getId().equals(docenteId));
+        if (!tieneAsignacion) {
+            throw new IllegalArgumentException("Solo puedes solicitar reemplazo para tus turnos asignados.");
+        }
     }
 }

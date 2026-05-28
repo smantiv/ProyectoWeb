@@ -18,8 +18,10 @@ import {
   Users,
 } from 'lucide-react';
 import { Button, DataTable, ErrorState, LoadingState, Message, Modal, StatCard } from '../components/ui';
+import { homeForRole } from '../auth/accessControl';
 import { useAsync } from '../hooks/useAsync';
 import { useAuth } from '../context/useAuth';
+import logo from '../assets/logo-sfr.png';
 import {
   analyticsService,
   asignacionesService,
@@ -32,12 +34,6 @@ import {
   usuariosService,
   zonasService,
 } from '../services/resources';
-
-const roleRoutes = {
-  ADMIN: '/dashboard-admin',
-  DOCENTE: '/dashboard-profesor',
-  COORDINADOR: '/dashboard-coordinador',
-};
 
 const RECORRIDO_EVIDENCE_MINUTES = 10;
 const CHECKIN_REMINDER_MINUTES = 10;
@@ -291,7 +287,7 @@ function FormField({ label, name, defaultValue = '', type = 'text', required = f
 
 export function LoginPage() {
   const [error, setError] = useState(null);
-  const { login, quickLogin } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(event) {
@@ -299,38 +295,29 @@ export function LoginPage() {
     setError(null);
     const form = event.currentTarget;
     const email = getFormValue(form, 'email');
+    const password = getFormValue(form, 'password');
     try {
-      const user = await login(email);
-      navigate(roleRoutes[user.rol] || '/dashboard-profesor');
-    } catch {
-      setError('No existe un usuario API con ese correo. Usa uno de data.sql o acceso rapido.');
+      const user = await login(email, password);
+      navigate(homeForRole(user.rol));
+    } catch (err) {
+      setError(err?.message || 'No se pudo iniciar sesion.');
     }
-  }
-
-  function enterAs(role) {
-    quickLogin(role);
-    navigate(roleRoutes[role]);
   }
 
   return (
     <main className="login-page">
       <section className="login-panel">
-        <div>
+        <div className="login-heading">
+          <img src={logo} alt="Logo Colegio Santa Francisca Romana" className="login-logo" />
           <h1>Sistema de Vigilancia Escolar</h1>
-          <p>SPA React conectada a la API REST del sistema de turnos.</p>
         </div>
         <form className="form-card" onSubmit={handleSubmit}>
           <h2>Ingresar</h2>
-          <FormField label="Correo institucional" name="email" type="email" defaultValue="admin@test.com" required />
+          <FormField label="Correo institucional" name="email" type="email" defaultValue="admin.batch@test.com" required />
           <FormField label="Contrasena" name="password" type="password" defaultValue="1234" />
           {error ? <Message type="error">{error}</Message> : null}
-          <Button type="submit"><Save size={16} />Entrar con API</Button>
+          <Button type="submit"><Save size={16} />Iniciar sesion</Button>
         </form>
-        <div className="quick-role-grid">
-          <button type="button" onClick={() => enterAs('DOCENTE')}>Profesor</button>
-          <button type="button" onClick={() => enterAs('COORDINADOR')}>Coordinador</button>
-          <button type="button" onClick={() => enterAs('ADMIN')}>Admin</button>
-        </div>
       </section>
     </main>
   );
@@ -581,6 +568,8 @@ export function ZonasPage() {
 export function TurnosPage() {
   const [editing, setEditing] = useState(null);
   const [message, setMessage] = useState(null);
+  const { user } = useAuth();
+  const canManage = user?.rol === 'ADMIN';
   const { data, loading, error, reload } = useAsync(async () => {
     const [turnos, zonas, asignaciones] = await Promise.all([turnosService.list(), zonasService.list(), asignacionesService.list()]);
     return { turnos: asArray(turnos), zonas: asArray(zonas), asignaciones: asArray(asignaciones) };
@@ -618,7 +607,11 @@ export function TurnosPage() {
 
   return (
     <>
-      <PageHeader title="Gestion de Turnos" description="Programacion de turnos y estado de cobertura." action={<Button onClick={() => setEditing({ estado: 'PENDIENTE' })}><Plus size={16} />Programar</Button>} />
+      <PageHeader
+        title="Gestion de Turnos"
+        description="Programacion de turnos y estado de cobertura."
+        action={canManage ? <Button onClick={() => setEditing({ estado: 'PENDIENTE' })}><Plus size={16} />Programar</Button> : null}
+      />
       {message ? <Message>{message}</Message> : null}
       <DataTable
         rows={data.turnos}
@@ -628,7 +621,7 @@ export function TurnosPage() {
           { key: 'zona', header: 'Zona', render: (row) => zonaMap.get(row.zonaId) || 'Sin zona' },
           { key: 'estado', header: 'Estado' },
           { key: 'cobertura', header: 'Cobertura', render: (row) => coberturaMap.has(row.id) ? coberturaMap.get(row.id).estadoCobertura : 'Sin asignar' },
-          { key: 'acciones', header: 'Acciones', render: (row) => <RowActions onEdit={() => setEditing(row)} onDelete={() => remove(row)} /> },
+          ...(canManage ? [{ key: 'acciones', header: 'Acciones', render: (row) => <RowActions onEdit={() => setEditing(row)} onDelete={() => remove(row)} /> }] : []),
         ]}
       />
       {editing ? (
@@ -1418,8 +1411,22 @@ export function AnalyticsPage() {
     setFilters((current) => ({ ...current, [event.target.name]: event.target.value }));
   }
 
-  function handleExportCsv() {
-    window.open(analyticsService.exportCsvUrl(filters), '_blank');
+  async function handleExportCsv() {
+    const response = await fetch(analyticsService.exportCsvUrl(filters), {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('sfr_token') || ''}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('No se pudo exportar el CSV.');
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'analiticas.csv';
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   const heatmap = data?.heatmap;

@@ -59,6 +59,7 @@ public class DataInitializerBatch implements CommandLineRunner {
     @Override
     public void run(String... args) {
         crearUsuarioSiNoExiste("Admin Sistema Batch", "admin.batch@test.com", "1234", "ADMIN", true);
+        crearUsuarioSiNoExiste("Coordinador Batch", "coordinador.batch@test.com", "1234", "COORDINADOR", true);
         Usuario docenteUsuario = crearUsuarioSiNoExiste("Docente Batch", "docente.batch@test.com", "1234", "DOCENTE", true);
 
         Docente docente = crearDocenteSiNoExiste("DOCBATCH001", docenteUsuario);

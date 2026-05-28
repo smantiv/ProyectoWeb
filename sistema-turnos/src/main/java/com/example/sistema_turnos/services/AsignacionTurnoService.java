@@ -44,6 +44,9 @@ public class AsignacionTurnoService {
     @Autowired
     private CurrentDocenteContextService currentDocenteContextService;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     public AsignacionTurnoDTO crearAsignacionTurno(@NonNull AsignacionTurnoDTO asignacionTurnoDTO) {
         AsignacionTurno asignacion = new AsignacionTurno();
         asignacion.setHoraCheckin(asignacionTurnoDTO.getHoraCheckin());
@@ -131,6 +134,7 @@ public class AsignacionTurnoService {
         if (asignacionExistente.isPresent()) {
             AsignacionTurno asignacion = asignacionExistente.get();
             Turno turno = asignacion.getTurno();
+            authorizationService.validarAccesoDocenteAAsignacion(asignacion);
 
             if (turno == null) {
                 throw new IllegalStateException("La asignacion no tiene un turno asociado.");
@@ -181,6 +185,7 @@ public class AsignacionTurnoService {
         }
 
         AsignacionTurno asignacion = asignacionExistente.get();
+        authorizationService.validarAccesoDocenteAAsignacion(asignacion);
         // El cierre usa un DTO dedicado para aceptar solo el contrato real del endpoint.
         asignacion.setHoraCierre(cierreTurnoDTO.getHoraCierre());
         asignacion.setCalificacionLimpieza(cierreTurnoDTO.getCalificacionLimpieza());
