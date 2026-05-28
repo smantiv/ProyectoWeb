@@ -31,8 +31,8 @@ export function AppLayout() {
         <div className="brand">
           <img src={logo} alt="Logo SFR" />
           <div>
-            <strong>SFR Turnos</strong>
-            <span>Vigilancia escolar</span>
+            <strong>Sistema de Vigilancia Escolar</strong>
+            <span>Colegio Santa Francisca Romana</span>
           </div>
         </div>
         <nav>
